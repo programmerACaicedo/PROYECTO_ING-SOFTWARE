@@ -9,7 +9,13 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-image: url('../img/logo512.png');
   }
+img {
+    max-width: 100%;
+    height: auto;
+  }
+
   
   .hero {
     background-color: rgba(0, 0, 0, 0.6);
