@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('../img/logo512.png');
+    background-image: url('../img/img_bg.png');
   }
 img {
     max-width: 100%;
