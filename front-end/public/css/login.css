@@ -7,7 +7,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-image: url('../img/log.jpg');
+    background-image: url('../img/log.png');
   }
   
   .login-container {
