@@ -1,5 +1,6 @@
 package com.apiweb.backend.Model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 import lombok.AllArgsConstructor;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArrendatarioAcuerdoModel {
+public class Lugares {
     @Id
-    private Object idUsuario;
+    private ObjectId inmuebleId;
     private String nombre;
 }
