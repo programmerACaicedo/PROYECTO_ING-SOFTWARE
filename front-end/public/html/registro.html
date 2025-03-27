@@ -29,5 +29,30 @@
       </button>
     </form>
   </div>
+
+  <!-- SDK de Google -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Inicialización de Google Sign-In -->
+  <script>
+    function handleCredentialResponse(response) {
+      console.log("Token JWT recibido:", response.credential);
+      // Aquí puedes enviar el token al backend para verificar al usuario
+    }
+
+    window.onload = function () {
+      google.accounts.id.initialize({
+        client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com", // Reemplaza con tu ID real
+        callback: handleCredentialResponse
+      });
+
+      // Vincular el botón personalizado con el inicio de sesión de Google
+      document.querySelector(".google-btn").addEventListener("click", function () {
+        google.accounts.id.prompt(); // Muestra el popup de Google
+      });
+    };
+  </script>
+
 </body>
 </html>
+
