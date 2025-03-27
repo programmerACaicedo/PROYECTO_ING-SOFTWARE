@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-class AcuerdosModel {
+public class AcuerdosModel {
     @Id
     private Object id;
     private Object idInmueble;
