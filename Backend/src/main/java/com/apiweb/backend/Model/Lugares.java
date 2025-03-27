@@ -1,7 +1,5 @@
 package com.apiweb.backend.Model;
 
-import java.time.Instant;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
@@ -12,10 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalificacionesServicios {
+public class Lugares {
     @Id
-    private ObjectId calificador;
-    private String calificacion;
-    private String comentario;
-    private Instant fecha;
+    private ObjectId inmuebleId;
+    private String nombre;
 }

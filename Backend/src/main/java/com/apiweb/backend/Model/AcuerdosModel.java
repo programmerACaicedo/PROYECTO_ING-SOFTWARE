@@ -19,12 +19,10 @@ public class AcuerdosModel {
     @Id
     private Object id;
     private Object idInmueble;
-    private Instant  Inicio;
-    private Instant  fechaFin;
+    private Instant Inicio;
+    private Instant fechaFin;
     private String razonCancelacion;
     private String estado;
     private String archivoContrato;
-    private ArrendatarioAcuerdoModel arrendatario;// Este atributo hace ref a el documento embebido
-
- 
+    private ArrendatarioAcuerdo arrendatario;// Este atributo hace ref a el documento embebido 
 } 
