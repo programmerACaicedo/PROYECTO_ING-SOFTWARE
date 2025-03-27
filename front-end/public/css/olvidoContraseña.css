@@ -6,6 +6,7 @@ body {
     height: 100vh;
     background-color: #f0f0f0;
     margin: 0;
+    background-image: url('../img/olvido.png');
 }
 
 .container {
@@ -13,7 +14,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 450px;
     text-align: center;
 }
 
@@ -46,4 +47,19 @@ button:disabled {
 
 #email-form {
     display: block;
+    max-width: 400px;
+    justify-content: center;
+    align-items: center;
+    margin: 0,0;
+}
+send-code-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    justify-content: center;
+    justify-self: center;
 }
