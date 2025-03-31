@@ -19,7 +19,7 @@ public class AcuerdosModel {
     @Id
     private Object id;
     private Object idInmueble;
-    private Instant Inicio;
+    private Instant fechaInicio;
     private Instant fechaFin;
     private String razonCancelacion;
     private String estado;

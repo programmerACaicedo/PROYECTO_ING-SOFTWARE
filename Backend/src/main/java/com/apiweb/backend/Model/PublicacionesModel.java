@@ -14,12 +14,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class PublicacionesModel {
     @Id
     private ObjectId id;
     private int precioMensual;
     private String disponibilidad;
-    private ArrayList<CalificacionesServicios> CalificacionesServicios = new ArrayList<CalificacionesServicios>();
+    private ArrayList<CalificacionesServicios> calificacionesServicios = new ArrayList<CalificacionesServicios>();
     private ArrayList<Lugares> Lugares = new ArrayList<Lugares>();
 }

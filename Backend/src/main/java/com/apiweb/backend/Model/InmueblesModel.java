@@ -25,4 +25,5 @@ public class InmueblesModel {
     private String condiciones;
     private List<String> imagenes = new ArrayList<>();
     private UbicacionInmueble ubicacion;
+    private double calificacionProm;
 }
