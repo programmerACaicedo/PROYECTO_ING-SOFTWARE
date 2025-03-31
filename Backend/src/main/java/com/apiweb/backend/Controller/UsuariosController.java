@@ -16,7 +16,7 @@ import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Service.IUsuariosService;
 
 @RestController
-@RequestMapping("/appi/agentes")
+@RequestMapping("/appi/usuario")
 public class UsuariosController {
     @Autowired IUsuariosService usuariosService;
 
