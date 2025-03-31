@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document ("ACUERDOS")
+@Document ("Acuerdos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

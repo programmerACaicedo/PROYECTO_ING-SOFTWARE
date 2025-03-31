@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document ("PUBLICACIONES")
+@Document ("Publicacion")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
