@@ -51,6 +51,7 @@ public class UsuariosServiceImp implements IUsuariosService {
         buscarUsuario.setFoto(usuario.getFoto());
 
         return usuariosRepository.save(buscarUsuario);
+        
     } catch (Exception e) {
         throw new UserUpdateException("Error al actualizar el usuario con ID: " + id + ". Detalles: " + e.getMessage());
     }
