@@ -1,6 +1,6 @@
 package com.apiweb.backend.Model;
 
-import org.springframework.data.annotation.Id;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArrendatarioAcuerdoModel {
-    @Id
-    private Object idUsuario;
-    private String nombre;
+public class MensajesInteres {
+    private String descripcion;
+    private Instant fecha;
 }

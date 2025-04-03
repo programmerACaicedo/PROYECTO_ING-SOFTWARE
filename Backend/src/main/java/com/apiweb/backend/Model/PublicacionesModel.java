@@ -19,6 +19,6 @@ public class PublicacionesModel {
     private ObjectId id;
     private int precioMensual;
     private String disponibilidad;
-    private ArrayList<CalificacionesServicios> calificacionesServicios = new ArrayList<CalificacionesServicios>();
-    private ArrayList<Lugares> Lugares = new ArrayList<Lugares>();
+    private ArrayList<Lugares> lugares = new ArrayList<Lugares>();
+    private MensajesInteres mensajeInteres;
 }

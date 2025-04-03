@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CalificacionesServicios {
     @Id
     private ObjectId calificador;
-    private int calificacion;
+    private double calificacion;
     private String comentario;
     private Instant fecha;
 }

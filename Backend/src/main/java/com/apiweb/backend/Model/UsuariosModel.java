@@ -21,8 +21,8 @@ public class UsuariosModel {
     private String nombre;
     private String correo;
     private String contrasena;
-    private TipoUsuario tipo;
     private Integer telefono;
+    private TipoUsuario tipo;
     private String pregunta_seguridad;
     private ArrayList<Calificaciones> calificaciones = new ArrayList<Calificaciones>();
     private ArrayList<Notificaciones> notificaciones = new ArrayList<Notificaciones>();

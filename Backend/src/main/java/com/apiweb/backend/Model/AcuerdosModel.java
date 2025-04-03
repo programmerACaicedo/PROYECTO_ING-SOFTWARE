@@ -1,7 +1,7 @@
 package com.apiweb.backend.Model;
 
 import java.time.Instant;
-
+import java.util.ArrayList;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,5 +24,6 @@ public class AcuerdosModel {
     private String razonCancelacion;
     private String estado;
     private String archivoContrato;
+    private ArrayList<CalificacionesServicios> calificacionServicio = new ArrayList<CalificacionesServicios>(); // Este atributo hace ref a el documento embebido
     private ArrendatarioAcuerdo arrendatario;// Este atributo hace ref a el documento embebido 
 } 
