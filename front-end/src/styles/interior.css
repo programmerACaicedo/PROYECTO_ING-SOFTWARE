@@ -80,6 +80,10 @@ body {
   #nuevo-aviso button:hover {
     background-color: #45a049;
   }
+  .property-list {
+    font-family: 'Courier New', Courier, monospace;
+    color: #45a049;
+  }
   
   
   
