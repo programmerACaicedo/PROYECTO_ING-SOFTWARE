@@ -1,0 +1,25 @@
+{
+  "name": "c",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/programmerACaicedo/PROYECTO_ING-SOFTWARE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/programmerACaicedo/PROYECTO_ING-SOFTWARE/issues"
+  },
+  "homepage": "https://github.com/programmerACaicedo/PROYECTO_ING-SOFTWARE#readme",
+  "keywords": [],
+  "description": "",
+  "dependencies": {
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.4.1",
+    "react-scripts": "^5.0.1"
+  }
+}
