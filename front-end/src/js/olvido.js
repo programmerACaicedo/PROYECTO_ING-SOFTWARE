@@ -3,6 +3,15 @@ const sendCodeBtn = document.getElementById("send-code-btn");
 const verificationForm = document.getElementById("verification-form");
 const emailForm = document.getElementById("email-form");
 const validateCodeBtn = document.getElementById("validate-code-btn");
+const messageBox = document.getElementById("message-box");
+
+// Función para mostrar mensajes
+function showMessage(message, type = "error") {
+    messageBox.textContent = message;
+    messageBox.className = `message ${type}`;
+    messageBox.style.display = "block";
+    setTimeout(() => { messageBox.style.display = "none"; }, 3000);
+}
 
 // Evento de clic para "Validar y Enviar Código"
 sendCodeBtn.addEventListener("click", function() {
