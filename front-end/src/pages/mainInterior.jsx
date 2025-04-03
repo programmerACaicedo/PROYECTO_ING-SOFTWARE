@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "../styles/interior.css"; // Asegúrate de que el archivo exista en src/styles/
+import "../styles/interior.css";
 
 const properties = {
   apartamento: [
     {
-      image: "image-placeholder.jpg",
+      image: "img_bg.png",
       price: "1.500.000",
       state: "Disponible",
       rooms: 3,
