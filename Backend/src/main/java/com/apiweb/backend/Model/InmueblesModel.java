@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.apiweb.backend.Model.ENUM.tipoInmueble;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,7 @@ public class InmueblesModel {
     private Object id;
     private String nombre;
     private PropietarioInmueble propietarioId;
-    private String tipo;
+    private tipoInmueble tipo;
     private String descripcion;
     private String condiciones;
     private List<String> imagenes = new ArrayList<>();
