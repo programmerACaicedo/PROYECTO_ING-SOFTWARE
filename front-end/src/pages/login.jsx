@@ -62,6 +62,7 @@ const Login = () => {
           <input type="email" placeholder="Correo Electrónico" required />
           <input type="password" placeholder="Contraseña" required />
           <div className="options">
+            
             <label>
               <input type="checkbox" /> Guardar credenciales
             </label>
