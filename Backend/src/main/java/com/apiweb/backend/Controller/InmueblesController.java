@@ -15,9 +15,10 @@ import com.apiweb.backend.Service.IInmueblesService;
 @RequestMapping("/api/inmuebles")
 public class InmueblesController {
     @Autowired IInmueblesService inmueblesService;
+
     @PostMapping("/insertar")
-    public ResponseEntity<InmueblesModel> crearInmueble (@RequestBody InmueblesModel inmueble) {
-        return new ResponseEntity<InmueblesModel>(inmueblesService.guardarInmueble(inmueble),HttpStatus.CREATED);
+    public ResponseEntity<String> insertar(@RequestBody InmueblesModel inmueble){
+        return new ResponseEntity<>(inmueblesService.guardarInmueble(inmueble), HttpStatus.CREATED);
     }
     
 }

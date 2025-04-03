@@ -39,4 +39,10 @@ public class GlobalException {
     public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
         return new ResponseEntity<>("Ocurrió un error inesperado: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // Manejo de excepciones para creación de inmueble
+    @ExceptionHandler(InmuebleCreateException.class)
+    public ResponseEntity<String> handleInmuebleCreateException(InmuebleCreateException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
