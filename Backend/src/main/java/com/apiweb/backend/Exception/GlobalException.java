@@ -51,4 +51,16 @@ public class GlobalException {
     public ResponseEntity<String> handleInmuebleUpdateException(InmuebleUpdateException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
+
+    // Manejo de excepciones para eliminación de usuario
+    @ExceptionHandler(InmuebleDeletionException.class)
+    public ResponseEntity<String> handleInmuebleDeletionException(InmuebleDeletionException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo de excepciones para creación de publicación
+    @ExceptionHandler(PublicacionCreateException.class)
+    public ResponseEntity<String> handlePublicacionCreateException(PublicacionCreateException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

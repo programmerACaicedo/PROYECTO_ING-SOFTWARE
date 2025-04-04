@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class PublicacionesModel {
     @Id
     private ObjectId id;
+    private String nombre;
     private int precioMensual;
     private tipoDisponibilidad disponibilidad;
     private ArrayList<Lugares> lugares = new ArrayList<Lugares>();
