@@ -45,4 +45,10 @@ public class GlobalException {
     public ResponseEntity<String> handleInmuebleCreateException(InmuebleCreateException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    // Manejo de excepciones para actualización de inmueble
+    @ExceptionHandler(InmuebleUpdateException.class)
+    public ResponseEntity<String> handleInmuebleUpdateException(InmuebleUpdateException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }

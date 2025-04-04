@@ -3,6 +3,7 @@ package com.apiweb.backend.Model;
 import java.time.Instant;
 import java.util.ArrayList;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,8 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AcuerdosModel {
     @Id
-    private Object id;
-    private Object idInmueble;
+    private ObjectId id;
+    private ObjectId idInmueble;
     private Instant fechaInicio;
     private Instant fechaFin;
     private String razonCancelacion;
