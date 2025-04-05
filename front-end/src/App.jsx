@@ -7,6 +7,9 @@ import Login from "./pages/login";
 import Registro from "./pages/registro";
 import OlvidoContraseña from "./pages/olvidoContraseña";
 import Interior from "./pages/mainInterior";
+import NuevoAviso from "./pages/nuevoAviso";  // Ahora el nuevo aviso es un componente independiente
+import Perfil from "./pages/misArrendamientos";
+
 
 
 import "./styles/App.css";
@@ -21,6 +24,10 @@ function App() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/olvido-contraseña" element={<OlvidoContraseña />} />
         <Route path="/interior" element={<Interior />} />
+        <Route path="/nuevo-aviso" element={<NuevoAviso />} />
+        <Route path="/perfil" element={<Perfil />} />
+
+
       </Routes>
     </BrowserRouter>
   );

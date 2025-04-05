@@ -1,88 +1,116 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/interior.css";
 
-const properties = {
-  apartamento: [
-    {
-      image: "img_bg.png",
-      price: "1.500.000",
-      state: "Disponible",
-      rooms: 3,
-      bathrooms: 2
-    }
-  ],
-  bodega: [
-    {
-      image: "image-placeholder.jpg",
-      price: "2.000.000",
-      state: "Disponible",
-      rooms: 0,
-      bathrooms: 0
-    }
-  ]
-};
-
 const Interior = () => {
-  const [mostrarAviso, setMostrarAviso] = useState(true);
-  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
+  const [isPropietario, setIsPropietario] = useState(false);
+  const [publicaciones, setPublicaciones] = useState([]);
+  const [mostrarMenu, setMostrarMenu] = useState(false); // Estado para desplegar el menú
+  const navigate = useNavigate();
 
-  const showProperties = (tipo) => {
-    setTipoSeleccionado(tipo);
+  useEffect(() => {
+    // Simulamos rol "propietario" (puedes quitarlo si quieres probar "interesado")
+    setIsPropietario(true);
+
+    // Datos simulados (en producción, llamarías a tu API)
+    const dataSimulada = [
+      {
+        id: 1,
+        titulo: "Alquiler de Apartamento - 15 piso unidad A",
+        precio: "1.500.000",
+        estado: "Disponible",
+        habitaciones: 3,
+        banos: 2,
+        tipo: "apartamento",
+      },
+      
+      {
+        id: 2,
+        titulo: "Bodega en zona industrial",
+        precio: "2.000.000",
+        estado: "Disponible",
+        habitaciones: 0,
+        banos: 0,
+        tipo: "bodega",
+      },
+      // ...más publicaciones
+    ];
+    setPublicaciones(dataSimulada);
+  }, []);
+
+  // Función para filtrar publicaciones según el tipo
+  const filterPublications = (tipo) => {
+    console.log("Filtrando por tipo:", tipo);
+    // Aquí podrías filtrar o llamar a tu API
   };
 
+  // Redirigir a la página de detalle de la publicación
+  const handlePublicationClick = (pubId) => {
+    navigate(`/publicacion/${pubId}`);
+  };
+
+  // Redirigir a "Nuevo Aviso"
+  const handleNuevoAviso = () => {
+    navigate("/nuevo-aviso");
+  };
+  const firstName = "Juan";
+
+
   return (
-    <div>
-      {/* Barra de navegación */}
+    <div className="interior-page">
       <header>
-        <h1>Servicio de Arrendamientos</h1>
-        <select required onChange={(e) => showProperties(e.target.value)}>
-          <option value="">Alquileres</option>
-          <option value="apartamento">Apartamento</option>
-          <option value="bodega">Bodegas</option>
-          <option value="garajes">Garajes</option>
-          <option value="parqueadero">Parqueadero</option>
-        </select>
+      <h1>Servicio de Arrendamientos</h1>
+        <div className="menu-container">
+          {/* Botón de arrendamientos */}
+          <button 
+            className="alquileres-btn" 
+            onClick={() => setMostrarMenu(!mostrarMenu)}
+          >
+            Alquileres
+          </button>
+          {mostrarMenu && (
+            <div className="dropdown-content">
+              <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
+              <button onClick={() => filterPublications("bodega")}>Bodegas</button>
+              <button onClick={() => filterPublications("garajes")}>Garajes</button>
+              <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
+            </div>
+          )}
+        </div>
+
+        {/* Botón "Nuevo Aviso" solo si el usuario es propietario */}
+        {isPropietario && (
+        <>
+          <button className="nuevo-aviso-btn" onClick={handleNuevoAviso}>
+            Nuevo Aviso
+          </button>
+          <button className="mis-arrendamientos-btn" onClick={() => navigate("/mis-arrendamientos")}>
+            {firstName}
+          </button>
+        </>
+        )}
       </header>
 
-      {/* Sección Nuevo Aviso */}
-      {mostrarAviso && (
-        <div id="nuevo-aviso">
-          <h2>Nuevo Aviso</h2>
-          <p>¡Publica tu propiedad aquí!</p>
-          <form>
-            <input type="text" placeholder="Nombre de la propiedad" required />
-            <input type="text" placeholder="Precio" required />
-            <input type="number" placeholder="Habitaciones" required />
-            <input type="number" placeholder="Baños" required />
-            <input type="text" placeholder="Estado" required />
-            <button type="submit">Publicar</button>
-          </form>
-        </div>
-      )}
-
-      {/* Sección Contáctanos */}
-      <section id="contactos">
-        <h2>Contáctanos</h2>
-        <p>Déjanos tu mensaje, pronto nos pondremos en contacto.</p>
-      </section>
-
-      {/* Publicaciones de Propiedades */}
-      <div id="publicaciones">
+      <section className="publicaciones">
         <h2>Publicaciones</h2>
-        <div className="property-card" id="property-list">
-          {properties[tipoSeleccionado]?.map((property, index) => (
-            <div key={index} className="property-card">
-              <img src={property.image} alt="Imagen de propiedad" />
-              <p>Precio: {property.price}</p>
-              <p>Estado: {property.state}</p>
-              <p>Habitaciones: {property.rooms}</p>
-              <p>Baños: {property.bathrooms}</p>
+        <div className="publicaciones-list">
+          {publicaciones.map((pub) => (
+            <div
+              key={pub.id}
+              className="publicacion"
+              onClick={() => handlePublicationClick(pub.id)}
+            >
+              <h3>{pub.titulo}</h3>
+              <p>Precio: {pub.precio}</p>
+              <p>Estado: {pub.estado}</p>
+              <p>Habitaciones: {pub.habitaciones}</p>
+              <p>Baños: {pub.banos}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 };
 
-export default Interior; // Se renombró el componente para coincidir con la importación
+export default Interior;

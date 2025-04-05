@@ -1,89 +1,184 @@
-/* General styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
+/* interior.css */
+
+/* Fondo de la página (imagen de ejemplo, ajústalo a tu imagen) */
+.interior-page {
+  background: url("../assets/img/img_bg.png") no-repeat center center;
+  background-size: cover;;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  color: #fff; /* Texto en blanco para resaltar sobre el fondo */
+}
+
+/* Encabezado */
+.interior-page header {
+  position: relative;
+  background: url(../assets/img/Panoramic_Cali_Col.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 40vh; /* Ocupa la mitad de la altura de la ventana */
+  padding: 1rem;
+  box-sizing: border-box;  
+}
+.interior-page header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; /* Ajusta la altura del degradado */
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
+
+/* Título principal */
+.interior-page h1 {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+
+/* Contenedor del botón Alquileres y su dropdown */
+.menu-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  position: relative; /* Necesario para posicionar el dropdown */
+}
+
+/* Botón "Alquileres" */
+.alquileres-btn {
+  background-color: transparent; /* Verde */
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  flex: 1; /* Para que ambos ocupen el mismo espacio en su contenedor */
+  max-width: 200px;
+}
+
+.alquileres-btn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+/* Dropdown que aparece al pulsar el botón */
+.dropdown-content {
+  position: absolute;
+  top: 100px; /* Ajusta según tu layout */
+  left: 0;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Botones dentro del dropdown */
+.dropdown-content button {
+  background: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  margin: 5px 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dropdown-content button:hover {
+  background: rgba(255, 255, 255, 0.304);
+}
+
+/* Botón "Nuevo Aviso" */
+.nuevo-aviso-btn {
+  background-color: transparent; /* Un color naranja para diferenciar */
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.nuevo-aviso-btn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+.mis-arrendamientos-btn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  /* Para que tenga el mismo tamaño que el de Nuevo Aviso */
+  flex: 1;
+  max-width: 200px;
+}
+
+.mis-arrendamientos-btn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+
+/* Sección de publicaciones */
+.publicaciones {
+  text-align: center;
+  padding: 1rem;
+}
+
+.publicaciones-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.publicacion {
+  background-color: rgba(255,255,255,0.85);
+  color: #333;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.publicacion:hover {
+  background-color: rgba(255,255,255,1);
+}
+
+.publicacion h3 {
+  margin: 0 0 10px;
+}
+/* Responsividad: para pantallas grandes */
+@media (min-width: 768px) {
+  .interior-page {
+    width: 90%;
+    margin: 0 auto;
   }
-  
-  header {
-    color: white;
-    padding: 20px;
-    text-align: center;
+}
+
+/* Responsividad: para móviles, se ajusta a 100% */
+@media (max-width: 767px) {
+  .interior-page header h1 {
+    font-size: 2rem;
   }
-  
-  nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  nav ul li {
-    display: inline-block;
-    margin: 10px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  #publicaciones {
-    padding: 20px;
-  }
-  
-  .property-card {
-    background-color: white;
-    padding: 20px;
-    margin: 10px 0;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .property-card img {
+  .alquileres-btn,
+  .nuevo-aviso-btn {
+    max-width: none;
     width: 100%;
-    height: auto;
-    border-radius: 5px;
   }
-  
-  /* Estilos para el formulario de "Nuevo Aviso" */
-  #nuevo-aviso form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  #nuevo-aviso input {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  #nuevo-aviso button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  #nuevo-aviso button:hover {
-    background-color: #45a049;
-  }
-  .property-list {
-    font-family: 'Courier New', Courier, monospace;
-    color: #45a049;
-  }
-  
-  
-  
+}
