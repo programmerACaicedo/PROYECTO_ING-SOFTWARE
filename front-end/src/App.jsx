@@ -10,7 +10,7 @@ import Registro from "./pages/registro";
 import OlvidoContraseña from "./pages/olvidoContraseña";
 import Interior from "./pages/mainInterior";
 import NuevoAviso from "./pages/nuevoAviso";  // Ahora el nuevo aviso es un componente independiente
-import Perfil from "./pages/misArrendamientos";
+import Perfil from "./pages/perfil";
 
 
 import "./styles/App.css"; // Importa el CSS

@@ -14,6 +14,7 @@
 
 /* Encabezado */
 .interior-page header {
+  width: 100%;
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg);
   background-size: cover;
@@ -54,7 +55,7 @@
 /* Botón "Alquileres" */
 .alquileres-btn {
   background-color: transparent; /* Verde */
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   padding: 12px 24px;
   font-size: 1rem;
   border: none;
@@ -102,7 +103,7 @@
 /* Botón "Nuevo Aviso" */
 .nuevo-aviso-btn {
   background-color: transparent; /* Un color naranja para diferenciar */
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   padding: 12px 24px;
   font-size: 1rem;
   border: none;
@@ -115,9 +116,9 @@
   background-color: rgba(255, 255, 255, 0.304);
 }
 
-.mis-arrendamientos-btn {
+.perfil-btn {
   background-color: transparent;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   padding: 12px 24px;
   font-size: 1rem;
   border: none;
@@ -129,7 +130,7 @@
   max-width: 200px;
 }
 
-.mis-arrendamientos-btn:hover {
+.perfil-btn:hover {
   background-color: rgba(255, 255, 255, 0.304);
 }
 
@@ -166,8 +167,8 @@
 /* Responsividad: para pantallas grandes */
 @media (min-width: 768px) {
   .interior-page {
-    width: 90%;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
   }
 }
 
@@ -179,6 +180,6 @@
   .alquileres-btn,
   .nuevo-aviso-btn {
     max-width: none;
-    width: 100%;
+    width: 100%; 
   }
 }

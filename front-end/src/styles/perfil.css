@@ -1,0 +1,189 @@
+/* Contenedor principal */
+.perfil-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef); /* Fondo opcional */
+}
+
+/* Encabezado */
+.header {
+  
+  text-align: center;
+  padding: 20px;
+  background-color: #00000009;
+  color: rgb(0, 0, 0);
+}
+
+.title {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+/* Contenido principal */
+.main-content {
+  background: url("../assets/img/img_bg.png") ;
+  flex: 1; /* Hace que el contenido principal crezca para llenar el espacio */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Formulario de perfil */
+.perfil-form {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho máximo en pantallas grandes */
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Se quita height: 100% para permitir que crezca según el contenido */
+}
+
+/* Sección de foto de perfil */
+.foto-perfil {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 40px;
+
+}
+
+.foto-perfil img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+  color:#000000;
+  background-color: rgb(222, 222, 222);
+
+}
+
+.btn-seleccionar-archivo {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-seleccionar-archivo:hover {
+  background-color: #0056b3;
+}
+
+/* Sección de datos personales */
+.datos-personales {
+  flex: 2; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: rgb(0, 0, 0);
+}
+
+/* Formularios */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: black;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Errores y mensajes */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.mensaje-exito {
+  color: green;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* Botones de acción */
+.btn-guardar,
+.btn-eliminar {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-guardar {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-guardar:hover {
+  background-color: #218838;
+}
+
+.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+  margin-top: 20px;
+}
+
+.btn-eliminar:hover {
+  background-color: #c82333;
+}
+
+/* Confirmación de eliminación */
+.confirmacion {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+/* Media Queries para diseño responsive */
+@media (max-width: 768px) {
+  .perfil-form {
+    flex-direction: column; 
+    align-items: center;
+    padding: 20px;
+  }
+
+  .foto-perfil {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .datos-personales {
+    width: 100%;
+  }
+
+  .foto-perfil img {
+    width: 150px;
+    height: 150px;
+  }
+}

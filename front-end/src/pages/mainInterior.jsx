@@ -53,7 +53,6 @@ const Interior = () => {
   const handleNuevoAviso = () => {
     navigate("/nuevo-aviso");
   };
-  const firstName = "Juan";
 
 
   return (
@@ -84,8 +83,8 @@ const Interior = () => {
           <button className="nuevo-aviso-btn" onClick={handleNuevoAviso}>
             Nuevo Aviso
           </button>
-          <button className="mis-arrendamientos-btn" onClick={() => navigate("/mis-arrendamientos")}>
-            {firstName}
+          <button className="perfil-btn" onClick={() => navigate("/perfil")}>
+            Mi Perfil
           </button>
         </>
         )}
