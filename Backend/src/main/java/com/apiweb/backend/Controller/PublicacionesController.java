@@ -16,8 +16,8 @@ import com.apiweb.backend.Service.IPublicacionesService;
 public class PublicacionesController {
     @Autowired IPublicacionesService publicacionesService;
     @PostMapping("/insertar")
-    public ResponseEntity<PublicacionesModel> crearPublicacion (@RequestBody PublicacionesModel publicacion) {
-        return new ResponseEntity<PublicacionesModel>(publicacionesService.guardarPublicacion(publicacion),HttpStatus.CREATED);
+    public ResponseEntity<String> crearPublicacion (@RequestBody PublicacionesModel publicacion) {
+        return new ResponseEntity<>(publicacionesService.guardarPublicacion(publicacion),HttpStatus.CREATED);
     }
-    
+
 }

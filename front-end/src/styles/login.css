@@ -1,4 +1,3 @@
-
 body {
   background-size: cover;
   font-family: Arial, sans-serif;
@@ -7,9 +6,6 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  
-
-
 }
 
 .login-page {
@@ -24,56 +20,83 @@ body {
   justify-content: center;
 }
 
+.login-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  border-radius: 15px;
+  color: #fff;
+  width: 100%;
+  max-width: 400px;
+}
 
-  .login-container {
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 2rem;
-    border-radius: 15px;
-    color: #fff;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 8px;
-  }
-  
-  button {
-    width: 75%;
-    padding: 10px;
-    background-color: #2340fd;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9em;
-    margin-top: 10px;
-  }
-  
-  .options a {
-    color: #ccc;
-    text-decoration: none;
-  }
-  
-  .google-btn {
-    background: white;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 8px;
+}
+
+button {
+  width: 75%;
+  padding: 10px;
+  background-color: #2340fd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.options input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.options a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.google-btn {
+  background: white;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+
+.register-link a {
+  color: #4da6ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}

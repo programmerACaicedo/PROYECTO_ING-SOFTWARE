@@ -1,5 +1,7 @@
+// src/App.jsx
+
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 // Páginas
 import Main from "./pages/main";
@@ -11,12 +13,10 @@ import NuevoAviso from "./pages/nuevoAviso";  // Ahora el nuevo aviso es un comp
 import Perfil from "./pages/misArrendamientos";
 
 
-
-import "./styles/App.css";
+import "./styles/App.css"; // Importa el CSS
 
 function App() {
   return (
-    
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main />} />
@@ -29,11 +29,24 @@ function App() {
 
 
       </Routes>
+
     </BrowserRouter>
   );
 }
 
-export default App;
+function BackgroundWrapper({ children }) {
+  const location = useLocation();
+  const isInicio = location.pathname === "/";
 
+  return isInicio ? (
+    <div className="App-page">
+      {children}
+    </div>
+  ) : (
+    children
+  );
+}
+
+export default App;
 
 
