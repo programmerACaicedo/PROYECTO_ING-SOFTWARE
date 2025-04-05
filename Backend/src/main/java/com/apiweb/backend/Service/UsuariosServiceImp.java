@@ -2,6 +2,7 @@ package com.apiweb.backend.Service;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.apiweb.backend.Exception.LoginFailedException;
@@ -19,15 +20,22 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Autowired
     IUsuariosRepository usuariosRepository;
 
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
     public String registroUsuario(UsuariosModel usuario) {
-    try {
+        try {
+        if (usuariosRepository.findByCorreo(usuario.getCorreo()) != null) {
+            throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado.");
+        }
+        String contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
+        usuario.setContrasena(contrasenaEncriptada);
         usuariosRepository.save(usuario);
         return "El usuario " + usuario.getNombre() + " fue registrado con éxito";
-    } catch (Exception e) {
+        } catch (Exception e) {
         throw new UserRegistrationException("Error al registrar el usuario: " + e.getMessage());
+        }
     }
-}
 
     @Override
     public String iniciarSesion(UsuariosModel usuario) {
