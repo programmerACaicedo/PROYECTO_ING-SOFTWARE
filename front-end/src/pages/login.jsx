@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "../styles/login.css";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate para la redirección
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
-  const navigate = useNavigate(); // Hook de redirección
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Cargar el script de Google Identity Services
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
@@ -16,16 +18,15 @@ const Login = () => {
 
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
-        setIsAuthenticated(true); // Establecer estado de autenticación como verdadero
-        // Aquí puedes enviar el token al backend para verificar al usuario
+        setIsAuthenticated(true);
       };
 
       if (window.google) {
         window.google.accounts.id.initialize({
           client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
           callback: handleCredentialResponse,
-          ux_mode: "popup", // Usar popup en lugar de FedCM
-          auto_select: false, // Desactivar selección automática
+          ux_mode: "popup",
+          auto_select: false,
         });
 
         document.querySelector(".google-btn")?.addEventListener("click", () => {
@@ -38,19 +39,38 @@ const Login = () => {
     };
     document.body.appendChild(script);
 
-    // Limpiar el script al desmontar el componente
     return () => {
       document.body.removeChild(script);
     };
   }, []);
 
-  const handleLoginClick = () => {
-    // Simular un login manual
-    setIsAuthenticated(true); // Cambiar el estado a 'autenticado'
+  const handleLoginClick = async (event) => {
+    event.preventDefault();
+    const form = event.target.closest("form");
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
 
-    if (isAuthenticated) {
-      // Si el usuario está autenticado, redirigir a la página Interior
-      navigate("/interior"); // Redirige a la página de Interior
+    try {
+      const response = await fetch("https://tu-api.com/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setIsAuthenticated(true);
+        navigate("/interior");
+      } else {
+        setErrorMessage("Usuario no registrado o credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión", error);
+      setErrorMessage("Error en el servidor. Intente más tarde.");
     }
   };
 
@@ -58,17 +78,29 @@ const Login = () => {
     <div className="login-page">
       <div className="login-container">
         <h2>Iniciar Sesión</h2>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form>
-          <input type="email" placeholder="Correo Electrónico" required />
-          <input type="password" placeholder="Contraseña" required />
+          <input 
+            type="email" 
+            placeholder="Correo Electrónico" 
+            required 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            required 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <div className="options">
-            
             <label>
               <input type="checkbox" /> Guardar credenciales
             </label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
-          <button type="button" onClick={handleLoginClick}>
+          <button type="submit" onClick={handleLoginClick}>
             Ingresar
           </button>
           <button type="button" className="google-btn">
@@ -79,6 +111,9 @@ const Login = () => {
             Continuar con Google
           </button>
         </form>
+        <p className="register-link">
+          ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
+        </p>
       </div>
     </div>
   );

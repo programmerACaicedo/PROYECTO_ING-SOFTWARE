@@ -1,8 +1,13 @@
 body {
-  height: 100vh; /* Asegura que cubra toda la pantalla */
+  height: 100vh;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 
 .register-page {
   background-image: url("../assets/img/registro.png");
@@ -16,42 +21,140 @@ body {
   justify-content: center;
 }
 
-  
-  .register-container {
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 2rem;
-    border-radius: 15px;
-    color: #fff;
-    width: 100%;
-    max-width: 450px;
-  }
-  
-  input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 10px;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .google-btn {
-    background: white;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  
+.register-container {
+  background-color: rgba(0, 0, 0, 0.777);
+  padding: 2rem;
+  border-radius: 15px;
+  color: #fff;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+/* Estilo para el checkbox y el enlace */
+.terms-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.terms-container input {
+  width: auto;
+}
+
+.terms-container a {
+  color: #4da3ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.terms-container a:hover {
+  text-decoration: underline;
+}
+
+/* Estilo para el botón de Google */
+.google-btn {
+  background: white;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.google-btn:hover {
+  background: #f1f1f1;
+}
+
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.form-group input, 
+.form-group select {
+  width: 250px; 
+  padding: 9px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.modal-content p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.modal-content button {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3;
+}

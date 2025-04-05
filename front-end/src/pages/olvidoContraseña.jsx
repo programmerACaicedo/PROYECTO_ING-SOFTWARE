@@ -3,6 +3,7 @@ import "../styles/olvidoContraseña.css";
 
 const OlvidoContraseña = () => {
   return (
+    //<div className="olvido-page">//
     <div className="container">
       <h2>Recuperar mi Contraseña</h2>
       <div id="email-form">
@@ -18,6 +19,7 @@ const OlvidoContraseña = () => {
         <button type="button">Validar</button>
       </div>
     </div>
+  //</div>//
   );
 };
 
