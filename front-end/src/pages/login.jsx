@@ -96,8 +96,7 @@ const Login = () => {
           />
           <div className="options">
             <label>
-              <input type="checkbox" /> Guardar credenciales
-            </label>
+              <input type="checkbox" /> Guardar credenciales</label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
           <button type="submit" onClick={handleLoginClick}>

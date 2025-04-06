@@ -62,12 +62,22 @@ button {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  color: #ccc;
 }
 
 .options input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+.options{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 0.9em;
+  margin-top: 10px;
+  color: #ccc;
+  font-weight: bold;
 }
 
 .options a {

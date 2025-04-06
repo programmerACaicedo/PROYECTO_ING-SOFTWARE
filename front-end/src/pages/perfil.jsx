@@ -71,6 +71,7 @@ const Perfil = () => {
         <h1 className="title">Mi Perfil👤</h1>
       </header>
       <main className="main-content">
+        <img src=".." alt="" />
         <div className="perfil-form">
           {/* Sección de la foto de perfil */}
           <div className="foto-perfil">
