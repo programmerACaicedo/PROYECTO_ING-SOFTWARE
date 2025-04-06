@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Importar useNavigate
 import "../styles/registro.css";
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const navigate = useNavigate(); // ✅ Usar el hook de navegación
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -36,10 +38,18 @@ const Registro = () => {
   }, []);
 
   const handleSubmit = (e) => {
+    e.preventDefault(); // ✅ Prevenir recarga por defecto
+
     if (!aceptaTerminos) {
-      e.preventDefault();
       alert("Debes aceptar el tratamiento de datos personales para continuar.");
+      return;
     }
+
+
+    // ✅ Aquí podrías enviar los datos a un backend...
+
+    // ✅ Redirigir a login
+    navigate("/login");
   };
 
   return (
@@ -64,11 +74,7 @@ const Registro = () => {
               <input type="password" placeholder="Crear Contraseña" required />
             </div>
             <div className="input-container">
-              <input
-                type="password"
-                placeholder="Confirmar Contraseña"
-                required
-              />
+              <input type="password" placeholder="Confirmar Contraseña" required />
             </div>
             <div className="input-container full-width">
               <input type="text" placeholder="Palabra de seguridad" required />
@@ -139,6 +145,3 @@ const Registro = () => {
 };
 
 export default Registro;
-
-
-
