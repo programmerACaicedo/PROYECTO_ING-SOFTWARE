@@ -1,6 +1,5 @@
 package com.apiweb.backend.Service;
 
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class UsuariosServiceImp implements IUsuariosService {
     IUsuariosRepository usuariosRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        private final ConcurrentHashMap<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
+
 
     @Override
     public String registroUsuario(UsuariosModel usuario) {
