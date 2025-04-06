@@ -18,8 +18,9 @@ import "./styles/App.css"; // Importa el CSS
 
 function App() {
   return (
-    //<div className="App-page">
+    
     <BrowserRouter>
+    <BackgroundWrapper>
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
@@ -30,8 +31,9 @@ function App() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/actualizar-publicacion" element={<ActualizarPublicacion />} />
       </Routes>
+      </BackgroundWrapper> 
     </BrowserRouter> 
-    //</div>
+  
   );
 }
 
