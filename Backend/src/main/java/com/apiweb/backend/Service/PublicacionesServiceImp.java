@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apiweb.backend.Exception.PublicacionCreateException;
+import com.apiweb.backend.Exception.PublicacionDeletionException;
+import com.apiweb.backend.Exception.PublicacionUpdateException;
 import com.apiweb.backend.Model.PublicacionesModel;
 import com.apiweb.backend.Repository.IInmueblesRepository;
 import com.apiweb.backend.Repository.IPublicacionesRepository;
@@ -48,7 +50,7 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
         return publicacionesRepository.save(publicacionExistente);
 
     } catch (Exception e) {
-        throw new PublicacionCreateException("Error al actualizar la Publicación con ID " + id + ": " + e.getMessage());
+        throw new PublicacionUpdateException("Error al actualizar la Publicación con ID " + id + ": " + e.getMessage());
     }
 }
 
@@ -64,7 +66,7 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
 
         return "La publicación " + publicacionExistente.getNombre() + " fue eliminada con éxito";
     } catch (Exception e) {
-        throw new PublicacionCreateException("Error al eliminar la Publicación con ID " + id + ": " + e.getMessage());
+        throw new PublicacionDeletionException("Error al eliminar la Publicación con ID " + id + ": " + e.getMessage());
     }
     }
 

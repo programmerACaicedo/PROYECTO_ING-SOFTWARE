@@ -51,7 +51,7 @@ input[type="password"] {
 }
 
 
-button {
+button  {
   width: 100%;
   padding: 9px;
   background-color: #4CAF50;
@@ -63,64 +63,44 @@ button {
   cursor: pointer;
 }
 
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Puedes ajustar a 4px o 2px si quieres más cercanía */
+  margin-top: 5px; /* Espacio antes del grupo de botones */
+}
+
 button:hover {
   background-color: #119618;
 }
-
-
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8em;
-  color: white;
   
+.options {
+  justify-content: space-between;
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-top: 10px;
 }
-
 .options label {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap: 6px;
-
+  gap: 8px;
   cursor: pointer;
-  color: #ccc;
-
+  color: #fffbfbd6;
+  margin-right: 12px; 
 }
 
-.options input[type="checkbox"] {
-  appearance: none;
-  width: 18px;
-  height: 12px;
-  border: 2px solid #0011ff;
-  border-radius: 12px;
-  background-color: #fff;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.3s;
+.options input {
+  width: auto;
 }
-
-.options input[type="checkbox"]:checked {
-  background-color: #0011ff;
-  border-color: #000dff;
-}
-
-.options input[type="checkbox"]:checked::after {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 0px;
-  width: 5px;
-  height: 11px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(39deg);
-}
-
 
 .options a {
-  color: #ffffff;
+  color: #ffffffc9;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .options a:hover {
@@ -146,7 +126,7 @@ button:hover {
 }
 
 .google-btn:hover {
-  background-color: #f1f1f1;
+  background-color: #067300;
 }
 
 .google-btn img {
