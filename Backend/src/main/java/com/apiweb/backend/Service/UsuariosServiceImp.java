@@ -1,5 +1,7 @@
 package com.apiweb.backend.Service;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,7 @@ public class UsuariosServiceImp implements IUsuariosService {
     IUsuariosRepository usuariosRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        private final ConcurrentHashMap<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
 
     @Override
     public String registroUsuario(UsuariosModel usuario) {
@@ -39,11 +42,22 @@ public class UsuariosServiceImp implements IUsuariosService {
 
     @Override
     public String iniciarSesion(UsuariosModel usuario) {
-    UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
-    if (usuarioExistente != null && usuarioExistente.getContrasena().equals(usuario.getContrasena())) {
+        try {
+        // Buscar el usuario por correo
+        UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
+        if (usuarioExistente == null) {
+            throw new LoginFailedException("El correo proporcionado no está registrado.");
+        }
+
+        // Validar la contraseña
+        if (!passwordEncoder.matches(usuario.getContrasena(), usuarioExistente.getContrasena())) {
+            throw new LoginFailedException("La contraseña es incorrecta.");
+        }
+
         return "Inicio de sesión exitoso";
-    }
-    throw new LoginFailedException("Credenciales inválidas");
+        } catch (Exception e) {
+        throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
+        }  
     }
 
     @Override
