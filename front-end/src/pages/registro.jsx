@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Importar useNavigate
+import { useNavigate } from "react-router-dom";
 import "../styles/registro.css";
-
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
@@ -17,7 +16,7 @@ const Registro = () => {
     tipoUsuario: ""
   });
 
-  const navigate = useNavigate(); // ✅ Usar el hook de navegación
+  const navigate = useNavigate();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -63,12 +62,24 @@ const Registro = () => {
       return;
     }
 
+    // Validación de correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formulario.correo)) {
+      alert("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+
+    // Validación de teléfono (solo números y entre 7 a 15 dígitos)
+    const telefonoRegex = /^[0-9]{7,15}$/;
+    if (!telefonoRegex.test(formulario.telefono)) {
+      alert("Por favor, ingresa un número de teléfono válido (solo números, entre 7 y 15 dígitos).");
+      return;
+    }
+
     if (formulario.contraseña !== formulario.confirmar) {
       alert("Las contraseñas no coinciden.");
       return;
     }
-
-    e.preventDefault(); // ✅ Prevenir recarga por defecto
 
     if (!aceptaTerminos) {
       alert("Debes aceptar el tratamiento de datos personales.");
@@ -172,9 +183,3 @@ const Registro = () => {
 };
 
 export default Registro;
-
-
-
-
-
-
