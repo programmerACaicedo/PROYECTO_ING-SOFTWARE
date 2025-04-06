@@ -10,6 +10,12 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalException {
 
+    // Manejo genérico de excepciones
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
+        return new ResponseEntity<>("Ocurrió un error inesperado: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     // Manejo de excepciones para registro de usuario
     @ExceptionHandler(UserRegistrationException.class)
     public ResponseEntity<String> handleUserRegistrationException(UserRegistrationException ex, WebRequest request) {
@@ -34,12 +40,6 @@ public class GlobalException {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    // Manejo genérico de excepciones
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
-        return new ResponseEntity<>("Ocurrió un error inesperado: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     // Manejo de excepciones para creación de inmueble
     @ExceptionHandler(InmuebleCreateException.class)
     public ResponseEntity<String> handleInmuebleCreateException(InmuebleCreateException ex, WebRequest request) {
@@ -62,5 +62,17 @@ public class GlobalException {
     @ExceptionHandler(PublicacionCreateException.class)
     public ResponseEntity<String> handlePublicacionCreateException(PublicacionCreateException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // Manejo de excepciones para actualización de publicación
+    @ExceptionHandler(PublicacionUpdateException.class)
+    public ResponseEntity<String> handlePublicacionUpdateException(PublicacionUpdateException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    // Manejo de excepciones para eliminación de publicación
+    @ExceptionHandler(PublicacionDeletionException.class)
+    public ResponseEntity<String> handlePublicacionDeletionException(PublicacionDeletionException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
