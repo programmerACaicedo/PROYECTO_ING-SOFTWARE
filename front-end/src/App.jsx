@@ -18,6 +18,7 @@ import "./styles/App.css"; // Importa el CSS
 
 function App() {
   return (
+    //<div className="App-page">
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main />} />
@@ -28,11 +29,9 @@ function App() {
         <Route path="/nuevo-aviso" element={<NuevoAviso />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/actualizar-publicacion" element={<ActualizarPublicacion />} />
-
-
       </Routes>
-
-    </BrowserRouter>
+    </BrowserRouter> 
+    //</div>
   );
 }
 

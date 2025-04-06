@@ -58,7 +58,8 @@ const Interior = () => {
   return (
     <div className="interior-page">
       <header>
-      <h1>Servicio de Arrendamientos</h1>
+      <h1>Servicio  
+        de Arrendamientos</h1>
         <div className="menu-container">
           {/* Botón de arrendamientos */}
           <button 
