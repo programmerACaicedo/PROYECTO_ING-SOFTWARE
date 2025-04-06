@@ -1,6 +1,5 @@
 package com.apiweb.backend.Model;
 
-import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -22,6 +21,6 @@ public class PublicacionesModel {
     private String nombre;
     private int precioMensual;
     private tipoDisponibilidad disponibilidad;
-    private ArrayList<Lugares> lugares = new ArrayList<Lugares>();
+    private Lugar lugar;
     private MensajesInteres mensajeInteres;
 }

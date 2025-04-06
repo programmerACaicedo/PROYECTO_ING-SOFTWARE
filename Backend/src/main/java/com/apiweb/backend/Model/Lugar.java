@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lugares {
+public class Lugar {
     @Id
     private ObjectId inmuebleId;
     private String nombre;

@@ -2,7 +2,7 @@
 
 /* Fondo de la página (imagen de ejemplo, ajústalo a tu imagen) */
 .interior-page {
-  background: url("../assets/img/img_bg.png") no-repeat center center;
+  /*background: url("../assets/img/img_bg.png") no-repeat center center;*/
   background-size: cover;;
   min-height: 100vh;
   width: 100%;
