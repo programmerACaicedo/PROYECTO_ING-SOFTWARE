@@ -3,8 +3,10 @@ import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
@@ -15,49 +17,79 @@ const Login = () => {
     script.onload = () => {
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
+        setIsAuthenticated(true);
         navigate("/interior");
       };
 
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
+          client_id:
+            "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
           callback: handleCredentialResponse,
           ux_mode: "popup",
           auto_select: false,
         });
 
-        document.querySelector(".google-btn")?.addEventListener("click", () => {
-          window.google.accounts.id.prompt();
-        });
+        document
+          .querySelector(".google-btn")
+          ?.addEventListener("click", () => {
+            window.google.accounts.id.prompt();
+          });
+      } else {
+        console.error("window.google no está disponible");
       }
     };
     document.body.appendChild(script);
 
+    // Cargar credenciales si existen
+    const savedEmail = localStorage.getItem("savedEmail");
+    const savedPassword = localStorage.getItem("savedPassword");
+    const savedRemember = localStorage.getItem("rememberMe") === "true";
+
+    if (savedEmail && savedPassword && savedRemember) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+
     return () => {
       document.body.removeChild(script);
     };
-  }, [navigate]);
+  }, []);
 
-  const validarEmail = (correo) => {
-    // Verifica que tenga @ y algo después
-    const partes = correo.split("@");
-    return partes.length === 2 && partes[1].trim() !== "";
-  };
+  // Limpiar mensaje de error cuando el usuario escribe
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
+    }
+  }, [email, password]);
 
   const handleLoginClick = (event) => {
     event.preventDefault();
-
-    if (!email || !password) {
-      setErrorMessage("Por favor completa todos los campos.");
+    const form = event.target.closest("form");
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
 
-    if (!validarEmail(email)) {
-      setErrorMessage("El correo electrónico no es válido.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Ingrese un correo válido.");
       return;
     }
 
-    setErrorMessage("");
+    // Simular autenticación exitosa
+    setIsAuthenticated(true);
+    if (rememberMe) {
+      localStorage.setItem("savedEmail", email);
+      localStorage.setItem("savedPassword", password);
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("savedEmail");
+      localStorage.removeItem("savedPassword");
+      localStorage.removeItem("rememberMe");
+    }
+
     navigate("/interior");
   };
 
@@ -67,29 +99,37 @@ const Login = () => {
         <h2>Iniciar Sesión</h2>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form>
-          <input 
-            type="email" 
-            placeholder="Correo Electrónico" 
-            value={email} 
+          <input
+            type="email"
+            placeholder="Correo Electrónico"
+            required
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required 
           />
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            value={password} 
+          <input
+            type="password"
+            placeholder="Contraseña"
+            required
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required 
           />
+
           <div className="options">
             <label>
-              <input type="checkbox" /> Guardar credenciales
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              Guardar credenciales
             </label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
+
           <button type="submit" onClick={handleLoginClick}>
             Ingresar
           </button>
+
           <button type="button" className="google-btn">
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
@@ -98,6 +138,7 @@ const Login = () => {
             Continuar con Google
           </button>
         </form>
+
         <p className="register-link">
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>
