@@ -73,7 +73,7 @@ const Registro = () => {
     }
 
     // Si todo está bien, navegar al interior
-    navigate("/interior");
+    navigate("/login");
   };
 
   return (
