@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "../styles/registro.css";
+import { useNavigate } from "react-router-dom";
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [formulario, setFormulario] = useState({
+    nombre: "",
+    apellidos: "",
+    correo: "",
+    telefono: "",
+    contraseña: "",
+    confirmar: "",
+    seguridad: "",
+    tipoUsuario: ""
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -35,11 +48,32 @@ const Registro = () => {
     };
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormulario({ ...formulario, [name]: value });
+  };
+
   const handleSubmit = (e) => {
-    if (!aceptaTerminos) {
-      e.preventDefault();
-      alert("Debes aceptar el tratamiento de datos personales para continuar.");
+    e.preventDefault();
+
+    const camposVacios = Object.values(formulario).some((campo) => campo === "");
+    if (camposVacios) {
+      alert("Por favor, completa todos los campos.");
+      return;
     }
+
+    if (formulario.contraseña !== formulario.confirmar) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
+
+    if (!aceptaTerminos) {
+      alert("Debes aceptar el tratamiento de datos personales.");
+      return;
+    }
+
+    // Si todo está bien, navegar al interior
+    navigate("/interior");
   };
 
   return (
@@ -49,32 +83,28 @@ const Registro = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-container">
-              <input type="text" placeholder="Nombre" required />
+              <input type="text" placeholder="Nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
             </div>
             <div className="input-container">
-              <input type="text" placeholder="Apellidos" required />
+              <input type="text" placeholder="Apellidos" name="apellidos" value={formulario.apellidos} onChange={handleChange} required />
             </div>
             <div className="input-container">
-              <input type="email" placeholder="Correo Electrónico" required />
+              <input type="email" placeholder="Correo Electrónico" name="correo" value={formulario.correo} onChange={handleChange} required />
             </div>
             <div className="input-container">
-              <input type="tel" placeholder="Teléfono" required />
+              <input type="tel" placeholder="Teléfono" name="telefono" value={formulario.telefono} onChange={handleChange} required />
             </div>
             <div className="input-container">
-              <input type="password" placeholder="Crear Contraseña" required />
+              <input type="password" placeholder="Crear Contraseña" name="contraseña" value={formulario.contraseña} onChange={handleChange} required />
             </div>
             <div className="input-container">
-              <input
-                type="password"
-                placeholder="Confirmar Contraseña"
-                required
-              />
+              <input type="password" placeholder="Confirmar Contraseña" name="confirmar" value={formulario.confirmar} onChange={handleChange} required />
             </div>
             <div className="input-container full-width">
-              <input type="text" placeholder="Palabra de seguridad" required />
+              <input type="text" placeholder="Palabra de seguridad" name="seguridad" value={formulario.seguridad} onChange={handleChange} required />
             </div>
             <div className="input-container full-width">
-              <select required>
+              <select name="tipoUsuario" value={formulario.tipoUsuario} onChange={handleChange} required>
                 <option value="">Tipo de Usuario</option>
                 <option value="propietario">Propietario</option>
                 <option value="interesado">Interesado</option>
@@ -139,6 +169,9 @@ const Registro = () => {
 };
 
 export default Registro;
+
+
+
 
 
 

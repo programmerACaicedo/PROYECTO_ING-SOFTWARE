@@ -3,7 +3,6 @@ import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -14,11 +13,9 @@ const Login = () => {
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
-      console.log("Script de Google cargado");
-
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
-        setIsAuthenticated(true);
+        navigate("/interior");
       };
 
       if (window.google) {
@@ -30,11 +27,8 @@ const Login = () => {
         });
 
         document.querySelector(".google-btn")?.addEventListener("click", () => {
-          console.log("Botón de Google clickeado");
           window.google.accounts.id.prompt();
         });
-      } else {
-        console.error("window.google no está disponible");
       }
     };
     document.body.appendChild(script);
@@ -42,36 +36,29 @@ const Login = () => {
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, [navigate]);
 
-  const handleLoginClick = async (event) => {
+  const validarEmail = (correo) => {
+    // Verifica que tenga @ y algo después
+    const partes = correo.split("@");
+    return partes.length === 2 && partes[1].trim() !== "";
+  };
+
+  const handleLoginClick = (event) => {
     event.preventDefault();
-    const form = event.target.closest("form");
-    if (!form.checkValidity()) {
-      form.reportValidity();
+
+    if (!email || !password) {
+      setErrorMessage("Por favor completa todos los campos.");
       return;
     }
 
-    try {
-      const response = await fetch("https://tu-api.com/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
-        setIsAuthenticated(true);
-        navigate("/interior");
-      } else {
-        setErrorMessage("Usuario no registrado o credenciales incorrectas");
-      }
-    } catch (error) {
-      console.error("Error al iniciar sesión", error);
-      setErrorMessage("Error en el servidor. Intente más tarde.");
+    if (!validarEmail(email)) {
+      setErrorMessage("El correo electrónico no es válido.");
+      return;
     }
+
+    setErrorMessage("");
+    navigate("/interior");
   };
 
   return (
@@ -83,20 +70,21 @@ const Login = () => {
           <input 
             type="email" 
             placeholder="Correo Electrónico" 
-            required 
             value={email} 
             onChange={(e) => setEmail(e.target.value)}
+            required 
           />
           <input 
             type="password" 
             placeholder="Contraseña" 
-            required 
             value={password} 
             onChange={(e) => setPassword(e.target.value)}
+            required 
           />
           <div className="options">
             <label>
-              <input type="checkbox" /> Guardar credenciales</label>
+              <input type="checkbox" /> Guardar credenciales
+            </label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
           <button type="submit" onClick={handleLoginClick}>
@@ -119,3 +107,4 @@ const Login = () => {
 };
 
 export default Login;
+
