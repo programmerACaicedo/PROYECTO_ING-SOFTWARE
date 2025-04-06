@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // ✅ Importar useNavigate
 import "../styles/registro.css";
-import { useNavigate } from "react-router-dom";
+
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
