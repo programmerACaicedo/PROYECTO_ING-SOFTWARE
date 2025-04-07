@@ -12,6 +12,7 @@ import Interior from "./pages/mainInterior";
 import NuevoAviso from "./pages/nuevoAviso";  // Ahora el nuevo aviso es un componente independiente
 import Perfil from "./pages/perfil";
 import ActualizarPublicacion from "./pages/actualizarPublicacion";
+import DetallePublicacion from "./pages/detallePublicacion";
 
 
 import "./styles/App.css"; // Importa el CSS
@@ -30,6 +31,8 @@ function App() {
         <Route path="/nuevo-aviso" element={<NuevoAviso />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/actualizar-publicacion" element={<ActualizarPublicacion />} />
+        <Route path="/publicacion/:id" element={<DetallePublicacion />} />
+
       </Routes>
       </BackgroundWrapper> 
     </BrowserRouter> 
