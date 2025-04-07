@@ -67,10 +67,11 @@ const Perfil = () => {
               <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
               <button onClick={() => navigate("/publicacion/1")}>Ver Publicación 1</button>
               <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
-
           </nav>
-
-        <h1 className="title">Servicios de Arrendamientos</h1>
+          
+      <div className="titulo">
+        <h1>Servicios de Arrendamientos</h1>
+      </div>
       </header>
 
       <main className="main-content">

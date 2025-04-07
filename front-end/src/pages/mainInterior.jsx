@@ -79,7 +79,10 @@ const Interior = () => {
       {!mostrarSplash && (
         <div className="interior-page">
           <header>
-            <h1>Servicio de Arrendamientos</h1>
+            <div className="interior">
+            <h1>Servicio de Arrendamientos🏘️</h1>
+            </div>
+            
             <div className="menu-container">
               <button
                 className="alquileres-btn"
