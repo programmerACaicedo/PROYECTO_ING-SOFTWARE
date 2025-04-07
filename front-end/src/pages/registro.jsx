@@ -65,7 +65,7 @@ const Registro = () => {
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
   const validarContraseña = (contraseña) =>
-    /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.?]).{8,}$/.test(contraseña);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -106,9 +106,8 @@ const Registro = () => {
     mostrarMensaje("¡Registro exitoso!", "exito");
 
     setTimeout(() => {
-      navigate("/interior");
-    }, 1500);
-
+      navigate("/login");
+    }, 1200);
   };
 
   return (
@@ -116,7 +115,7 @@ const Registro = () => {
       <div className="register-container">
         <h2>Registrar Usuario</h2>
 
-        {mensaje && <div className={`${mensaje} ${tipoMensaje}`}>{mensaje}</div>}
+        {mensaje && <div className={`mensaje ${tipoMensaje}`}>{mensaje}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -133,7 +132,6 @@ const Registro = () => {
               <input type="tel" placeholder="Teléfono" name="telefono" value={formulario.telefono} onChange={handleChange} required />
             </div>
 
-            {/* Campo contraseña con ícono de mostrar */}
             <div className="input-container password-container">
               <input
                 type={verPassword ? "text" : "password"}
