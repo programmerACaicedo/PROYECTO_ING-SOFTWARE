@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "../styles/registro.css";
 import { useNavigate } from "react-router-dom";
+import "../styles/registro.css";
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
@@ -59,6 +59,20 @@ const Registro = () => {
     const camposVacios = Object.values(formulario).some((campo) => campo === "");
     if (camposVacios) {
       alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    // Validación de correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formulario.correo)) {
+      alert("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+
+    // Validación de teléfono (solo números y entre 7 a 15 dígitos)
+    const telefonoRegex = /^[0-9]{7,15}$/;
+    if (!telefonoRegex.test(formulario.telefono)) {
+      alert("Por favor, ingresa un número de teléfono válido (solo números, entre 7 y 15 dígitos).");
       return;
     }
 
@@ -169,9 +183,3 @@ const Registro = () => {
 };
 
 export default Registro;
-
-
-
-
-
-

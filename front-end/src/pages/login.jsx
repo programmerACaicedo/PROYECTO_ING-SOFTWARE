@@ -57,12 +57,15 @@ const Login = () => {
     };
   }, []);
 
-  // Limpiar mensaje de error cuando el usuario escribe
+  // Borrar el mensaje automáticamente a los 5 segundos
   useEffect(() => {
     if (errorMessage) {
-      setErrorMessage("");
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [email, password]);
+  }, [errorMessage]);
 
   const handleLoginClick = (event) => {
     event.preventDefault();
@@ -74,7 +77,7 @@ const Login = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setErrorMessage("Ingrese un correo válido.");
+      setErrorMessage("Credenciales incorrectas.");
       return;
     }
 
@@ -95,9 +98,11 @@ const Login = () => {
 
   return (
     <div className="login-page">
+      {/* Mensaje de error fuera del contenedor */}
+      {errorMessage && <div className="floating-error">{errorMessage}</div>}
+
       <div className="login-container">
         <h2>Iniciar Sesión</h2>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form>
           <input
             type="email"

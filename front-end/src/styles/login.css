@@ -149,6 +149,36 @@ button:hover {
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.floating-error {
+  position: fixed;
+  top: 0; /* Parte más visible de la pantalla */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e63946; /* rojo más vivo */
+  color: #fff;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Animación de entrada */
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+
 @media (max-width: 480px) {
   .login-container {
     padding: 1.5rem;
