@@ -1,7 +1,8 @@
+// src/components/Login.jsx
 import React, { useEffect, useState } from "react";
 import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react"; // Asegúrate de tener 'lucide-react' instalado
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -63,21 +64,26 @@ const Login = () => {
     }
   }, [errorMessage]);
 
-  const handleLoginClick = (event) => {
+  const handleLoginSubmit = (event) => {
     event.preventDefault();
 
-    if (!email || !password) {
-      setErrorMessage("Credenciales incorrectas.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("❌Credenciales Incorretas");
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setErrorMessage("Credenciales incorrectas.");
+    if (!passwordRegex.test(password)) {
+      setErrorMessage(
+        "❌Credenciales Incorretas"
+      );
       return;
     }
 
     setIsAuthenticated(true);
+
     if (rememberMe) {
       localStorage.setItem("savedEmail", email);
       localStorage.setItem("savedPassword", password);
@@ -93,11 +99,13 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      {errorMessage && <div className="mensaje error">{errorMessage}</div>}
-
       <div className="login-container">
+        <div className={`mensaje error ${errorMessage ? "" : "oculto"}`}>
+          {errorMessage}
+        </div>
         <h2>Iniciar Sesión</h2>
-        <form>
+
+        <form onSubmit={handleLoginSubmit}>
           <input
             type="email"
             placeholder="Correo Electrónico"
@@ -106,21 +114,21 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-         <div className="password-container">
-  <input
-    type={mostrarPassword ? "text" : "password"}
-    placeholder="Contraseña"
-    required
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-  />
-  <span
-    className="eye-icon"
-    onClick={() => setMostrarPassword(!mostrarPassword)}
-  >
-    {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-  </span>
-</div>
+          <div className="password-container">
+            <input
+              type={mostrarPassword ? "text" : "password"}
+              placeholder="Contraseña"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              className="eye-icon"
+              onClick={() => setMostrarPassword(!mostrarPassword)}
+            >
+              {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
+          </div>
 
           <div className="options">
             <label>
@@ -134,9 +142,7 @@ const Login = () => {
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
 
-          <button type="submit" onClick={handleLoginClick}>
-            Ingresar
-          </button>
+          <button type="submit">Ingresar</button>
 
           <button type="button" className="google-btn">
             <img
@@ -156,3 +162,4 @@ const Login = () => {
 };
 
 export default Login;
+

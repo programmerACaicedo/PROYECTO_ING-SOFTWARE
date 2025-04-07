@@ -14,10 +14,10 @@ body {
   background-color: white;
   padding: 3rem 2.5rem;
   border-radius: 15px;
-  color: #111;
+  color: #000000;
   font-weight: 900;
-  width: 100%;
-  max-width: 400px;
+  width: 1000px;
+  max-width: 700px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   text-align: center;
@@ -29,7 +29,7 @@ body {
 
 form input {
   width: 100%;
-  padding: 12px;
+  padding: 11px;
   margin-bottom: 15px;
   border: 2px solid #ccc;
   border-radius: 8px;
@@ -44,7 +44,8 @@ form input:focus {
 
 form button {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
+  margin-top: 3px;
   background-color: #4CAF50;
   color: white;
   border: none;
@@ -52,9 +53,45 @@ form button {
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
-  transition: background 0.3s ease;
+  transition: background 0.4s ease;
 }
 
 form button:hover {
-  background-color: #3e8e41;
+  background-color: #008945;
+}
+
+/* Estilos para el campo de verificación fuera del formulario */
+#verification-section {
+  margin-top: 20px;
+}
+
+#verification-section input {
+  width: 100%;
+  padding: 11px;
+  margin-bottom: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+#verification-section input:focus {
+  border-color: #008945;
+}
+
+#verification-section button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.4s ease;
+}
+
+#verification-section button:hover {
+  background-color: #008945;
 }

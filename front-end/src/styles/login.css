@@ -1,4 +1,5 @@
-body {
+/* Tus estilos actuales */
+body { 
   background-size: cover;
   background-repeat: no-repeat;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -8,7 +9,6 @@ body {
   height: 100vh;
   margin: 0;
 }
-
 
 .login-page {
   background-image: url("../assets/img/log.png");
@@ -28,7 +28,7 @@ body {
   border-radius: 16px;
   color: #fff;
   width: 90%;
-  height: 420px;
+  height: auto; /* Permite que se ajuste según el contenido */
   max-width: 400px;
   box-shadow: 0 8px 32px rgb(21, 39, 204);
 }
@@ -37,7 +37,6 @@ body {
   text-align: center;
   margin-bottom: 1rem;
 }
-
 
 input[type="email"],
 input[type="password"] {
@@ -50,8 +49,7 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-
-button  {
+button {
   width: 100%;
   padding: 9px;
   background-color: #4CAF50;
@@ -66,8 +64,8 @@ button  {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Puedes ajustar a 4px o 2px si quieres más cercanía */
-  margin-top: 5px; /* Espacio antes del grupo de botones */
+  gap: 6px;
+  margin-top: 5px;
 }
 
 button:hover {
@@ -106,7 +104,6 @@ button:hover {
 .options a:hover {
   text-decoration: underline;
 }
-
 
 .google-btn {
   background: rgb(197, 197, 197);
@@ -152,10 +149,10 @@ button:hover {
 
 .floating-error {
   position: fixed;
-  top: 0; /* Parte más visible de la pantalla */
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #e63946; /* rojo más vivo */
+  background-color: #e63946;
   color: #fff;
   padding: 16px 32px;
   font-size: 1.1rem;
@@ -166,7 +163,6 @@ button:hover {
   animation: slideDown 0.3s ease-out;
 }
 
-/* Animación de entrada */
 @keyframes slideDown {
   from {
     transform: translate(-50%, -100%);
@@ -177,7 +173,6 @@ button:hover {
     opacity: 1;
   }
 }
-
 
 @media (max-width: 480px) {
   .login-container {
@@ -191,6 +186,7 @@ button:hover {
     gap: 8px;
   }
 }
+
 .password-container {
   position: relative;
 }
@@ -212,7 +208,23 @@ button:hover {
   color: #333;
 }
 
-/* Estilo del mensaje */
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon:hover {
+  color: #000;
+}
+
+/* Nuevos estilos para el mensaje de error dentro del contenedor */
 .mensaje {
   margin-bottom: 1rem;
   padding: 12px;
@@ -227,28 +239,12 @@ button:hover {
   color: #a60000;
   border: 1px solid #ff4d4d;
 }
-.password-container {
-  position: relative;
-}
-
-.password-container input {
-  width: 100%;
-  padding-right: 40px; /* Espacio para el ojito */
-  box-sizing: border-box;
-}
-
-.eye-icon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.eye-icon:hover {
-  color: #000; /* Cambia de color al pasar el mouse */
+.mensaje.oculto {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
 }
