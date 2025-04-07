@@ -8,17 +8,17 @@ body {
   justify-content: center;
 }
 
-
 .register-page {
   background-image: url("../assets/img/registro.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .register-container {
@@ -27,9 +27,8 @@ body {
   border-radius: 15px;
   color: #fff;
   width: 100%;
-  max-width: 520px;
+  max-width: 600px;
   box-shadow: 0 8px 32px rgb(42, 161, 52);
-
 }
 
 h2 {
@@ -38,7 +37,7 @@ h2 {
 }
 
 
-button {
+.register-button {
   width: 100%;
   padding: 12px;
   background-color: #28a745;
@@ -50,6 +49,7 @@ button {
   margin-top: 10px;
   transition: 0.3s;
 }
+
 
 button:hover {
   background-color: #218838;
@@ -72,12 +72,10 @@ button:hover {
   gap: 6px;
   cursor: pointer;
   color: #ccc;
-
 }
 
 .terms-container input {
   width: auto;
-  
 }
 
 .terms-container a {
@@ -113,18 +111,45 @@ button:hover {
 .form-group {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 15px;
 }
 
-.form-group input, 
+.input-container {
+  flex: 1 1 48%;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  flex: 1 1 100%;
+}
+
+.form-group input,
 .form-group select {
-  width: 250px; 
   padding: 9px;
-  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+  color: #000;
 }
+
+.password-container {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -194,16 +219,13 @@ button:hover {
   border: 1px solid #33cc33;
 }
 
-.password-container {
-  position: relative;
-}
+/* 📱 Responsivo para móviles */
+@media (max-width: 600px) {
+  .input-container {
+    flex: 1 1 100%;
+  }
 
-.eye-icon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 18px;
-  user-select: none;
+  .register-container {
+    padding: 1.5rem;
+  }
 }

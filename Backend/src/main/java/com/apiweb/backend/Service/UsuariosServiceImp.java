@@ -60,6 +60,26 @@ public class UsuariosServiceImp implements IUsuariosService {
     }
 
     @Override
+    public String recuperarContrasena(UsuariosModel usuario) {
+    try {
+        // Buscar el usuario por correo
+        UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
+        if (usuarioExistente == null) {
+            throw new UserNotFoundException("El correo proporcionado no está registrado.");
+        }
+
+        // Validar la palabra de seguridad
+        if (!usuarioExistente.getPalabra_seguridad().equals(usuario.getPalabra_seguridad())) {
+            throw new LoginFailedException("La palabra de seguridad es incorrecta.");
+        }
+
+        return "Validación exitosa. Ahora puedes restablecer tu contraseña.";
+    } catch (Exception e) {
+        throw new LoginFailedException("Error al recuperar la contraseña: " + e.getMessage());
+    }
+}
+
+    @Override
     public UsuariosModel actualizarUsuario(ObjectId id, UsuariosModel usuario) {
     try {
         UsuariosModel buscarUsuario = usuariosRepository.findById(id)

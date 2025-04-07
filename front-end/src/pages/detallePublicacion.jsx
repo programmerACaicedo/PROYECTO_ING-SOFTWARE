@@ -76,6 +76,9 @@ const DetallePublicacion = () => {
       </div>
     );
   }
+  const handleActualizar = ()=>{
+    navigate(`/actualizar-publicacion/${publicacion.id}`);
+  } 
 
   return (
     <div className="detalle-publicacion-container">
@@ -111,6 +114,7 @@ const DetallePublicacion = () => {
 
           <div className="botones-accion">
             <button onClick={handleNotificar}>Notificar arrendatario</button>
+            <button onClick={handleActualizar}>Actualizar publicacion</button>
             <button onClick={() => setMostrarModal(true)}>Reportar</button>
           </div>
         </div>

@@ -48,7 +48,7 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
                 .orElseThrow(() -> new IllegalArgumentException("La publicación con ID " + id + " no existe."));
 
         publicacionExistente.setNombre(publicacion.getNombre());
-        publicacionExistente.setPrecioMensual(publicacion.getPrecioMensual());
+        publicacionExistente.setPrecio_mensual(publicacion.getPrecio_mensual());
         publicacionExistente.setDisponibilidad(publicacion.getDisponibilidad());
         
         return publicacionesRepository.save(publicacionExistente);

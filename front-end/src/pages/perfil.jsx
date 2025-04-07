@@ -56,21 +56,26 @@ const Perfil = () => {
 
   return (
     <div className="perfil-container">
+      
       <header className="header">
+        <div className="container-perfil">
         {/* Menú hamburguesa */}
         <input type="checkbox" id="menu-bar"  />
         <label htmlFor="menu-bar" className="icon-menu">☰
         </label>
+        
           <nav className="menu">
             <button onClick={() => navigate("/interior")}>Inicio</button>
               <button onClick={() => navigate("/perfil")}>Perfil</button>
               <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
               <button onClick={() => navigate("/publicacion/1")}>Ver Publicación 1</button>
               <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
-
           </nav>
-
-        <h1 className="title">Servicios de Arrendamientos</h1>
+          
+      <div className="titulo">
+        <h1>Servicios de Arrendamientos</h1>
+      </div>
+      </div>
       </header>
 
       <main className="main-content">
