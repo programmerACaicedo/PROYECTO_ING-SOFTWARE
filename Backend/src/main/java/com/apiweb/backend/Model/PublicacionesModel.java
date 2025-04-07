@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.apiweb.backend.Model.ENUM.Estado;
 import com.apiweb.backend.Model.ENUM.tipoDisponibilidad;
 
 import lombok.AllArgsConstructor;
@@ -23,4 +24,5 @@ public class PublicacionesModel {
     private Lugar lugar;
     private MensajesInteres mensaje_interes;
     private Reportes reporte;
+    private Estado estado;
 }
