@@ -103,8 +103,16 @@ const Registro = () => {
       return;
     }
 
+<<<<<<< HEAD
+    // Si todo está bien, navegar al interior
+    navigate("/login");
+=======
     mostrarMensaje("¡Registro exitoso!", "exito");
-    setTimeout(() => navigate("/interior"), 1500);
+
+    setTimeout(() => {
+      navigate("/interior");
+    }, 1500);
+>>>>>>> edca4fab40a46ea8b56d00f1f9349d78498de029
   };
 
   return (
