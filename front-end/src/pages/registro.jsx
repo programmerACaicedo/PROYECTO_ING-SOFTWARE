@@ -64,8 +64,7 @@ const Registro = () => {
 
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
-  const validarContraseña = (contraseña) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
+  const validarContraseña = (contraseña) =>/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
 
   const handleSubmit = (e) => {
     e.preventDefault();
