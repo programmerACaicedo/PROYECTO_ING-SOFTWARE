@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react"; // Asegúrate de tener 'lucide-react' instalado
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
@@ -14,94 +17,127 @@ const Login = () => {
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
-      console.log("Script de Google cargado");
-
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
         setIsAuthenticated(true);
+        navigate("/interior");
       };
 
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
+          client_id:
+            "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
           callback: handleCredentialResponse,
           ux_mode: "popup",
           auto_select: false,
         });
 
         document.querySelector(".google-btn")?.addEventListener("click", () => {
-          console.log("Botón de Google clickeado");
           window.google.accounts.id.prompt();
         });
-      } else {
-        console.error("window.google no está disponible");
       }
     };
     document.body.appendChild(script);
+
+    const savedEmail = localStorage.getItem("savedEmail");
+    const savedPassword = localStorage.getItem("savedPassword");
+    const savedRemember = localStorage.getItem("rememberMe") === "true";
+
+    if (savedEmail && savedPassword && savedRemember) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
 
     return () => {
       document.body.removeChild(script);
     };
   }, []);
 
-  const handleLoginClick = async (event) => {
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
+  const handleLoginClick = (event) => {
     event.preventDefault();
-    const form = event.target.closest("form");
-    if (!form.checkValidity()) {
-      form.reportValidity();
+
+    if (!email || !password) {
+      setErrorMessage("Credenciales incorrectas.");
       return;
     }
 
-    try {
-      const response = await fetch("https://tu-api.com/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
-        setIsAuthenticated(true);
-        navigate("/interior");
-      } else {
-        setErrorMessage("Usuario no registrado o credenciales incorrectas");
-      }
-    } catch (error) {
-      console.error("Error al iniciar sesión", error);
-      setErrorMessage("Error en el servidor. Intente más tarde.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Credenciales incorrectas.");
+      return;
     }
+
+    setIsAuthenticated(true);
+    if (rememberMe) {
+      localStorage.setItem("savedEmail", email);
+      localStorage.setItem("savedPassword", password);
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("savedEmail");
+      localStorage.removeItem("savedPassword");
+      localStorage.removeItem("rememberMe");
+    }
+
+    navigate("/interior");
   };
 
   return (
     <div className="login-page">
+      {errorMessage && <div className="mensaje error">{errorMessage}</div>}
+
       <div className="login-container">
         <h2>Iniciar Sesión</h2>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form>
-          <input 
-            type="email" 
-            placeholder="Correo Electrónico" 
-            required 
-            value={email} 
+          <input
+            type="email"
+            placeholder="Correo Electrónico"
+            required
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            required 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)}
-          />
+
+         <div className="password-container">
+  <input
+    type={mostrarPassword ? "text" : "password"}
+    placeholder="Contraseña"
+    required
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+  <span
+    className="eye-icon"
+    onClick={() => setMostrarPassword(!mostrarPassword)}
+  >
+    {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  </span>
+</div>
+
           <div className="options">
             <label>
-              <input type="checkbox" /> Guardar credenciales</label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              Guardar credenciales
+            </label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
+
           <button type="submit" onClick={handleLoginClick}>
             Ingresar
           </button>
+
           <button type="button" className="google-btn">
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
@@ -110,6 +146,7 @@ const Login = () => {
             Continuar con Google
           </button>
         </form>
+
         <p className="register-link">
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>

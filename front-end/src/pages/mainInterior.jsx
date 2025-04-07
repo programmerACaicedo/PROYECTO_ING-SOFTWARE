@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/interior.css";
+import "../styles/interior.css"; // Ajusta la ruta si tu CSS tiene otro nombre o ubicación
 
 const Interior = () => {
   const [isPropietario, setIsPropietario] = useState(false);

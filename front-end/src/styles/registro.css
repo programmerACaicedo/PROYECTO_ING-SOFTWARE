@@ -27,8 +27,9 @@ body {
   border-radius: 15px;
   color: #fff;
   width: 100%;
-  max-width: 550px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  max-width: 520px;
+  box-shadow: 0 8px 32px rgb(42, 161, 52);
+
 }
 
 h2 {
@@ -56,6 +57,7 @@ button:hover {
 
 /* Estilo para el checkbox y el enlace */
 .terms-container {
+  color: white;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -63,8 +65,19 @@ button:hover {
   margin-top: 10px;
 }
 
+.terms-container label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #ccc;
+
+}
+
 .terms-container input {
   width: auto;
+  
 }
 
 .terms-container a {
@@ -75,6 +88,7 @@ button:hover {
 
 .terms-container a:hover {
   text-decoration: underline;
+  color: #1308af;
 }
 
 /* Estilo para el botón de Google */
@@ -157,4 +171,39 @@ button:hover {
 
 .modal-content button:hover {
   background-color: #0056b3;
+}
+
+.mensaje {
+  margin-bottom: 1rem;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.mensaje.error {
+  background-color: #ffe0e0;
+  color: #a60000;
+  border: 1px solid #ff4d4d;
+}
+
+.mensaje.exito {
+  background-color: #e0ffe0;
+  color: #006600;
+  border: 1px solid #33cc33;
+}
+
+.password-container {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
 }
