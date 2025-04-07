@@ -6,8 +6,28 @@ const Interior = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
-  const [mostrarSplash, setMostrarSplash] = useState(true); // 👈 splash visible
+
+  // Mostrar splash si venimos de un inicio de sesión
+  const [mostrarSplash, setMostrarSplash] = useState(() => {
+    const fueRecienIniciado = localStorage.getItem("reciénIniciado") === "true";
+    if (fueRecienIniciado) {
+      localStorage.removeItem("reciénIniciado");
+      return true;
+    }
+    return false;
+  });
+
   const navigate = useNavigate();
+
+  // Ocultar splash después de cierto tiempo
+  useEffect(() => {
+    if (mostrarSplash) {
+      const timer = setTimeout(() => {
+        setMostrarSplash(false);
+      }, 1500); // Duración del splash
+      return () => clearTimeout(timer);
+    }
+  }, [mostrarSplash]);
 
   useEffect(() => {
     setIsPropietario(true);
@@ -33,17 +53,11 @@ const Interior = () => {
       },
     ];
     setPublicaciones(dataSimulada);
-
-    // Ocultar splash después de unos segundos
-    const timer = setTimeout(() => {
-      setMostrarSplash(false);
-    }, 1200);
-
-    return () => clearTimeout(timer);
   }, []);
 
   const filterPublications = (tipo) => {
     console.log("Filtrando por tipo:", tipo);
+    // Lógica de filtrado si la implementas
   };
 
   const handlePublicationClick = (pubId) => {
@@ -58,7 +72,7 @@ const Interior = () => {
     <>
       {mostrarSplash && (
         <div className="splash-screen">
-          <h1>Bienvenido a Servicios de Arrendamientos</h1>
+          <h1>🏘️ Bienvenido a Servicios de Arrendamientos 🏠🔑</h1>
         </div>
       )}
 
