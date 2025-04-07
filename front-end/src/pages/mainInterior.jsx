@@ -6,7 +6,7 @@ const Interior = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
-
+  
   // Mostrar splash si venimos de un inicio de sesión
   const [mostrarSplash, setMostrarSplash] = useState(() => {
     const fueRecienIniciado = localStorage.getItem("reciénIniciado") === "true";
@@ -55,9 +55,13 @@ const Interior = () => {
     setPublicaciones(dataSimulada);
   }, []);
 
+  // Actualiza filterPublications para navegar a la página con publicaciones filtradas
   const filterPublications = (tipo) => {
     console.log("Filtrando por tipo:", tipo);
-    // Lógica de filtrado si la implementas
+    // Cierra el menú desplegable
+    setMostrarMenu(false);
+    // Navega a la ruta de publicaciones filtradas
+    navigate(`/publicaciones/${tipo}`);
   };
 
   const handlePublicationClick = (pubId) => {
@@ -79,7 +83,10 @@ const Interior = () => {
       {!mostrarSplash && (
         <div className="interior-page">
           <header>
-            <h1>Servicio de Arrendamientos</h1>
+            <div className="interior">
+            <h1>Servicio de Arrendamientos🏘️</h1>
+            </div>
+            
             <div className="menu-container">
               <button
                 className="alquileres-btn"
@@ -89,10 +96,18 @@ const Interior = () => {
               </button>
               {mostrarMenu && (
                 <div className="dropdown-content">
-                  <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
-                  <button onClick={() => filterPublications("bodega")}>Bodegas</button>
-                  <button onClick={() => filterPublications("garajes")}>Garajes</button>
-                  <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
+                  <button onClick={() => filterPublications("apartamento")}>
+                    Apartamentos
+                  </button>
+                  <button onClick={() => filterPublications("bodega")}>
+                    Bodegas
+                  </button>
+                  <button onClick={() => filterPublications("garajes")}>
+                    Garajes
+                  </button>
+                  <button onClick={() => filterPublications("parqueadero")}>
+                    Parqueaderos
+                  </button>
                 </div>
               )}
             </div>

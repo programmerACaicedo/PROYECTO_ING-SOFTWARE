@@ -183,7 +183,9 @@ const Registro = () => {
             </label>
           </div>
 
+          <div className="register-button">
           <button type="submit">Registrar</button>
+          </div>
 
           <button type="button" className="google-btn">
             <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" />

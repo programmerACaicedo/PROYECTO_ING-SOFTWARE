@@ -8,7 +8,9 @@ const Main = () => {
   return (
     <div className="hero">
       <header className="main-header">
+        <div className="title">
         <h1>¡Bienvenido a Servicio de Arrendamientos! 🏡</h1>
+        </div>
         <nav>
           <ul>
             <li>

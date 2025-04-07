@@ -40,11 +40,14 @@
 }
 
 /* Título principal */
-.interior-page h1 {
-  font-size: 4rem;
+.interior {
+  color: #000000;
+  text-align: center; 
+  font-size: 2rem;
   margin: 0.6rem 0;
   text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
   margin-top: -19rem;
+  flex-direction: row;
 }
 
 /* Contenedor del botón Alquileres y su dropdown */
@@ -201,7 +204,7 @@
 .splash-screen {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #ffffff, #0f257590);
+  background: linear-gradient(135deg, #ffffff, #3c5ccd90);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -36,7 +36,8 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
-button {
+
+.register-button {
   width: 100%;
   padding: 12px;
   background-color: #28a745;
@@ -48,6 +49,7 @@ button {
   margin-top: 10px;
   transition: 0.3s;
 }
+
 
 button:hover {
   background-color: #218838;

@@ -13,6 +13,7 @@ import NuevoAviso from "./pages/nuevoAviso";  // Ahora el nuevo aviso es un comp
 import Perfil from "./pages/perfil";
 import ActualizarPublicacion from "./pages/actualizarPublicacion";
 import DetallePublicacion from "./pages/detallePublicacion";
+import PublicacionesFiltradas from "./pages/publicacionesFiltradas";
 
 
 import "./styles/App.css"; // Importa el CSS
@@ -32,6 +33,7 @@ function App() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/actualizar-publicacion" element={<ActualizarPublicacion />} />
         <Route path="/publicacion/:id" element={<DetallePublicacion />} />
+        <Route path="/publicaciones/:tipo" element={<PublicacionesFiltradas />} />
 
       </Routes>
       </BackgroundWrapper> 
