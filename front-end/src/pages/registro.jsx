@@ -7,6 +7,8 @@ const Registro = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState("");
+  const [verPassword, setVerPassword] = useState(false);
+  const [verConfirmar, setVerConfirmar] = useState(false);
 
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -26,15 +28,13 @@ const Registro = () => {
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
-      const handleCredentialResponse = (response) => {
-        console.log("Token JWT recibido:", response.credential);
-      };
-
       if (window.google) {
         window.google.accounts.id.initialize({
           client_id:
             "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
-          callback: handleCredentialResponse,
+          callback: (response) => {
+            console.log("Token JWT recibido:", response.credential);
+          },
           ux_mode: "popup",
           auto_select: false,
         });
@@ -45,9 +45,7 @@ const Registro = () => {
       }
     };
     document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
+    return () => document.body.removeChild(script);
   }, []);
 
   const handleChange = (e) => {
@@ -58,34 +56,21 @@ const Registro = () => {
   const mostrarMensaje = (texto, tipo) => {
     setMensaje(texto);
     setTipoMensaje(tipo);
-
     setTimeout(() => {
       setMensaje("");
       setTipoMensaje("");
     }, 3000);
   };
 
-  const validarCorreo = (correo) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(correo);
-  };
-
-  const validarTelefono = (telefono) => {
-    const regex = /^\d{7,15}$/;
-    return regex.test(telefono);
-  };
-
-  const validarContraseña = (contraseña) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/;
-    return regex.test(contraseña);
-  };
+  const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+  const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
+  const validarContraseña = (contraseña) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const camposVacios = Object.values(formulario).some((campo) => campo === "");
-    if (camposVacios) {
+    if (Object.values(formulario).some((campo) => campo === "")) {
       mostrarMensaje("Por favor, completa todos los campos.", "error");
       return;
     }
@@ -96,7 +81,7 @@ const Registro = () => {
     }
 
     if (!validarTelefono(formulario.telefono)) {
-      mostrarMensaje("El teléfono debe contener solo números (7 a 15 dígitos).", "error");
+      mostrarMensaje("El teléfono debe tener entre 7 y 15 dígitos.", "error");
       return;
     }
 
@@ -139,15 +124,40 @@ const Registro = () => {
             <div className="input-container">
               <input type="tel" placeholder="Teléfono" name="telefono" value={formulario.telefono} onChange={handleChange} required />
             </div>
-            <div className="input-container">
-              <input type="password" placeholder="Crear Contraseña" name="contraseña" value={formulario.contraseña} onChange={handleChange} required />
+
+            {/* Campo contraseña con ícono de mostrar */}
+            <div className="input-container password-container">
+              <input
+                type={verPassword ? "text" : "password"}
+                placeholder="Crear Contraseña"
+                name="contraseña"
+                value={formulario.contraseña}
+                onChange={handleChange}
+                required
+              />
+              <span className="eye-icon" onClick={() => setVerPassword(!verPassword)}>
+                {verPassword ? "🙈" : "👁️"}
+              </span>
             </div>
-            <div className="input-container">
-              <input type="password" placeholder="Confirmar Contraseña" name="confirmar" value={formulario.confirmar} onChange={handleChange} required />
+
+            <div className="input-container password-container">
+              <input
+                type={verConfirmar ? "text" : "password"}
+                placeholder="Confirmar Contraseña"
+                name="confirmar"
+                value={formulario.confirmar}
+                onChange={handleChange}
+                required
+              />
+              <span className="eye-icon" onClick={() => setVerConfirmar(!verConfirmar)}>
+                {verConfirmar ? "🙈" : "👁️"}
+              </span>
             </div>
+
             <div className="input-container full-width">
               <input type="text" placeholder="Palabra de seguridad" name="seguridad" value={formulario.seguridad} onChange={handleChange} required />
             </div>
+
             <div className="input-container full-width">
               <select name="tipoUsuario" value={formulario.tipoUsuario} onChange={handleChange} required>
                 <option value="">Tipo de Usuario</option>
