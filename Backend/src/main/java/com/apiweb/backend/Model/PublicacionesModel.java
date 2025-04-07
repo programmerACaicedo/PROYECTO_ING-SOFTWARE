@@ -21,6 +21,6 @@ public class PublicacionesModel {
     private int precioMensual;
     private tipoDisponibilidad disponibilidad;
     private Lugar lugar;
-    private MensajesInteres mensajeInteres;
-    private Reportes reportes;
+    private MensajesInteres mensaje_interes;
+    private Reportes reporte;
 }

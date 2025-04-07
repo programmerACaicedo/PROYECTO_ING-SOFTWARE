@@ -1,7 +1,9 @@
 package com.apiweb.backend.Model;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Lugar {
-    @Id
+    @Field("inmueble_id")
+    @JsonProperty("inmueble_id")
     private ObjectId inmuebleId;
     private String nombre;
 }

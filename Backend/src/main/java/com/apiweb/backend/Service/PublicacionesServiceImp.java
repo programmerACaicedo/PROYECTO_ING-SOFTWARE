@@ -16,6 +16,7 @@ public class PublicacionesServiceImp implements IPublicacionesService{
 
     @Autowired
     private IPublicacionesRepository publicacionesRepository;
+    @Autowired
     private IInmueblesRepository inmueblesRepository;
 
     @Override

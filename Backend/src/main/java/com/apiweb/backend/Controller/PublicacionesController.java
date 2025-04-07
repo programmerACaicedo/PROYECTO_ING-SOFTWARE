@@ -24,12 +24,12 @@ public class PublicacionesController {
         return new ResponseEntity<>(publicacionesService.guardarPublicacion(publicacion),HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PublicacionesModel> actualizarPublicacion(@PathVariable("id") ObjectId id, @RequestBody PublicacionesModel publicacion) {
         return new ResponseEntity<>(publicacionesService.actualizarPublicacion(id, publicacion), HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarPublicacion(@PathVariable("id") ObjectId id) {
         return new ResponseEntity<>(publicacionesService.eliminarPublicacion(id), HttpStatus.OK);
     }
