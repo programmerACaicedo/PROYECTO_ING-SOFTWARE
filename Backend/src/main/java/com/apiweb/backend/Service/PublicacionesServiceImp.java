@@ -70,5 +70,23 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
     }
     }
 
-}
 
+
+// @Override
+// public PublicacionesModel añadirReportePublicacion(ObjectId id, PublicacionesModel publicacion) {
+//     try {
+//         PublicacionesModel publicacionExistente = publicacionesRepository.findById(id)
+//                 .orElseThrow(() -> new IllegalArgumentException("La publicación con ID " + id + " no existe."));
+
+//         publicacionExistente.setNombre(publicacion.getNombre());
+//         publicacionExistente.setPrecioMensual(publicacion.getPrecioMensual());
+//         publicacionExistente.setDisponibilidad(publicacion.getDisponibilidad());
+        
+//         return publicacionesRepository.save(publicacionExistente);
+
+//     } catch (Exception e) {
+//         throw new PublicacionUpdateException("Error al actualizar la Publicación con ID " + id + ": " + e.getMessage());
+//     }
+// }
+
+}
