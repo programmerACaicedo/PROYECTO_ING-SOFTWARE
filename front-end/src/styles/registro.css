@@ -170,3 +170,25 @@ button:hover {
 .modal-content button:hover {
   background-color: #0056b3;
 }
+
+.mensaje {
+  margin-bottom: 1rem;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.mensaje.error {
+  background-color: #ffe0e0;
+  color: #a60000;
+  border: 1px solid #ff4d4d;
+}
+
+.mensaje.exito {
+  background-color: #e0ffe0;
+  color: #006600;
+  border: 1px solid #33cc33;
+}
+
