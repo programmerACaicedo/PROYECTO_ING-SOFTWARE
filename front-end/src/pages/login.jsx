@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react"; // Asegúrate de tener 'lucide-react' instalado
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -30,18 +32,13 @@ const Login = () => {
           auto_select: false,
         });
 
-        document
-          .querySelector(".google-btn")
-          ?.addEventListener("click", () => {
-            window.google.accounts.id.prompt();
-          });
-      } else {
-        console.error("window.google no está disponible");
+        document.querySelector(".google-btn")?.addEventListener("click", () => {
+          window.google.accounts.id.prompt();
+        });
       }
     };
     document.body.appendChild(script);
 
-    // Cargar credenciales si existen
     const savedEmail = localStorage.getItem("savedEmail");
     const savedPassword = localStorage.getItem("savedPassword");
     const savedRemember = localStorage.getItem("rememberMe") === "true";
@@ -57,7 +54,6 @@ const Login = () => {
     };
   }, []);
 
-  // Borrar el mensaje automáticamente a los 5 segundos
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
@@ -69,9 +65,9 @@ const Login = () => {
 
   const handleLoginClick = (event) => {
     event.preventDefault();
-    const form = event.target.closest("form");
-    if (!form.checkValidity()) {
-      form.reportValidity();
+
+    if (!email || !password) {
+      setErrorMessage("Credenciales incorrectas.");
       return;
     }
 
@@ -81,7 +77,6 @@ const Login = () => {
       return;
     }
 
-    // Simular autenticación exitosa
     setIsAuthenticated(true);
     if (rememberMe) {
       localStorage.setItem("savedEmail", email);
@@ -98,8 +93,7 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      {/* Mensaje de error fuera del contenedor */}
-      {errorMessage && <div className="floating-error">{errorMessage}</div>}
+      {errorMessage && <div className="mensaje error">{errorMessage}</div>}
 
       <div className="login-container">
         <h2>Iniciar Sesión</h2>
@@ -111,13 +105,22 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+
+         <div className="password-container">
+  <input
+    type={mostrarPassword ? "text" : "password"}
+    placeholder="Contraseña"
+    required
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+  <span
+    className="eye-icon"
+    onClick={() => setMostrarPassword(!mostrarPassword)}
+  >
+    {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  </span>
+</div>
 
           <div className="options">
             <label>
@@ -153,4 +156,3 @@ const Login = () => {
 };
 
 export default Login;
-
