@@ -64,7 +64,8 @@ const Registro = () => {
 
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
-  const validarContraseña = (contraseña) =>/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
+  const validarContraseña = (contraseña) =>
+    /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+=[\]{}|;:,.?]).{8,}$/.test(contraseña);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -102,12 +103,20 @@ const Registro = () => {
       return;
     }
 
+    mostrarMensaje("¡Registro exitoso!", "exito");
+
+    setTimeout(() => {
+      navigate("/interior");
+    }, 1500);
+
+  };
+
   return (
     <div className="register-page">
       <div className="register-container">
         <h2>Registrar Usuario</h2>
 
-        {mensaje && <div className={`mensaje ${tipoMensaje}`}>{mensaje}</div>}
+        {mensaje && <div className={`${mensaje} ${tipoMensaje}`}>{mensaje}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -135,7 +144,7 @@ const Registro = () => {
                 required
               />
               <span className="eye-icon" onClick={() => setVerPassword(!verPassword)}>
-                {verPassword ? "🙈" : "👁️"}
+                {verPassword ? "🙈" : "👁"}
               </span>
             </div>
 
@@ -149,7 +158,7 @@ const Registro = () => {
                 required
               />
               <span className="eye-icon" onClick={() => setVerConfirmar(!verConfirmar)}>
-                {verConfirmar ? "🙈" : "👁️"}
+                {verConfirmar ? "🙈" : "👁"}
               </span>
             </div>
 
@@ -199,5 +208,5 @@ const Registro = () => {
     </div>
   );
 };
-};
+
 export default Registro;
