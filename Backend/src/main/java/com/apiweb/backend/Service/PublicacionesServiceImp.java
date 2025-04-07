@@ -1,5 +1,7 @@
 package com.apiweb.backend.Service;
 
+import java.time.Instant;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import com.apiweb.backend.Exception.PublicacionCreateException;
 import com.apiweb.backend.Exception.PublicacionDeletionException;
 import com.apiweb.backend.Exception.PublicacionUpdateException;
 import com.apiweb.backend.Model.PublicacionesModel;
+import com.apiweb.backend.Model.Reportes;
 import com.apiweb.backend.Repository.IInmueblesRepository;
 import com.apiweb.backend.Repository.IPublicacionesRepository;
 
@@ -73,21 +76,17 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
 
 
 
-// @Override
-// public PublicacionesModel añadirReportePublicacion(ObjectId id, PublicacionesModel publicacion) {
-//     try {
-//         PublicacionesModel publicacionExistente = publicacionesRepository.findById(id)
-//                 .orElseThrow(() -> new IllegalArgumentException("La publicación con ID " + id + " no existe."));
+    @Override
+    public PublicacionesModel agregarReporte(ObjectId publicacionId, Reportes reporte) {
+        PublicacionesModel publicacion = publicacionesRepository.findById(publicacionId)
+            .orElseThrow(() -> new RuntimeException("Publicación no encontrada con ID: " + publicacionId));
 
-//         publicacionExistente.setNombre(publicacion.getNombre());
-//         publicacionExistente.setPrecioMensual(publicacion.getPrecioMensual());
-//         publicacionExistente.setDisponibilidad(publicacion.getDisponibilidad());
-        
-//         return publicacionesRepository.save(publicacionExistente);
+        reporte.setFecha(Instant.now());
 
-//     } catch (Exception e) {
-//         throw new PublicacionUpdateException("Error al actualizar la Publicación con ID " + id + ": " + e.getMessage());
-//     }
-// }
+        publicacion.setReporte(reporte);
+
+        return publicacionesRepository.save(publicacion);
+    }
+
 
 }
