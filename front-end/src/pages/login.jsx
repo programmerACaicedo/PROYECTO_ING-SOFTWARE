@@ -21,6 +21,7 @@ const Login = () => {
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
         setIsAuthenticated(true);
+        localStorage.setItem("reciénIniciado", "true"); // 👈 splash solo una vez
         navigate("/interior");
       };
 
@@ -69,16 +70,15 @@ const Login = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
     if (!emailRegex.test(email)) {
       setErrorMessage("❌Credenciales Incorretas");
       return;
     }
 
     if (!passwordRegex.test(password)) {
-      setErrorMessage(
-        "❌Credenciales Incorretas"
-      );
+      setErrorMessage("❌Credenciales Incorretas");
       return;
     }
 
@@ -94,6 +94,7 @@ const Login = () => {
       localStorage.removeItem("rememberMe");
     }
 
+    localStorage.setItem("reciénIniciado", "true"); // 👈 splash al loguearse
     navigate("/interior");
   };
 
@@ -162,4 +163,5 @@ const Login = () => {
 };
 
 export default Login;
+
 
