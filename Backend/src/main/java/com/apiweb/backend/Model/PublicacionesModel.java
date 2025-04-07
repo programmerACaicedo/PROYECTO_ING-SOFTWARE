@@ -1,6 +1,5 @@
 package com.apiweb.backend.Model;
 
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,4 +22,5 @@ public class PublicacionesModel {
     private tipoDisponibilidad disponibilidad;
     private Lugar lugar;
     private MensajesInteres mensajeInteres;
+    private Reportes reportes;
 }

@@ -8,4 +8,5 @@ public interface IPublicacionesService {
     public String guardarPublicacion(PublicacionesModel publicacion);
     public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel publicacion);
     public String eliminarPublicacion(ObjectId id);
+//    public PublicacionesModel añadirReportePublicacion (ObjectId id, PublicacionesModel publicacion);
 }
