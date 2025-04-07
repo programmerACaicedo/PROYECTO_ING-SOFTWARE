@@ -30,6 +30,12 @@ public class UsuariosController {
         return new ResponseEntity<>(usuariosService.iniciarSesion(usuario), HttpStatus.OK);
     }
 
+    @PostMapping("/recuperar")
+    public ResponseEntity<String> recuperarContrasena(@RequestBody UsuariosModel usuario) {
+        return new ResponseEntity<>(usuariosService.recuperarContrasena(usuario), HttpStatus.OK);
+
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UsuariosModel> actualizarUsuario(@PathVariable("id") ObjectId id,  @RequestBody UsuariosModel usuario){
         return new ResponseEntity<>(usuariosService.actualizarUsuario(id, usuario), HttpStatus.OK);

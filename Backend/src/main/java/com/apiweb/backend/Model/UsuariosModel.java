@@ -23,7 +23,7 @@ public class UsuariosModel {
     private String contrasena;
     private Integer telefono;
     private TipoUsuario tipo;
-    private String pregunta_seguridad;
+    private String palabra_seguridad;
     private ArrayList<Calificaciones> calificaciones = new ArrayList<Calificaciones>();
     private ArrayList<Notificaciones> notificaciones = new ArrayList<Notificaciones>();
     private String foto;
