@@ -1,4 +1,3 @@
-// Perfil.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/perfil.css';
@@ -6,7 +5,6 @@ import '../styles/perfil.css';
 const Perfil = () => {
   const navigate = useNavigate();
 
-  // Estado para los datos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -14,25 +12,19 @@ const Perfil = () => {
     foto: null,
   });
 
-  // Estado para errores de validación
   const [errores, setErrores] = useState({});
-
-  // Estado para mensajes y confirmación
   const [mensaje, setMensaje] = useState('');
   const [confirmarEliminar, setConfirmarEliminar] = useState(false);
 
-  // Manejar cambios en los campos de texto
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Manejar cambio en la foto de perfil
   const handleFotoChange = (e) => {
     setFormData({ ...formData, foto: e.target.files[0] });
   };
 
-  // Validar el formulario
   const validateForm = () => {
     const newErrores = {};
     if (!formData.nombre) newErrores.nombre = 'El nombre es obligatorio';
@@ -42,19 +34,16 @@ const Perfil = () => {
     return Object.keys(newErrores).length === 0;
   };
 
-  // Manejar el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       setMensaje('Perfil actualizado con éxito');
       setErrores({});
-      // Aquí puedes agregar una llamada al backend
     } else {
       setMensaje('');
     }
   };
 
-  // Manejar la eliminación de la cuenta
   const handleEliminarCuenta = () => {
     setConfirmarEliminar(true);
   };
@@ -62,24 +51,36 @@ const Perfil = () => {
   const confirmarEliminacion = () => {
     setMensaje('Cuenta eliminada con éxito');
     setConfirmarEliminar(false);
-    navigate('/'); // Redirige a la página principal
+    navigate('/');
   };
 
   return (
     <div className="perfil-container">
       <header className="header">
-        <h1 className="title">Mi Perfil👤</h1>
+        {/* Menú hamburguesa */}
+        <input type="checkbox" id="menu-bar"  />
+        <label htmlFor="menu-bar" className="icon-menu">☰
+        </label>
+        <nav className="menu">
+          <button onClick={() => navigate("/interior")}>Inicio</button>
+            <button onClick={() => navigate("/perfil")}>Perfil</button>
+            <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
+            <button onClick={() => navigate("/publicacion/1")}>Ver Publicación 1</button>
+            <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
+
+        </nav>
+
+        <h1 className="title">Servicios de Arrendamientos</h1>
       </header>
+
       <main className="main-content">
-        <img src=".." alt="" />
         <div className="perfil-form">
-          {/* Sección de la foto de perfil */}
           <div className="foto-perfil">
             <img
               src={
                 formData.foto
                   ? URL.createObjectURL(formData.foto)
-                  : '/assets/pictograma-persona.png' // Imagen predeterminada
+                  : '/assets/pictograma-persona.png'
               }
               alt="Foto de Perfil"
             />
@@ -95,7 +96,6 @@ const Perfil = () => {
             />
           </div>
 
-          {/* Formulario de actualización */}
           <div className="datos-personales">
             <h2>Actualiza tus datos</h2>
             <form onSubmit={handleSubmit}>
@@ -134,12 +134,10 @@ const Perfil = () => {
               </button>
             </form>
 
-            {/* Botón de eliminar cuenta */}
             <button className="btn-eliminar" onClick={handleEliminarCuenta}>
               Eliminar Cuenta
             </button>
 
-            {/* Confirmación de eliminación */}
             {confirmarEliminar && (
               <div className="confirmacion">
                 <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</p>
@@ -148,7 +146,6 @@ const Perfil = () => {
               </div>
             )}
 
-            {/* Mensaje de éxito */}
             {mensaje && <p className="mensaje-exito">{mensaje}</p>}
           </div>
         </div>
@@ -158,3 +155,4 @@ const Perfil = () => {
 };
 
 export default Perfil;
+
