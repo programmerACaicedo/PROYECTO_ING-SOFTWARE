@@ -1,5 +1,7 @@
 package com.apiweb.backend.Service;
 
+import java.time.Instant;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import com.apiweb.backend.Exception.PublicacionCreateException;
 import com.apiweb.backend.Exception.PublicacionDeletionException;
 import com.apiweb.backend.Exception.PublicacionUpdateException;
 import com.apiweb.backend.Model.PublicacionesModel;
+import com.apiweb.backend.Model.Reportes;
 import com.apiweb.backend.Repository.IInmueblesRepository;
 import com.apiweb.backend.Repository.IPublicacionesRepository;
 
@@ -16,6 +19,7 @@ public class PublicacionesServiceImp implements IPublicacionesService{
 
     @Autowired
     private IPublicacionesRepository publicacionesRepository;
+    @Autowired
     private IInmueblesRepository inmueblesRepository;
 
     @Override
@@ -70,5 +74,19 @@ public PublicacionesModel actualizarPublicacion(ObjectId id, PublicacionesModel 
     }
     }
 
-}
 
+
+    @Override
+    public PublicacionesModel agregarReporte(ObjectId publicacionId, Reportes reporte) {
+        PublicacionesModel publicacion = publicacionesRepository.findById(publicacionId)
+            .orElseThrow(() -> new RuntimeException("Publicación no encontrada con ID: " + publicacionId));
+
+        reporte.setFecha(Instant.now());
+
+        publicacion.setReporte(reporte);
+
+        return publicacionesRepository.save(publicacion);
+    }
+
+
+}

@@ -14,9 +14,11 @@ import com.apiweb.backend.Repository.IUsuariosRepository;
 
 @Service
 public class InmueblesServiceImp implements IInmueblesService{
-
+    
     @Autowired
     private IUsuariosRepository usuariosRepository;
+    
+    @Autowired
     private IInmueblesRepository inmueblesRepository;
 
     @Override

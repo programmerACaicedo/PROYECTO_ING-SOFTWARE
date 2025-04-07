@@ -1,5 +1,7 @@
 package com.apiweb.backend.Model;
 
+import java.time.Instant;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -12,9 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lugar {
-    @Field("inmueble_id")
-    @JsonProperty("inmueble_id")
-    private ObjectId inmuebleId;
-    private String nombre;
+public class Reportes {
+    @Field("usuario_reporta")
+    @JsonProperty("usuario_reporta")
+    private ObjectId usuarioReporta;
+    private String motivo;
+    private Instant fecha;
 }

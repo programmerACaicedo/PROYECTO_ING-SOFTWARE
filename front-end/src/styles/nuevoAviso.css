@@ -1,89 +1,220 @@
-/* General styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-  }
-  
-  header {
-    color: white;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  nav ul li {
-    display: inline-block;
-    margin: 10px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  #publicaciones {
-    padding: 20px;
-  }
-  
-  .property-card {
-    background-color: white;
-    padding: 20px;
-    margin: 10px 0;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .property-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-  
-  /* Estilos para el formulario de "Nuevo Aviso" */
-  #nuevo-aviso form {
-    display: flex;
+/* Contenedor principal */
+.publicar-aviso-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header-publicar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.header-publicar h1 {
+  flex: 1;
+  font-size: 2rem;
+  margin: 0;
+  color: #000000;
+}
+
+/* Botón hamburguesa */
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #000000;
+
+}
+
+/* Menú desplegable hamburguesa */
+.hamburger-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hamburger-menu button {
+  background: transparent;
+  border: none;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  color: #000000;
+
+}
+
+.hamburger-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Título de sección */
+.seccion-titulo {
+  font-size: 1.8rem;
+  margin: 1rem 0;
+  text-align: left;
+  color: #333;
+}
+
+/* Contenido: dos columnas */
+.contenido-publicar {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Columna izquierda: vista previa de imagen */
+.imagen-preview {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.imagen-preview img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.imagen-vacia {
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  color: #aaa;
+}
+
+/* Botón para subir imagen */
+.btn-subir-imagen {
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-subir-imagen:hover {
+  background-color: #0056b3;
+}
+
+/* Columna derecha: formulario */
+.form-publicar {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Fila para agrupar campos en línea */
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+/* Cada campo */
+.campo-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.campo-form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.campo-form input,
+.campo-form select,
+.campo-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campo-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Texto debajo de la descripción */
+.texto-descripcion {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #555;
+  font-style: italic;
+}
+
+/* Botón publicar aviso (más pequeño) */
+.btn-publicar {
+  padding: 8px 14px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 0.3s;
+}
+
+.btn-publicar:hover {
+  background-color: #218838;
+}
+
+/* Mensajes */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.mensaje-exito {
+  color: green;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .contenido-publicar {
     flex-direction: column;
-    gap: 10px;
   }
-  
-  #nuevo-aviso input {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  .row {
+    flex-direction: column;
   }
-  
-  #nuevo-aviso button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  #nuevo-aviso button:hover {
-    background-color: #45a049;
-  }
-  .property-list {
-    font-family: 'Courier New', Courier, monospace;
-    color: #45a049;
-  }
-  
-  
-  
+}
