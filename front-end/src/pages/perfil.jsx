@@ -58,7 +58,7 @@ const Perfil = () => {
     <div className="perfil-container">
       
       <header className="header">
-        <div className="container">
+        <div className="container-perfil">
         {/* Menú hamburguesa */}
         <input type="checkbox" id="menu-bar"  />
         <label htmlFor="menu-bar" className="icon-menu">☰
