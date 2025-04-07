@@ -1,4 +1,26 @@
-/* Centrado total del contenido */
+:root {
+  --color-fondo-body: #f3f3f3;
+  --color-fondo-contenedor: #ffffff;
+  --color-texto: #000000;
+  --color-input-border: #ccc;
+  --color-boton: #4CAF50;
+  --color-boton-hover: #008945;
+  --color-focus: #4CAF50;
+
+  --fuente-principal: Arial, sans-serif;
+
+  --padding-pc: 3rem 2.5rem;
+  --padding-movil: 2rem 1.5rem;
+
+  --ancho-contenedor: 600px;
+  --radio-borde: 15px;
+  --radio-input: 8px;
+  --sombra: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  --font-size: 1rem;
+  --font-size-movil: 0.95rem;
+  --font-weight: 900;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -6,19 +28,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f3f3f3;
-  font-family: Arial, sans-serif;
+  background-color: var(--color-fondo-body);
+  font-family: var(--fuente-principal);
 }
 
 .container {
-  background-color: white;
-  padding: 3rem 2.5rem;
-  border-radius: 15px;
-  color: #000000;
-  font-weight: 900;
-  width: 1000px;
-  max-width: 700px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-fondo-contenedor);
+  padding: var(--padding-pc);
+  border-radius: var(--radio-borde);
+  color: var(--color-texto);
+  font-weight: var(--font-weight);
+  width: 100%;
+  max-width: var(--ancho-contenedor);
+  box-shadow: var(--sombra);
   box-sizing: border-box;
   text-align: center;
 }
@@ -31,67 +53,79 @@ form input {
   width: 100%;
   padding: 11px;
   margin-bottom: 15px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid var(--color-input-border);
+  border-radius: var(--radio-input);
   outline: none;
-  font-size: 1rem;
+  font-size: var(--font-size);
   box-sizing: border-box;
 }
 
 form input:focus {
-  border-color: #4CAF50;
+  border-color: var(--color-focus);
 }
 
 form button {
   width: 100%;
   padding: 10px;
   margin-top: 3px;
-  background-color: #4CAF50;
+  background-color: var(--color-boton);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radio-input);
   cursor: pointer;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: var(--font-size);
   transition: background 0.4s ease;
 }
 
 form button:hover {
-  background-color: #008945;
+  background-color: var(--color-boton-hover);
 }
 
-/* Estilos para el campo de verificación fuera del formulario */
 #verification-section {
   margin-top: 20px;
 }
 
-#verification-section input {
+#verification-section input,
+#verification-section button {
   width: 100%;
   padding: 11px;
   margin-bottom: 10px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  outline: none;
-  font-size: 1rem;
+  border-radius: var(--radio-input);
+  font-size: var(--font-size);
   box-sizing: border-box;
+  border: 2px solid var(--color-input-border);
+  outline: none;
 }
 
 #verification-section input:focus {
-  border-color: #008945;
+  border-color: var(--color-boton-hover);
 }
 
 #verification-section button {
-  width: 100%;
-  padding: 10px;
-  background-color: #4CAF50;
+  background-color: var(--color-boton);
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  color: white;
   font-weight: bold;
-  font-size: 1rem;
+  cursor: pointer;
   transition: background 0.4s ease;
 }
 
 #verification-section button:hover {
-  background-color: #008945;
+  background-color: var(--color-boton-hover);
+}
+
+/* 🔁 Media query para celulares */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--padding-movil);
+    width: 90%;
+  }
+
+  form input,
+  form button,
+  #verification-section input,
+  #verification-section button {
+    font-size: var(--font-size-movil);
+  }
 }

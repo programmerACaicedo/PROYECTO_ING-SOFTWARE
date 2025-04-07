@@ -66,6 +66,7 @@ const PublicarAviso = () => {
   };
 
   return (
+    <div class="header-publicar">
     <div className="publicar-aviso-container">
       <header className="header-publicar">
         <button
@@ -211,6 +212,7 @@ const PublicarAviso = () => {
       </div>
 
       {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+    </div>
     </div>
   );
 };
