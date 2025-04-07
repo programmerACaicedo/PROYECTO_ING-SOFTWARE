@@ -56,11 +56,14 @@ const Perfil = () => {
 
   return (
     <div className="perfil-container">
+      
       <header className="header">
+        <div className="container">
         {/* Menú hamburguesa */}
         <input type="checkbox" id="menu-bar"  />
         <label htmlFor="menu-bar" className="icon-menu">☰
         </label>
+        
           <nav className="menu">
             <button onClick={() => navigate("/interior")}>Inicio</button>
               <button onClick={() => navigate("/perfil")}>Perfil</button>
@@ -71,6 +74,7 @@ const Perfil = () => {
           
       <div className="titulo">
         <h1>Servicios de Arrendamientos</h1>
+      </div>
       </div>
       </header>
 
