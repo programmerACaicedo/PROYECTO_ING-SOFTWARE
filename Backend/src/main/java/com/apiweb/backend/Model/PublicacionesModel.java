@@ -18,7 +18,7 @@ public class PublicacionesModel {
     @Id
     private ObjectId id;
     private String nombre;
-    private int precioMensual;
+    private int precio_mensual;
     private tipoDisponibilidad disponibilidad;
     private Lugar lugar;
     private MensajesInteres mensaje_interes;
