@@ -31,7 +31,7 @@ function App() {
         <Route path="/interior" element={<Interior />} />
         <Route path="/nuevo-aviso" element={<NuevoAviso />} />
         <Route path="/perfil" element={<Perfil />} />
-        <Route path="/actualizar-publicacion" element={<ActualizarPublicacion />} />
+        <Route path="/actualizar-publicacion/:id" element={<ActualizarPublicacion />} />
         <Route path="/publicacion/:id" element={<DetallePublicacion />} />
         <Route path="/publicaciones/:tipo" element={<PublicacionesFiltradas />} />
 

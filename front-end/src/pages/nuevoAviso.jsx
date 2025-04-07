@@ -69,19 +69,8 @@ const PublicarAviso = () => {
     <div class="header-publicar">
     <div className="publicar-aviso-container">
       <header className="header-publicar">
-        <button
-          className="hamburger-btn"
-          onClick={() => setMostrarMenu(!mostrarMenu)}
-        >
-          ☰
-        </button>
+        
         <h1>Servicio de Arrendamientos</h1>
-        {mostrarMenu && (
-          <div className="hamburger-menu">
-            <button onClick={() => navigate("/perfil")}>Perfil</button>
-            <button onClick={() => navigate("/interior")}>Inicio</button>
-          </div>
-        )}
       </header>
 
       <h2 className="seccion-titulo">Datos del inmueble</h2>
