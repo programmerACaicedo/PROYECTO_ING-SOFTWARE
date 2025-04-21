@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UbicacionInmueble {
-    private String direccion;
-    private String coordenadas;
-    private String ciudad;
+    private String edificio;
+    private String piso;
 }

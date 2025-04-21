@@ -32,6 +32,28 @@ public class InmueblesServiceImp implements IInmueblesService{
         if (!usuariosRepository.existsById(inmueble.getPropietarioId().getUsuarioId())) {
             throw new IllegalArgumentException("El propietario con ID " + inmueble.getPropietarioId().getUsuarioId() + " no existe.");
         }
+        
+        // Validar que la ubicación y el tipo no sean nulos
+        if (inmueble.getUbicacion() == null 
+                || inmueble.getUbicacion().getEdificio() == null 
+                || inmueble.getUbicacion().getPiso() == null 
+                || inmueble.getTipo() == null) {
+            throw new IllegalArgumentException("La ubicación o el tipo no pueden ser nulos.");
+        }
+        
+        // Verificar si ya existe un inmueble con el mismo tipo, edificio y piso
+        boolean existeInmueble = inmueblesRepository
+                .findByTipoAndUbicacion_EdificioAndUbicacion_Piso(
+                        inmueble.getTipo(), 
+                        inmueble.getUbicacion().getEdificio(), 
+                        inmueble.getUbicacion().getPiso())
+                .isPresent();
+                        
+        if (existeInmueble) {
+            throw new IllegalArgumentException("Ya existe un inmueble registrado en el edificio " 
+                    + inmueble.getUbicacion().getEdificio() + " en el piso " 
+                    + inmueble.getUbicacion().getPiso() + " con el tipo " + inmueble.getTipo() + ".");
+        }
 
         inmueblesRepository.save(inmueble);
         return "El inmueble " + inmueble.getNombre() + " fue registrado con éxito";
@@ -52,9 +74,8 @@ public class InmueblesServiceImp implements IInmueblesService{
         buscarInmueble.setCondiciones(inmueble.getCondiciones());
 
         if (buscarInmueble.getUbicacion() != null && inmueble.getUbicacion() != null) {
-            buscarInmueble.getUbicacion().setDireccion(inmueble.getUbicacion().getDireccion());
-            buscarInmueble.getUbicacion().setCoordenadas(inmueble.getUbicacion().getCoordenadas());
-            buscarInmueble.getUbicacion().setCiudad(inmueble.getUbicacion().getCiudad());
+            buscarInmueble.getUbicacion().setEdificio(inmueble.getUbicacion().getEdificio());
+            buscarInmueble.getUbicacion().setPiso(inmueble.getUbicacion().getPiso());
         }
 
         return inmueblesRepository.save(buscarInmueble);
@@ -77,5 +98,7 @@ public class InmueblesServiceImp implements IInmueblesService{
         throw new InmuebleDeletionException("Error al eliminar el inmueble con ID: " + id + ". Detalles: " + e.getMessage());
     }
     }
+
+    
     
 }
