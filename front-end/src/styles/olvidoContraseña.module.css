@@ -115,7 +115,7 @@ form button:hover {
   background-color: var(--color-boton-hover);
 }
 
-/* 🔁 Media query para celulares */
+/* Media query para celulares */
 @media (max-width: 768px) {
   .container {
     padding: var(--padding-movil);

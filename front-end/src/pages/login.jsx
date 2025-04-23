@@ -1,6 +1,5 @@
-// src/components/Login.jsx
 import React, { useEffect, useState } from "react";
-import "../styles/login.css";
+import styles from "../styles/login.module.css"; // Importamos el módulo de estilo
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -21,7 +20,7 @@ const Login = () => {
       const handleCredentialResponse = (response) => {
         console.log("Token JWT recibido:", response.credential);
         setIsAuthenticated(true);
-        localStorage.setItem("reciénIniciado", "true"); // 👈 splash solo una vez
+        localStorage.setItem("reciénIniciado", "true");
         navigate("/interior");
       };
 
@@ -34,7 +33,7 @@ const Login = () => {
           auto_select: false,
         });
 
-        document.querySelector(".google-btn")?.addEventListener("click", () => {
+        document.querySelector(".googleBtn")?.addEventListener("click", () => {
           window.google.accounts.id.prompt();
         });
       }
@@ -73,12 +72,12 @@ const Login = () => {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
     if (!emailRegex.test(email)) {
-      setErrorMessage("❌Credenciales Incorretas");
+      setErrorMessage("❌Credenciales Incorrectas");
       return;
     }
 
     if (!passwordRegex.test(password)) {
-      setErrorMessage("❌Credenciales Incorretas");
+      setErrorMessage("❌Credenciales Incorrectas");
       return;
     }
 
@@ -94,14 +93,14 @@ const Login = () => {
       localStorage.removeItem("rememberMe");
     }
 
-    localStorage.setItem("reciénIniciado", "true"); // 👈 splash al loguearse
+    localStorage.setItem("reciénIniciado", "true");
     navigate("/interior");
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className={`mensaje error ${errorMessage ? "" : "oculto"}`}>
+    <div className={styles.loginPage}>
+      <div className={styles.loginContainer}>
+        <div className={`${styles.error} ${errorMessage ? "" : styles.oculto}`}>
           {errorMessage}
         </div>
         <h2>Iniciar Sesión</h2>
@@ -115,7 +114,7 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <div className="password-container">
+          <div className={styles.passwordContainer}>
             <input
               type={mostrarPassword ? "text" : "password"}
               placeholder="Contraseña"
@@ -124,14 +123,14 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <span
-              className="eye-icon"
+              className={styles.eyeIcon}
               onClick={() => setMostrarPassword(!mostrarPassword)}
             >
               {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
 
-          <div className="options">
+          <div className={styles.options}>
             <label>
               <input
                 type="checkbox"
@@ -145,7 +144,7 @@ const Login = () => {
 
           <button type="submit">Ingresar</button>
 
-          <button type="button" className="google-btn">
+          <button type="button" className={styles.googleBtn}>
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
               alt="Google Logo"
@@ -154,7 +153,7 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="register-link">
+        <p className={styles.registerLink}>
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>
       </div>
@@ -163,5 +162,3 @@ const Login = () => {
 };
 
 export default Login;
-
-

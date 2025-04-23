@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/nuevoAviso.module.css";
+import styles from "../styles/nuevoAviso.module.css"; // Importar con variable 'styles'
 
 const PublicarAviso = () => {
   const navigate = useNavigate();
-  
 
   const [form, setForm] = useState({
     titulo: "",
@@ -19,7 +18,6 @@ const PublicarAviso = () => {
   const [mensaje, setMensaje] = useState("");
   const [errores, setErrores] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
-  const [mostrarMenu, setMostrarMenu] = useState(false);
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,25 +25,19 @@ const PublicarAviso = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    // Validamos formato y tamaño
     const valid = files.every(
-      (file) =>
-        ["image/jpeg", "image/png"].includes(file.type) &&
-        file.size <= 5 * 1024 * 1024
+      (file) => ["image/jpeg", "image/png"].includes(file.type) && file.size <= 5 * 1024 * 1024
     );
     if (!valid) {
       alert("Las imágenes deben ser JPG/PNG y no superar los 5MB.");
       return;
     }
     setForm({ ...form, imagenes: files });
-    if (files.length > 0) {
-      setPreviewImage(URL.createObjectURL(files[0]));
-    }
+    if (files.length > 0) setPreviewImage(URL.createObjectURL(files[0]));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Validaciones básicas:
     if (form.titulo.length > 100) {
       setErrores({ titulo: "El título no puede exceder 100 caracteres" });
       return;
@@ -59,33 +51,27 @@ const PublicarAviso = () => {
       return;
     }
     setMensaje("¡Aviso creado exitosamente!");
-    // Simulación: redirige después de 1.5 segundos
-    setTimeout(() => {
-      navigate("/mis-avisos");
-    }, 1500);
+    setTimeout(() => navigate("/mis-avisos"), 1500);
   };
 
   return (
-    <div class="header-publicar">
-    <div className="publicar-aviso-container">
-      <header className="header-publicar">
-        
+    <div className={styles.publicarAvisoContainer}>
+      <header className={styles.headerPublicar}>
         <h1>Servicio de Arrendamientos</h1>
       </header>
 
-      <h2 className="seccion-titulo">Datos del inmueble</h2>
+      <h2 className={styles.seccionTitulo}>Datos del inmueble</h2>
 
-      <div className="contenido-publicar">
-        {/* Columna Izquierda: Vista previa de imagen */}
-        <div className="imagen-preview">
+      <div className={styles.contenidoPublicar}>
+        <div className={styles.imagenPreview}>
           {previewImage ? (
             <img src={previewImage} alt="Vista previa" />
           ) : (
-            <div className="imagen-vacia">
+            <div className={styles.imagenVacia}>
               <p>No hay imagen seleccionada</p>
             </div>
           )}
-          <label htmlFor="input-imagen" className="btn-subir-imagen">
+          <label htmlFor="input-imagen" className={styles.btnSubirImagen}>
             Subir Imagen
           </label>
           <input
@@ -95,8 +81,7 @@ const PublicarAviso = () => {
             onChange={handleImageChange}
             style={{ display: "none" }}
           />
-            {/* Descripción */}
-            <div className="campo-form">
+          <div className={styles.campoForm}>
             <label>Descripción:</label>
             <textarea
               name="descripcion"
@@ -106,16 +91,14 @@ const PublicarAviso = () => {
               placeholder="Ingrese la descripción del inmueble"
               required
             />
-            <p className="texto-descripcion">Ingrese la descripción del inmueble</p>
-            {errores.descripcion && <p className="error">{errores.descripcion}</p>}
+            <p className={styles.textoDescripcion}>Ingrese la descripción del inmueble</p>
+            {errores.descripcion && <p className={styles.error}>{errores.descripcion}</p>}
           </div>
         </div>
 
-        {/* Columna Derecha: Formulario */}
-        <form className="form-publicar" onSubmit={handleSubmit}>
-          {/* Fila: Título y Precio */}
-          <div className="row">
-            <div className="campo-form">
+        <form className={styles.formPublicar} onSubmit={handleSubmit}>
+          <div className={styles.row}>
+            <div className={styles.campoForm}>
               <label>Título del aviso:</label>
               <input
                 name="titulo"
@@ -126,9 +109,9 @@ const PublicarAviso = () => {
                 placeholder="Ingrese el título"
                 required
               />
-              {errores.titulo && <p className="error">{errores.titulo}</p>}
+              {errores.titulo && <p className={styles.error}>{errores.titulo}</p>}
             </div>
-            <div className="campo-form">
+            <div className={styles.campoForm}>
               <label>Precio: $</label>
               <input
                 name="precio"
@@ -138,12 +121,11 @@ const PublicarAviso = () => {
                 placeholder="Ingrese el precio"
                 required
               />
-              {errores.precio && <p className="error">{errores.precio}</p>}
+              {errores.precio && <p className={styles.error}>{errores.precio}</p>}
             </div>
           </div>
 
-          {/* Dirección */}
-          <div className="campo-form">
+          <div className={styles.campoForm}>
             <label>Dirección:</label>
             <input
               name="direccion"
@@ -155,8 +137,7 @@ const PublicarAviso = () => {
             />
           </div>
 
-          {/* Condiciones adicionales */}
-          <div className="campo-form">
+          <div className={styles.campoForm}>
             <label>Condiciones adicionales:</label>
             <input
               name="condiciones"
@@ -167,9 +148,8 @@ const PublicarAviso = () => {
             />
           </div>
 
-          {/* Fila: Ciudad y Tipo */}
-          <div className="row">
-            <div className="campo-form">
+          <div className={styles.row}>
+            <div className={styles.campoForm}>
               <label>Ciudad:</label>
               <input
                 name="ciudad"
@@ -180,7 +160,7 @@ const PublicarAviso = () => {
                 required
               />
             </div>
-            <div className="campo-form">
+            <div className={styles.campoForm}>
               <label>Tipo:</label>
               <select name="tipo" value={form.tipo} onChange={handleInputChange} required>
                 <option value="">Seleccione</option>
@@ -193,15 +173,13 @@ const PublicarAviso = () => {
             </div>
           </div>
 
-          {/* Botón para publicar aviso */}
-          <button type="submit" className="btn-publicar">
+          <button type="submit" className={styles.btnPublicar}>
             Publicar aviso
           </button>
         </form>
       </div>
 
-      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
-    </div>
+      {mensaje && <p className={styles.mensajeExito}>{mensaje}</p>}
     </div>
   );
 };

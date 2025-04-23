@@ -1,6 +1,6 @@
 // src/pages/ActualizarPublicacion.jsx
 import React, { useState, useEffect } from "react";
-import "../styles/actualizarPublicacion.css";
+import "../styles/actualizarPublicacion.module.css";
 
 const ActualizarPublicacion = () => {
   // Estado que simula la lista de publicaciones del propietario

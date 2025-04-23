@@ -1,7 +1,7 @@
 // src/pages/DetallePublicacion.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/detallePublicacion.css";
+import "../styles/detallePublicacion.module.css";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();

@@ -1,5 +1,4 @@
-/* Estilos generales para la página */
-.perfil-container {
+.perfilContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,7 +6,7 @@
   font-family: var(--fuente-principal);
 }
 
-header .container-perfil {
+.header .containerPerfil {
   width: 100%;
   max-width: var(--ancho-contenedor);
   padding: var(--padding-pc);
@@ -37,14 +36,14 @@ header .container-perfil {
   background-color: var(--color-boton-hover);
 }
 
-.main-content {
+.mainContent {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 2rem;
 }
 
-.perfil-form {
+.perfilForm {
   width: 100%;
   max-width: var(--ancho-contenedor);
   background-color: white;
@@ -53,17 +52,17 @@ header .container-perfil {
   box-shadow: var(--sombra);
 }
 
-.foto-perfil {
+.fotoPerfil {
   text-align: center;
 }
 
-.foto-perfil img {
+.fotoPerfil img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
 }
 
-.btn-seleccionar-archivo {
+.btnSeleccionarArchivo {
   display: inline-block;
   background-color: var(--color-boton);
   color: white;
@@ -73,19 +72,19 @@ header .container-perfil {
   cursor: pointer;
 }
 
-.datos-personales label {
+.datosPersonales label {
   display: block;
   margin-bottom: 1rem;
 }
 
-.datos-personales input {
+.datosPersonales input {
   width: 100%;
   padding: 0.5rem;
   border-radius: var(--radio-input);
   border: 1px solid var(--color-input-border);
 }
 
-.datos-personales button {
+.datosPersonales button {
   background-color: var(--color-boton);
   color: white;
   padding: 0.7rem;
@@ -95,7 +94,7 @@ header .container-perfil {
   transition: background-color 0.3s ease;
 }
 
-.datos-personales button:hover {
+.datosPersonales button:hover {
   background-color: var(--color-boton-hover);
 }
 
@@ -109,11 +108,11 @@ header .container-perfil {
   font-size: 1rem;
 }
 
-.eliminar-cuenta {
+.eliminarCuenta {
   margin-top: 20px;
 }
 
-.btn-eliminar {
+.btnEliminar {
   background-color: red;
   color: white;
   padding: 0.7rem;
@@ -122,13 +121,13 @@ header .container-perfil {
   cursor: pointer;
 }
 
-.confirmar-eliminacion {
+.confirmarEliminacion {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.confirmar-eliminacion button {
+.confirmarEliminacion button {
   margin-top: 10px;
   padding: 0.5rem 1rem;
   border: none;
@@ -138,6 +137,6 @@ header .container-perfil {
   color: white;
 }
 
-.confirmar-eliminacion button:hover {
+.confirmarEliminacion button:hover {
   background-color: var(--color-boton-hover);
 }

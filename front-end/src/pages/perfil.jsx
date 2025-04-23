@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/perfil.module.css';
+import styles from '../styles/perfil.module.css'; // Import with a variable 'styles'
 
 const Perfil = () => {
   const navigate = useNavigate();
@@ -55,14 +55,14 @@ const Perfil = () => {
   };
 
   return (
-    <div className="perfil-container">
-      <header className="header">
-        <div className="container-perfil">
+    <div className={styles.perfilContainer}>
+      <header className={styles.header}>
+        <div className={styles.containerPerfil}>
           {/* Menú hamburguesa */}
           <input type="checkbox" id="menu-bar" />
-          <label htmlFor="menu-bar" className="icon-menu">☰</label>
+          <label htmlFor="menu-bar" className={styles.iconMenu}>☰</label>
 
-          <nav className="menu">
+          <nav className={styles.menu}>
             <button onClick={() => navigate("/interior")}>Inicio</button>
             <button onClick={() => navigate("/perfil")}>Perfil</button>
             <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
@@ -70,15 +70,15 @@ const Perfil = () => {
             <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
           </nav>
 
-          <div className="titulo">
+          <div className={styles.titulo}>
             <h1>Servicios de Arrendamientos</h1>
           </div>
         </div>
       </header>
 
-      <main className="main-content">
-        <div className="perfil-form">
-          <div className="foto-perfil">
+      <main className={styles.mainContent}>
+        <div className={styles.perfilForm}>
+          <div className={styles.fotoPerfil}>
             <img
               src={
                 formData.foto
@@ -87,7 +87,7 @@ const Perfil = () => {
               }
               alt="Foto de Perfil"
             />
-            <label htmlFor="foto-upload" className="btn-seleccionar-archivo">
+            <label htmlFor="foto-upload" className={styles.btnSeleccionarArchivo}>
               Seleccionar Archivo
             </label>
             <input
@@ -99,7 +99,7 @@ const Perfil = () => {
             />
           </div>
 
-          <div className="datos-personales">
+          <div className={styles.datosPersonales}>
             <h2>Actualiza tus datos</h2>
             <form onSubmit={handleSubmit}>
               <label>
@@ -110,7 +110,7 @@ const Perfil = () => {
                   value={formData.nombre}
                   onChange={handleChange}
                 />
-                {errores.nombre && <p className="error">{errores.nombre}</p>}
+                {errores.nombre && <p className={styles.error}>{errores.nombre}</p>}
               </label>
               <label>
                 Apellidos:
@@ -120,7 +120,7 @@ const Perfil = () => {
                   value={formData.apellidos}
                   onChange={handleChange}
                 />
-                {errores.apellidos && <p className="error">{errores.apellidos}</p>}
+                {errores.apellidos && <p className={styles.error}>{errores.apellidos}</p>}
               </label>
               <label>
                 Teléfono:
@@ -130,15 +130,15 @@ const Perfil = () => {
                   value={formData.telefono}
                   onChange={handleChange}
                 />
-                {errores.telefono && <p className="error">{errores.telefono}</p>}
+                {errores.telefono && <p className={styles.error}>{errores.telefono}</p>}
               </label>
 
               <button type="submit">Actualizar</button>
             </form>
-            {mensaje && <p className="mensaje">{mensaje}</p>}
+            {mensaje && <p className={styles.mensaje}>{mensaje}</p>}
 
-            <div className="eliminar-cuenta">
-              <button onClick={handleEliminarCuenta} className="btn-eliminar">
+            <div className={styles.eliminarCuenta}>
+              <button onClick={handleEliminarCuenta} className={styles.btnEliminar}>
                 Eliminar Cuenta
               </button>
             </div>
@@ -146,7 +146,7 @@ const Perfil = () => {
         </div>
 
         {confirmarEliminar && (
-          <div className="confirmar-eliminacion">
+          <div className={styles.confirmarEliminacion}>
             <p>¿Estás seguro de que deseas eliminar tu cuenta?</p>
             <button onClick={confirmarEliminacion}>Sí</button>
             <button onClick={() => setConfirmarEliminar(false)}>No</button>
@@ -158,5 +158,3 @@ const Perfil = () => {
 };
 
 export default Perfil;
-
-

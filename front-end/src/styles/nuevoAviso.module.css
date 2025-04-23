@@ -1,27 +1,25 @@
-/* Contenedor principal */
-.publicar-aviso-container {
+.publicarAvisoContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   padding: 2rem;
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
-  overflow-x: hidden; /* Previene desbordes horizontales */
+  overflow-x: hidden;
 }
 
-/* Encabezado */
-.header-publicar {
+.headerPublicar {
   width: 100%;
   background-color: #f2f2f2;
   text-align: center;
-  padding: 2rem 1rem; /* Padding horizontal para mejor visibilidad móvil */
+  padding: 2rem 1rem;
   margin: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow-x: hidden;
 }
 
-.header-publicar h1 {
+.headerPublicar h1 {
   font-size: 2rem;
   font-weight: bold;
   color: #333;
@@ -29,8 +27,7 @@
   word-wrap: break-word;
 }
 
-/* Título de sección */
-.seccion-titulo {
+.seccionTitulo {
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
@@ -38,16 +35,14 @@
   color: #444;
 }
 
-/* Contenedor de contenido: imagen + formulario */
-.contenido-publicar {
+.contenidoPublicar {
   display: flex;
   gap: 2rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-/* Vista previa de imagen + descripción */
-.imagen-preview {
+.imagenPreview {
   width: 300px;
   padding: 1rem;
   background-color: #fff;
@@ -58,7 +53,7 @@
   align-items: center;
 }
 
-.imagen-preview img {
+.imagenPreview img {
   width: 100vw;
   height: auto;
   border-radius: 10px;
@@ -66,7 +61,7 @@
   object-fit: cover;
 }
 
-.imagen-vacia {
+.imagenVacia {
   width: 100%;
   height: 250px;
   display: flex;
@@ -79,7 +74,7 @@
   border-radius: 10px;
 }
 
-.btn-subir-imagen {
+.btnSubirImagen {
   margin-top: 1rem;
   background-color: #007bff;
   color: white;
@@ -91,16 +86,16 @@
   font-weight: bold;
 }
 
-.btn-subir-imagen:hover {
+.btnSubirImagen:hover {
   background-color: #0056b3;
 }
 
-.imagen-preview label {
+.imagenPreview label {
   margin-top: 1rem;
   font-weight: bold;
 }
 
-.imagen-preview textarea {
+.imagenPreview textarea {
   margin-top: 0.5rem;
   width: 100%;
   resize: vertical;
@@ -110,15 +105,14 @@
   font-size: 0.95rem;
 }
 
-.texto-descripcion {
+.textoDescripcion {
   font-size: 0.85rem;
   color: #777;
   margin-top: 4px;
   font-style: italic;
 }
 
-/* Formulario */
-.form-publicar {
+.formPublicar {
   width: 500px;
   display: flex;
   flex-direction: column;
@@ -134,20 +128,20 @@
   gap: 1rem;
 }
 
-.campo-form {
+.campoForm {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.campo-form label {
+.campoForm label {
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.campo-form input,
-.campo-form select,
-.campo-form textarea {
+.campoForm input,
+.campoForm select,
+.campoForm textarea {
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -155,8 +149,7 @@
   width: 100%;
 }
 
-/* Botón publicar */
-.btn-publicar {
+.btnPublicar {
   align-self: center;
   padding: 12px 24px;
   background-color: #28a745;
@@ -168,31 +161,29 @@
   transition: background-color 0.3s ease;
 }
 
-.btn-publicar:hover {
+.btnPublicar:hover {
   background-color: #218838;
 }
 
-/* Mensajes */
 .error {
   color: red;
   font-size: 0.9rem;
 }
 
-.mensaje-exito {
+.mensajeExito {
   color: green;
   font-weight: bold;
   font-size: 1rem;
   margin-top: 1rem;
 }
 
-/* RESPONSIVO */
 @media (max-width: 768px) {
-  .contenido-publicar {
+  .contenidoPublicar {
     flex-direction: column;
     align-items: center;
   }
 
-  .form-publicar {
+  .formPublicar {
     width: 100%;
     max-width: 500px;
   }
@@ -201,14 +192,12 @@
     flex-direction: column;
   }
 
-  .header-publicar h1 {
+  .headerPublicar h1 {
     font-size: 1.6rem;
     padding: 0 1rem;
   }
 
-  .header-publicar {
+  .headerPublicar {
     padding: 1.5rem 1rem;
   }
 }
-
-

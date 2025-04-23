@@ -1,4 +1,3 @@
-// src/pages/PublicacionesFiltradas.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/publicacionesFiltradas.module.css";
@@ -7,10 +6,8 @@ const PublicacionesFiltradas = () => {
   const { tipo } = useParams();
   const navigate = useNavigate();
 
-  // Menú hamburguesa
   const [mostrarMenu, setMostrarMenu] = useState(false);
 
-  // Simulamos un array de publicaciones
   const [publicaciones] = useState([
     {
       id: 1,
@@ -54,22 +51,18 @@ const PublicacionesFiltradas = () => {
     },
   ]);
 
-  // Estado local para publicaciones filtradas
   const [publicacionesFiltradas, setPublicacionesFiltradas] = useState([]);
 
-  // Filtrar publicaciones según el tipo
   useEffect(() => {
     setPublicacionesFiltradas(
       publicaciones.filter((pub) => pub.tipo === tipo)
     );
   }, [tipo, publicaciones]);
 
-  // Navegar al detalle
   const handlePublicationClick = (pubId) => {
     navigate(`/publicacion/${pubId}`);
   };
 
-  // Opciones del menú hamburguesa
   const handleMenuClick = (ruta) => {
     setMostrarMenu(false);
     navigate(ruta);
@@ -138,7 +131,7 @@ const PublicacionesFiltradas = () => {
         </div>
       </main>
     </div>
-);
+  );
 };
 
 export default PublicacionesFiltradas;
