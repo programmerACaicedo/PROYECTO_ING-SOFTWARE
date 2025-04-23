@@ -56,26 +56,24 @@ const Perfil = () => {
 
   return (
     <div className="perfil-container">
-      
       <header className="header">
         <div className="container-perfil">
-        {/* Menú hamburguesa */}
-        <input type="checkbox" id="menu-bar"  />
-        <label htmlFor="menu-bar" className="icon-menu">☰
-        </label>
-        
+          {/* Menú hamburguesa */}
+          <input type="checkbox" id="menu-bar" />
+          <label htmlFor="menu-bar" className="icon-menu">☰</label>
+
           <nav className="menu">
             <button onClick={() => navigate("/interior")}>Inicio</button>
-              <button onClick={() => navigate("/perfil")}>Perfil</button>
-              <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
-              <button onClick={() => navigate("/publicacion/1")}>Ver Publicación 1</button>
-              <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
+            <button onClick={() => navigate("/perfil")}>Perfil</button>
+            <button onClick={() => navigate("/nuevo-aviso")}>Nuevo Aviso</button>
+            <button onClick={() => navigate("/publicacion/1")}>Ver Publicación 1</button>
+            <button onClick={() => navigate("/publicacion/2")}>Ver Publicación 2</button>
           </nav>
-          
-      <div className="titulo">
-        <h1>Servicios de Arrendamientos</h1>
-      </div>
-      </div>
+
+          <div className="titulo">
+            <h1>Servicios de Arrendamientos</h1>
+          </div>
+        </div>
       </header>
 
       <main className="main-content">
@@ -134,30 +132,31 @@ const Perfil = () => {
                 />
                 {errores.telefono && <p className="error">{errores.telefono}</p>}
               </label>
-              <button type="submit" className="btn-guardar">
-                Guardar Cambios
-              </button>
+
+              <button type="submit">Actualizar</button>
             </form>
+            {mensaje && <p className="mensaje">{mensaje}</p>}
 
-            <button className="btn-eliminar" onClick={handleEliminarCuenta}>
-              Eliminar Cuenta
-            </button>
-
-            {confirmarEliminar && (
-              <div className="confirmacion">
-                <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</p>
-                <button onClick={confirmarEliminacion}>Confirmar</button>
-                <button onClick={() => setConfirmarEliminar(false)}>Cancelar</button>
-              </div>
-            )}
-
-            {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+            <div className="eliminar-cuenta">
+              <button onClick={handleEliminarCuenta} className="btn-eliminar">
+                Eliminar Cuenta
+              </button>
+            </div>
           </div>
         </div>
+
+        {confirmarEliminar && (
+          <div className="confirmar-eliminacion">
+            <p>¿Estás seguro de que deseas eliminar tu cuenta?</p>
+            <button onClick={confirmarEliminacion}>Sí</button>
+            <button onClick={() => setConfirmarEliminar(false)}>No</button>
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
 export default Perfil;
+
 

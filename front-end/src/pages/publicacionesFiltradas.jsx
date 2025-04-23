@@ -1,7 +1,7 @@
 // src/pages/PublicacionesFiltradas.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/publicacionesFiltradas.module.css";
+import styles from "../styles/publicacionesFiltradas.module.css";
 
 const PublicacionesFiltradas = () => {
   const { tipo } = useParams();
@@ -20,7 +20,7 @@ const PublicacionesFiltradas = () => {
       habitaciones: 3,
       banos: 2,
       tipo: "apartamento",
-      imagen: "https://via.placeholder.com/300x200", // Reemplaza con tu imagen real
+      imagen: "https://via.placeholder.com/300x200",
     },
     {
       id: 2,
@@ -59,11 +59,12 @@ const PublicacionesFiltradas = () => {
 
   // Filtrar publicaciones según el tipo
   useEffect(() => {
-    const filtradas = publicaciones.filter((pub) => pub.tipo === tipo);
-    setPublicacionesFiltradas(filtradas);
+    setPublicacionesFiltradas(
+      publicaciones.filter((pub) => pub.tipo === tipo)
+    );
   }, [tipo, publicaciones]);
 
-  // Manejo de clic en una publicación (ir a su detalle)
+  // Navegar al detalle
   const handlePublicationClick = (pubId) => {
     navigate(`/publicacion/${pubId}`);
   };
@@ -71,26 +72,21 @@ const PublicacionesFiltradas = () => {
   // Opciones del menú hamburguesa
   const handleMenuClick = (ruta) => {
     setMostrarMenu(false);
-    if (ruta.startsWith("/publicaciones/")) {
-      navigate(ruta);
-    } else {
-      navigate(ruta);
-    }
+    navigate(ruta);
   };
 
   return (
-    <div className="publicaciones-filtradas-page">
-      {/* Encabezado con menú hamburguesa */}
-      <header className="pf-header">
+    <div className={styles["publicaciones-filtradas-page"]}>
+      <header className={styles["pf-header"]}>
         <button
-          className="hamburger-btn"
+          className={styles["hamburger-btn"]}
           onClick={() => setMostrarMenu(!mostrarMenu)}
         >
           ☰
         </button>
         <h1>Servicio de Arrendamientos</h1>
         {mostrarMenu && (
-          <nav className="hamburger-menu">
+          <nav className={styles["hamburger-menu"]}>
             <button onClick={() => handleMenuClick("/interior")}>Inicio</button>
             <button onClick={() => handleMenuClick("/publicaciones/apartamento")}>
               Apartamentos
@@ -110,24 +106,24 @@ const PublicacionesFiltradas = () => {
             <button onClick={() => handleMenuClick("/tus-arrendamientos")}>
               Tus arrendamientos
             </button>
-            <button onClick={() => handleMenuClick("/logout")}>Cerrar Sesion</button>
+            <button onClick={() => handleMenuClick("/logout")}>Cerrar Sesión</button>
           </nav>
         )}
       </header>
 
-      <main className="pf-main">
-        <h2 className="pf-titulo">
+      <main className={styles["pf-main"]}>
+        <h2 className={styles["pf-titulo"]}>
           {tipo.charAt(0).toUpperCase() + tipo.slice(1)} Disponibles
         </h2>
 
-        <div className="pf-grid">
+        <div className={styles["pf-grid"]}>
           {publicacionesFiltradas.length === 0 ? (
             <p>No hay publicaciones de tipo "{tipo}"</p>
           ) : (
             publicacionesFiltradas.map((pub) => (
               <div
                 key={pub.id}
-                className="pf-card"
+                className={styles["pf-card"]}
                 onClick={() => handlePublicationClick(pub.id)}
               >
                 <img src={pub.imagen} alt={pub.titulo} />
@@ -142,7 +138,7 @@ const PublicacionesFiltradas = () => {
         </div>
       </main>
     </div>
-  );
+);
 };
 
 export default PublicacionesFiltradas;

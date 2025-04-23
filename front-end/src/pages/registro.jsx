@@ -1,6 +1,7 @@
+// src/pages/Registro.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/registro.module.css";
+import styles from "../styles/registro.module.css";
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
@@ -65,7 +66,9 @@ const Registro = () => {
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
   const validarContraseña = (contraseña) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.?]).{8,}$/.test(contraseña);
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.?]).{8,}$/.test(
+      contraseña
+    );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -104,35 +107,68 @@ const Registro = () => {
     }
 
     mostrarMensaje("¡Registro exitoso!", "exito");
-
-    setTimeout(() => {
-      navigate("/login");
-    }, 1200);
+    setTimeout(() => navigate("/login"), 1200);
   };
 
   return (
-    <div className="register-page">
-      <div className="register-container">
+    <div className={styles["register-page"]}>
+      <div className={styles["register-container"]}>
         <h2>Registrar Usuario</h2>
 
-        {mensaje && <div className={`mensaje ${tipoMensaje}`}>{mensaje}</div>}
+        {mensaje && (
+          <div
+            className={`${styles.mensaje} ${
+              tipoMensaje === "error" ? styles.error : styles.exito
+            }`}
+          >
+            {mensaje}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <div className="input-container">
-              <input type="text" placeholder="Nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
+          <div className={styles["form-group"]}>
+            <div className={styles["input-container"]}>
+              <input
+                type="text"
+                placeholder="Nombre"
+                name="nombre"
+                value={formulario.nombre}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <div className="input-container">
-              <input type="text" placeholder="Apellidos" name="apellidos" value={formulario.apellidos} onChange={handleChange} required />
+            <div className={styles["input-container"]}>
+              <input
+                type="text"
+                placeholder="Apellidos"
+                name="apellidos"
+                value={formulario.apellidos}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <div className="input-container">
-              <input type="email" placeholder="Correo Electrónico" name="correo" value={formulario.correo} onChange={handleChange} required />
+            <div className={styles["input-container"]}>
+              <input
+                type="email"
+                placeholder="Correo Electrónico"
+                name="correo"
+                value={formulario.correo}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <div className="input-container">
-              <input type="tel" placeholder="Teléfono" name="telefono" value={formulario.telefono} onChange={handleChange} required />
+            <div className={styles["input-container"]}>
+              <input
+                type="tel"
+                placeholder="Teléfono"
+                name="telefono"
+                value={formulario.telefono}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <div className="input-container password-container">
+            <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
               <input
                 type={verPassword ? "text" : "password"}
                 placeholder="Crear Contraseña"
@@ -141,12 +177,15 @@ const Registro = () => {
                 onChange={handleChange}
                 required
               />
-              <span className="eye-icon" onClick={() => setVerPassword(!verPassword)}>
+              <span
+                className={styles["eye-icon"]}
+                onClick={() => setVerPassword(!verPassword)}
+              >
                 {verPassword ? "🙈" : "👁"}
               </span>
             </div>
 
-            <div className="input-container password-container">
+            <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
               <input
                 type={verConfirmar ? "text" : "password"}
                 placeholder="Confirmar Contraseña"
@@ -155,17 +194,32 @@ const Registro = () => {
                 onChange={handleChange}
                 required
               />
-              <span className="eye-icon" onClick={() => setVerConfirmar(!verConfirmar)}>
+              <span
+                className={styles["eye-icon"]}
+                onClick={() => setVerConfirmar(!verConfirmar)}
+              >
                 {verConfirmar ? "🙈" : "👁"}
               </span>
             </div>
 
-            <div className="input-container full-width">
-              <input type="text" placeholder="Palabra de seguridad" name="seguridad" value={formulario.seguridad} onChange={handleChange} required />
+            <div className={`${styles["input-container"]} ${styles["full-width"]}`}>
+              <input
+                type="text"
+                placeholder="Palabra de seguridad"
+                name="seguridad"
+                value={formulario.seguridad}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <div className="input-container full-width">
-              <select name="tipoUsuario" value={formulario.tipoUsuario} onChange={handleChange} required>
+            <div className={`${styles["input-container"]} ${styles["full-width"]}`}>
+              <select
+                name="tipoUsuario"
+                value={formulario.tipoUsuario}
+                onChange={handleChange}
+                required
+              >
                 <option value="">Tipo de Usuario</option>
                 <option value="propietario">Propietario</option>
                 <option value="interesado">Interesado</option>
@@ -173,32 +227,47 @@ const Registro = () => {
             </div>
           </div>
 
-          <div className="terms-container">
-            <input type="checkbox" id="terms" checked={aceptaTerminos} onChange={(e) => setAceptaTerminos(e.target.checked)} />
+          <div className={styles["terms-container"]}>
+            <input
+              type="checkbox"
+              id="terms"
+              checked={aceptaTerminos}
+              onChange={(e) => setAceptaTerminos(e.target.checked)}
+            />
             <label htmlFor="terms">
               Acepto el{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); setMostrarModal(true); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMostrarModal(true);
+                }}
+              >
                 tratamiento de datos personales
               </a>
             </label>
           </div>
 
-          <div className="register-button">
-          <button type="submit">Registrar</button>
+          <div className={styles["register-button"]}>
+            <button type="submit">Registrar</button>
           </div>
 
           <button type="button" className="google-btn">
-            <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" />
+            <img
+              src="https://img.icons8.com/color/16/000000/google-logo.png"
+              alt="Google Logo"
+            />
             Continuar con Google
           </button>
         </form>
 
         {mostrarModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className={styles["modal-overlay"]}>
+            <div className={styles["modal-content"]}>
               <h3>Tratamiento de Datos Personales</h3>
               <p>
-                En Servicio de Arrendamiento, los datos personales recolectados son tratados de forma segura y confidencial...
+                En Servicio de Arrendamiento, los datos personales recolectados son tratados
+                de forma segura y confidencial...
               </p>
               <button onClick={() => setMostrarModal(false)}>Cerrar</button>
             </div>
@@ -206,7 +275,7 @@ const Registro = () => {
         )}
       </div>
     </div>
-  );
+);
 };
 
 export default Registro;
