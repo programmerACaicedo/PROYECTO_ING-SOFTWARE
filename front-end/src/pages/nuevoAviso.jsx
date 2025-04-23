@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/nuevoAviso.css";
+import "../styles/nuevoAviso.module.css";
 
 const PublicarAviso = () => {
   const navigate = useNavigate();

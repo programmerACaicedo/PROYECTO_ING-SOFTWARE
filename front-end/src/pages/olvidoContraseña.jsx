@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/olvidoContraseña.css";
+import "../styles/olvidoContraseña.module.css";
 
 const OlvidoContraseña = () => {
   const [correo, setCorreo] = useState("");

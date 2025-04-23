@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/registro.css";
+import "../styles/registro.module.css";
 
 const Registro = () => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);

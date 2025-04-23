@@ -1,7 +1,7 @@
 // src/pages/PublicacionesFiltradas.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/publicacionesFiltradas.css";
+import "../styles/publicacionesFiltradas.module.css";
 
 const PublicacionesFiltradas = () => {
   const { tipo } = useParams();

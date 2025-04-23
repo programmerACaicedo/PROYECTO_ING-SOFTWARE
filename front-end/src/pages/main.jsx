@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/main.css";
+import "../styles/main.module.css";
 
 const Main = () => {
   console.log("Main.jsx está renderizando"); // Verificación de renderizado
