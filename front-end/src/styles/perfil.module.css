@@ -1,142 +1,172 @@
 .perfilContainer {
+  background-color: #f4f4f4;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--color-fondo-body);
-  font-family: var(--fuente-principal);
+  padding: 1rem;
 }
 
-.header .containerPerfil {
-  width: 100%;
-  max-width: var(--ancho-contenedor);
-  padding: var(--padding-pc);
-  box-sizing: border-box;
+.header {
+  background-color: transparent;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .titulo h1 {
-  text-align: center;
+  font-size: 1.8rem;
+  color: #111;
+  font-weight: bold;
+}
+
+.containerPerfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.iconMenu {
+  display: none;
 }
 
 .menu {
   display: flex;
-  justify-content: space-around;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .menu button {
-  padding: 0.5rem 1rem;
-  background-color: var(--color-boton);
+  background-color: #007bff;
   color: white;
   border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
   cursor: pointer;
-  border-radius: var(--radio-input);
-  transition: background-color 0.3s ease;
-}
-
-.menu button:hover {
-  background-color: var(--color-boton-hover);
+  font-weight: bold;
 }
 
 .mainContent {
   width: 100%;
-  display: flex;
-  justify-content: center;
+  max-width: 900px;
+  background-color: white;
   padding: 2rem;
+  border-radius: 10px;
+  display: flex;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  gap: 2rem;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .perfilForm {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   width: 100%;
-  max-width: var(--ancho-contenedor);
-  background-color: white;
-  padding: var(--padding-pc);
-  border-radius: var(--radio-borde);
-  box-shadow: var(--sombra);
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .fotoPerfil {
-  text-align: center;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .fotoPerfil img {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
+  object-fit: cover;
+  background-color: #ddd;
 }
 
 .btnSeleccionarArchivo {
-  display: inline-block;
-  background-color: var(--color-boton);
+  background-color: #007bff;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radio-input);
-  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+.datosPersonales {
+  flex: 1;
+  min-width: 250px;
+}
+
+.datosPersonales h2 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-weight: bold;
 }
 
 .datosPersonales label {
   display: block;
   margin-bottom: 1rem;
+  font-weight: bold;
 }
 
 .datosPersonales input {
   width: 100%;
   padding: 0.5rem;
-  border-radius: var(--radio-input);
-  border: 1px solid var(--color-input-border);
+  margin-top: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.datosPersonales button {
-  background-color: var(--color-boton);
+.datosPersonales button[type="submit"] {
+  background-color: #28a745;
   color: white;
-  padding: 0.7rem;
   border: none;
+  padding: 0.6rem;
+  width: 100%;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 1rem;
   cursor: pointer;
-  border-radius: var(--radio-input);
-  transition: background-color 0.3s ease;
 }
 
-.datosPersonales button:hover {
-  background-color: var(--color-boton-hover);
+.eliminarCuenta {
+  margin-top: 1rem;
+}
+
+.btnEliminar {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  width: 100%;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .error {
   color: red;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
 
 .mensaje {
+  margin-top: 1rem;
   color: green;
-  font-size: 1rem;
-}
-
-.eliminarCuenta {
-  margin-top: 20px;
-}
-
-.btnEliminar {
-  background-color: red;
-  color: white;
-  padding: 0.7rem;
-  border: none;
-  border-radius: var(--radio-input);
-  cursor: pointer;
+  font-weight: bold;
 }
 
 .confirmarEliminacion {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: white;
+  padding: 1rem;
+  margin-top: 2rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 .confirmarEliminacion button {
-  margin-top: 10px;
+  margin: 0.5rem;
   padding: 0.5rem 1rem;
-  border: none;
+  font-weight: bold;
   cursor: pointer;
-  border-radius: var(--radio-input);
-  background-color: var(--color-boton);
-  color: white;
-}
-
-.confirmarEliminacion button:hover {
-  background-color: var(--color-boton-hover);
 }
