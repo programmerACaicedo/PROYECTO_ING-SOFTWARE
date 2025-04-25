@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
 }
-
+/*
 button {
   width: 100%;
   padding: 10px;
@@ -23,6 +23,7 @@ button {
   font-size: var(--font-size);
   transition: background 0.4s ease;
 }
+*/
 
 .loginContainer {
   background-color: rgba(0, 0, 0, 0.768);
