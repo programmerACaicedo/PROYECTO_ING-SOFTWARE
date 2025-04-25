@@ -1,3 +1,4 @@
+/* Definición de variables */
 :root {
   --color-fondo-body: #f3f3f3;
   --color-fondo-contenedor: #ffffff;
@@ -21,17 +22,7 @@
   --font-weight: 900;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--color-fondo-body);
-  font-family: var(--fuente-principal);
-}
-
+/* Contenedor principal */
 .container {
   background-color: var(--color-fondo-contenedor);
   padding: var(--padding-pc);
@@ -43,13 +34,31 @@ body {
   box-shadow: var(--sombra);
   box-sizing: border-box;
   text-align: center;
+  font-family: var(--fuente-principal);
 }
 
-.container h2 {
+/* Título */
+.title {
   margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--color-texto);
 }
 
-form input {
+/* Sección del formulario */
+.formSection {
+  margin-bottom: 20px;
+}
+
+/* Etiquetas */
+.label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  text-align: left;
+}
+
+/* Inputs */
+.input {
   width: 100%;
   padding: 11px;
   margin-bottom: 15px;
@@ -60,11 +69,12 @@ form input {
   box-sizing: border-box;
 }
 
-form input:focus {
+.input:focus {
   border-color: var(--color-focus);
 }
 
-form button {
+/* Botones */
+.button {
   width: 100%;
   padding: 10px;
   margin-top: 3px;
@@ -78,31 +88,33 @@ form button {
   transition: background 0.4s ease;
 }
 
-form button:hover {
+.button:hover {
   background-color: var(--color-boton-hover);
 }
 
-#verification-section {
+/* Sección de verificación */
+.verificationSection {
   margin-top: 20px;
 }
 
-#verification-section input,
-#verification-section button {
+.verificationSection .input {
   width: 100%;
   padding: 11px;
   margin-bottom: 10px;
+  border: 2px solid var(--color-input-border);
   border-radius: var(--radio-input);
   font-size: var(--font-size);
   box-sizing: border-box;
-  border: 2px solid var(--color-input-border);
   outline: none;
 }
 
-#verification-section input:focus {
+.verificationSection .input:focus {
   border-color: var(--color-boton-hover);
 }
 
-#verification-section button {
+.verificationSection .button {
+  width: 100%;
+  padding: 11px;
   background-color: var(--color-boton);
   border: none;
   color: white;
@@ -111,8 +123,15 @@ form button:hover {
   transition: background 0.4s ease;
 }
 
-#verification-section button:hover {
+.verificationSection .button:hover {
   background-color: var(--color-boton-hover);
+}
+
+/* Mensaje de error */
+.errorMessage {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9em;
 }
 
 /* Media query para celulares */
@@ -122,10 +141,10 @@ form button:hover {
     width: 90%;
   }
 
-  form input,
-  form button,
-  #verification-section input,
-  #verification-section button {
+  .input,
+  .button,
+  .verificationSection .input,
+  .verificationSection .button {
     font-size: var(--font-size-movil);
   }
 }

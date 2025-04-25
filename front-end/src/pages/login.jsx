@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "../styles/login.module.css"; // Importamos el módulo de estilo
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -11,6 +11,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const googleButtonRef = useRef(null); // Ref para el botón de Google
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -33,9 +34,11 @@ const Login = () => {
           auto_select: false,
         });
 
-        document.querySelector(".googleBtn")?.addEventListener("click", () => {
-          window.google.accounts.id.prompt();
-        });
+        if (googleButtonRef.current) {
+          googleButtonRef.current.addEventListener("click", () => {
+            window.google.accounts.id.prompt();
+          });
+        }
       }
     };
     document.body.appendChild(script);
@@ -52,37 +55,32 @@ const Login = () => {
 
     return () => {
       document.body.removeChild(script);
+      if (googleButtonRef.current) {
+        googleButtonRef.current.removeEventListener("click", () => {
+          window.google.accounts.id.prompt();
+        });
+      }
     };
   }, []);
 
   useEffect(() => {
     if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
+      const timer = setTimeout(() => setErrorMessage(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
 
   const handleLoginSubmit = (event) => {
     event.preventDefault();
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-    if (!emailRegex.test(email)) {
-      setErrorMessage("❌Credenciales Incorrectas");
-      return;
-    }
-
-    if (!passwordRegex.test(password)) {
+    if (!emailRegex.test(email) || !passwordRegex.test(password)) {
       setErrorMessage("❌Credenciales Incorrectas");
       return;
     }
 
     setIsAuthenticated(true);
-
     if (rememberMe) {
       localStorage.setItem("savedEmail", email);
       localStorage.setItem("savedPassword", password);
@@ -92,7 +90,6 @@ const Login = () => {
       localStorage.removeItem("savedPassword");
       localStorage.removeItem("rememberMe");
     }
-
     localStorage.setItem("reciénIniciado", "true");
     navigate("/interior");
   };
@@ -104,7 +101,6 @@ const Login = () => {
           {errorMessage}
         </div>
         <h2>Iniciar Sesión</h2>
-
         <form onSubmit={handleLoginSubmit}>
           <input
             type="email"
@@ -112,8 +108,8 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className={styles.inputEmail}
           />
-
           <div className={styles.passwordContainer}>
             <input
               type={mostrarPassword ? "text" : "password"}
@@ -121,6 +117,7 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className={styles.inputPassword}
             />
             <span
               className={styles.eyeIcon}
@@ -129,7 +126,6 @@ const Login = () => {
               {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
-
           <div className={styles.options}>
             <label>
               <input
@@ -141,10 +137,14 @@ const Login = () => {
             </label>
             <a href="/olvido-contraseña">Olvidé mi contraseña</a>
           </div>
-
-          <button type="submit">Ingresar</button>
-
-          <button type="button" className={styles.googleBtn}>
+          <button type="submit" className={styles.submitButton}>
+            Ingresar
+          </button>
+          <button
+            type="button"
+            className={styles.googleBtn}
+            ref={googleButtonRef}
+          >
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
               alt="Google Logo"
@@ -152,7 +152,6 @@ const Login = () => {
             Continuar con Google
           </button>
         </form>
-
         <p className={styles.registerLink}>
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>

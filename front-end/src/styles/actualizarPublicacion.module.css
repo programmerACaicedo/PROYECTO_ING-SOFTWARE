@@ -1,126 +1,123 @@
-/* Contenedor principal */
-.actualizar-publicacion-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 1rem;
-    font-family: Arial, sans-serif;
-    color: #333;
-  }
-  
-  /* Header con menú y título */
-  .header-actualizar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    background-color: #ccc;
-  }
-  
-  .menu-btn {
-    font-size: 1.5rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color:black;
-    position: left;
-  }
-  
-  .header-actualizar h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    color:black;
+.actualizarPublicacionContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
 
+/* Header con menú y título */
+.headerActualizar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  background-color: #ccc;
+}
+
+.menuBtn {
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: black;
+  position: left;
+}
+
+.headerActualizar h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: black;
+}
+
+/* Título de la sección */
+.tituloSeccion {
+  text-align: center;
+  margin-top: 0;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Select para escoger la publicación */
+.selectPublicacion {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Formulario */
+.formActualizar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.campoForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.campoForm label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.campoForm input[type="text"],
+.campoForm textarea,
+.campoForm select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.campoForm textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Botón de guardar cambios */
+.btnGuardarCambios {
+  background-color: #007bff;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-start; /* para que no se extienda todo el ancho */
+}
+
+.btnGuardarCambios:hover {
+  background-color: #0056b3;
+}
+
+/* Mensajes */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.exito {
+  color: green;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .actualizarPublicacionContainer {
+    padding: 0.5rem;
   }
-  
-  /* Título de la sección */
-  .titulo-seccion {
-    text-align: center;
-    margin-top: 0;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  /* Select para escoger la publicación */
-  .select-publicacion {
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
+
+  .formActualizar {
     gap: 0.5rem;
   }
-  
-  /* Formulario */
-  .form-actualizar {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .campo-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .campo-form label {
-    font-weight: bold;
-    margin-bottom: 0.3rem;
-  }
-  
-  .campo-form input[type="text"],
-  .campo-form textarea,
-  .campo-form select {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .campo-form textarea {
-    min-height: 80px;
-    resize: vertical;
-  }
-  
-  /* Botón de guardar cambios */
-  .btn-guardar-cambios {
-    background-color: #007bff;
-    color: white;
-    padding: 0.7rem 1.2rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    align-self: flex-start; /* para que no se extienda todo el ancho */
-  }
-  
-  .btn-guardar-cambios:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Mensajes */
-  .error {
-    color: red;
+
+  .campoForm input[type="text"],
+  .campoForm textarea,
+  .campoForm select {
     font-size: 0.9rem;
-    margin-top: 0.2rem;
   }
-  
-  .exito {
-    color: green;
-    font-weight: bold;
-    margin-top: 1rem;
-  }
-  
-  /* Responsivo */
-  @media (max-width: 600px) {
-    .actualizar-publicacion-container {
-      padding: 0.5rem;
-    }
-  
-    .form-actualizar {
-      gap: 0.5rem;
-    }
-  
-    .campo-form input[type="text"],
-    .campo-form textarea,
-    .campo-form select {
-      font-size: 0.9rem;
-    }
-  }
-  
+}
