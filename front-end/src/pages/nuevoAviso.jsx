@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/nuevoAviso.module.css"; // Importar con variable 'styles'
+import styles from "../styles/nuevoAviso.module.css";
 
 const PublicarAviso = () => {
   const navigate = useNavigate();
+
+  // Detectar si es un dispositivo móvil
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [form, setForm] = useState({
     titulo: "",
@@ -15,43 +24,182 @@ const PublicarAviso = () => {
     descripcion: "",
     imagenes: [],
   });
-  const [mensaje, setMensaje] = useState("");
-  const [errores, setErrores] = useState({});
-  const [previewImage, setPreviewImage] = useState(null);
+  const [mensajes, setMensajes] = useState([]); // Cola de mensajes
+  const [previewImage, setPreviewImage] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Limpiar URLs de vista previa al desmontar el componente
+  useEffect(() => {
+    return () => {
+      previewImage.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewImage]);
+
+  // Mostrar mensajes de la cola, cada uno durante 2 segundos
+  useEffect(() => {
+    if (mensajes.length > 0) {
+      const timer = setTimeout(() => {
+        setMensajes((prevMensajes) => prevMensajes.slice(1)); // Eliminar el primer mensaje
+      }, 5000); // 5 segundos
+      return () => clearTimeout(timer); // Limpiar el temporizador
+    }
+  }, [mensajes]);
 
   const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "precio") {
+      if (value === "" || /^[0-9]*$/.test(value)) {
+        setForm({ ...form, [name]: value });
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const valid = files.every(
+    console.log("Archivos seleccionados:", files);
+
+    if (files.length === 0) {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "No se seleccionaron imágenes.", tipo: "error" },
+      ]);
+      return;
+    }
+
+    const validFormat = files.every(
       (file) => ["image/jpeg", "image/png"].includes(file.type) && file.size <= 5 * 1024 * 1024
     );
-    if (!valid) {
-      alert("Las imágenes deben ser JPG/PNG y no superar los 5MB.");
+
+    if (!validFormat) {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Las imágenes deben ser JPG/PNG y no superar los 5MB.", tipo: "error" },
+      ]);
       return;
     }
-    setForm({ ...form, imagenes: files });
-    if (files.length > 0) setPreviewImage(URL.createObjectURL(files[0]));
+
+    // Verificar duplicados
+    const newImages = [];
+    const duplicates = [];
+
+    files.forEach((file) => {
+      const isDuplicate = form.imagenes.some(
+        (existingFile) => existingFile.name === file.name && existingFile.size === file.size
+      );
+      if (isDuplicate) {
+        duplicates.push(file.name);
+      } else {
+        newImages.push(file);
+      }
+    });
+
+    if (duplicates.length > 0) {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: `Imágenes duplicadas no permitidas: ${duplicates.join(", ")}`, tipo: "error" },
+      ]);
+      return;
+    }
+
+    const updatedImages = [...form.imagenes, ...newImages];
+    const totalImages = updatedImages.length;
+
+    if (totalImages > 10) {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "No puedes subir más de 10 imágenes.", tipo: "error" },
+      ]);
+      return;
+    }
+
+    // Generar URLs para la vista previa
+    const newPreviewImages = updatedImages.map((file) => URL.createObjectURL(file));
+    setForm({ ...form, imagenes: updatedImages });
+    setPreviewImage(newPreviewImages);
+    console.log("URLs de vista previa:", newPreviewImages);
+
+    // Limpiar el input
+    e.target.value = null;
   };
 
-  const handleSubmit = (e) => {
+  const handleRemoveImage = (index) => {
+    const newImages = form.imagenes.filter((_, i) => i !== index);
+    const newPreviewImages = previewImage.filter((_, i) => i !== index);
+    setForm({ ...form, imagenes: newImages });
+    setPreviewImage(newPreviewImages);
+    URL.revokeObjectURL(previewImage[index]);
+  };
+
+  const handleImageDoubleClick = (img) => {
+    setSelectedImage(img);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.titulo.length > 100) {
-      setErrores({ titulo: "El título no puede exceder 100 caracteres" });
+
+    const errores = [];
+    if (form.titulo.length > 100)
+      errores.push({ texto: "El título no puede exceder 100 caracteres", tipo: "error" });
+    if (!form.descripcion)
+      errores.push({ texto: "La descripción es obligatoria", tipo: "error" });
+    if (form.descripcion.length > 500)
+      errores.push({ texto: "La descripción no puede exceder 500 caracteres", tipo: "error" });
+    if (!form.precio || isNaN(form.precio) || Number(form.precio) <= 0) {
+      errores.push({ texto: "El precio debe ser un número positivo mayor a 0", tipo: "error" });
+    }
+    if (form.imagenes.length < 3)
+      errores.push({ texto: " de subir al menos 3 imágenes.", tipo: "error" });
+    if (form.imagenes.length > 10)
+      errores.push({ texto: "No puedes subir más de 10 imágenes.", tipo: "error" });
+
+    if (errores.length > 0) {
+      setMensajes((prevMensajes) => [...prevMensajes, ...errores]);
       return;
     }
-    if (form.descripcion.length > 500) {
-      setErrores({ descripcion: "La descripción no puede exceder 500 caracteres" });
-      return;
+
+    const formData = new FormData();
+    Object.keys(form).forEach((key) => {
+      if (key === "imagenes") {
+        form.imagenes.forEach((file) => formData.append("imagenes", file));
+      } else {
+        formData.append(key, form[key]);
+      }
+    });
+
+    try {
+      const response = await fetch("/api/avisos", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setMensajes((prevMensajes) => [
+          ...prevMensajes,
+          { texto: "¡Aviso creado exitosamente!", tipo: "success" },
+        ]);
+        setTimeout(() => navigate("/mis-avisos"), 2000);
+      } else {
+        setMensajes((prevMensajes) => [
+          ...prevMensajes,
+          { texto: data.error || "Error al crear el aviso", tipo: "error" },
+        ]);
+      }
+    } catch (error) {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Error de conexión con el servidor", tipo: "error" },
+      ]);
     }
-    if (isNaN(form.precio) || Number(form.precio) <= 0) {
-      setErrores({ precio: "El precio debe ser un número positivo" });
-      return;
-    }
-    setMensaje("¡Aviso creado exitosamente!");
-    setTimeout(() => navigate("/mis-avisos"), 1500);
   };
 
   return (
@@ -64,23 +212,51 @@ const PublicarAviso = () => {
 
       <div className={styles.contenidoPublicar}>
         <div className={styles.imagenPreview}>
-          {previewImage ? (
-            <img src={previewImage} alt="Vista previa" />
+          {previewImage.length > 0 ? (
+            <div className={styles.imageGallery}>
+              {previewImage.map((img, index) => (
+                <div key={index} className={styles.imageContainer}>
+                  <img
+                    src={img}
+                    alt={`Vista previa ${index + 1}`}
+                    onClick={() => handleImageDoubleClick(img)}
+                  />
+                  <button
+                    type="button"
+                    className={styles.removeImageButton}
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className={styles.imagenVacia}>
-              <p>No hay imagen seleccionada</p>
+              <p>No hay imágenes seleccionadas</p>
             </div>
           )}
           <label htmlFor="input-imagen" className={styles.btnSubirImagen}>
-            Subir Imagen
+            {isMobile ? "Subir Imágenes (3-10)" : "Subir Imagen"}
           </label>
           <input
             id="input-imagen"
             type="file"
-            accept="image/png, image/jpeg"
+            accept="image/png, image/jpeg, image/jpg"
+            multiple={isMobile}
             onChange={handleImageChange}
             style={{ display: "none" }}
           />
+          {/* Mostrar el primer mensaje de la cola */}
+          {mensajes.length > 0 && (
+            <p
+              className={
+                mensajes[0].tipo === "success" ? styles.mensajeExito : styles.error
+              }
+            >
+              {mensajes[0].texto}
+            </p>
+          )}
           <div className={styles.campoForm}>
             <label>Descripción:</label>
             <textarea
@@ -92,7 +268,6 @@ const PublicarAviso = () => {
               required
             />
             <p className={styles.textoDescripcion}>Ingrese la descripción del inmueble</p>
-            {errores.descripcion && <p className={styles.error}>{errores.descripcion}</p>}
           </div>
         </div>
 
@@ -109,7 +284,6 @@ const PublicarAviso = () => {
                 placeholder="Ingrese el título"
                 required
               />
-              {errores.titulo && <p className={styles.error}>{errores.titulo}</p>}
             </div>
             <div className={styles.campoForm}>
               <label>Precio: $</label>
@@ -121,7 +295,6 @@ const PublicarAviso = () => {
                 placeholder="Ingrese el precio"
                 required
               />
-              {errores.precio && <p className={styles.error}>{errores.precio}</p>}
             </div>
           </div>
 
@@ -179,7 +352,17 @@ const PublicarAviso = () => {
         </form>
       </div>
 
-      {mensaje && <p className={styles.mensajeExito}>{mensaje}</p>}
+      {/* Modal para la imagen ampliada */}
+      {isModalOpen && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Imagen ampliada" className={styles.modalImage} />
+            <button className={styles.modalCloseButton} onClick={closeModal}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
