@@ -53,6 +53,7 @@ h2 {
   justify-content: center;
   align-items: center;
   min-height: 44px;
+  touch-action: manipulation; /* Mejora interacción en móviles */
 }
 
 .register-button button:hover {
@@ -80,11 +81,47 @@ h2 {
   margin-top: 0.75rem;
 }
 
+.terms-container input[type="checkbox"] {
+  display: none; /* Oculta el checkbox nativo */
+}
+
 .terms-container label {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   cursor: pointer;
+  position: relative;
+  padding-left: 1.5rem; /* Espacio para el checkbox personalizado */
+  touch-action: manipulation; /* Mejora interacción en móviles */
+}
+
+.terms-container label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.terms-container input[type="checkbox"]:checked + label::before {
+  background-color: #28a745; /* Color cuando está marcado */
+  border-color: #28a745;
+}
+
+.terms-container input[type="checkbox"]:checked + label::after {
+  content: "✔"; /* Icono de check */
+  position: absolute;
+  left: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 0.75rem;
 }
 
 .terms-container a {
@@ -103,6 +140,7 @@ h2 {
   height: auto; /* Mantiene proporciones */
   vertical-align: middle; /* Alinea verticalmente con el texto */
 }
+
 /* Botón de Google */
 .googlebtn {
   width: 100%;
@@ -123,6 +161,7 @@ h2 {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s ease, box-shadow 0.2s;
   min-height: 44px;
+  touch-action: manipulation; /* Mejora interacción en móviles */
 }
 
 .googlebtn:hover {
@@ -163,12 +202,15 @@ h2 {
   padding: clamp(8px, 2vw, 10px);
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  font-size: clamp(16px, 2.5vw, 1rem); /* Mínimo 16px para evitar zoom */
   width: 100%;
   box-sizing: border-box;
   background-color: #f8f8f8;
   color: #000;
   transition: border-color 0.3s;
+  touch-action: manipulation; /* Mejora interacción en móviles */
+  -webkit-text-size-adjust: 100%; /* Evita ajustes de tamaño de texto en iOS */
+  -webkit-appearance: none; /* Elimina estilos nativos en iOS */
 }
 
 .form-group input:focus,
