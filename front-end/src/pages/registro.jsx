@@ -1,5 +1,5 @@
 // src/pages/Registro.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/registro.module.css";
 
@@ -10,6 +10,7 @@ const Registro = () => {
   const [tipoMensaje, setTipoMensaje] = useState("");
   const [verPassword, setVerPassword] = useState(false);
   const [verConfirmar, setVerConfirmar] = useState(false);
+  const googleButtonRef = useRef(null);
 
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -40,9 +41,11 @@ const Registro = () => {
           auto_select: false,
         });
 
-        document.querySelector(".google-btn")?.addEventListener("click", () => {
-          window.google.accounts.id.prompt();
-        });
+        if (googleButtonRef.current) {
+          googleButtonRef.current.addEventListener("click", () => {
+            window.google.accounts.id.prompt();
+          });
+        }
       }
     };
     document.body.appendChild(script);
@@ -252,7 +255,7 @@ const Registro = () => {
             <button type="submit">Registrar</button>
           </div>
 
-          <button type="button" className="google-btn">
+          <button type="button" className={styles.googlebtn} ref={googleButtonRef}>
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
               alt="Google Logo"
@@ -266,8 +269,12 @@ const Registro = () => {
             <div className={styles["modal-content"]}>
               <h3>Tratamiento de Datos Personales</h3>
               <p>
-                En Servicio de Arrendamiento, los datos personales recolectados son tratados
-                de forma segura y confidencial...
+              En Servicio de Arrendamiento, los datos personales recolectados son tratados de forma segura y 
+              confidencial, con el fin de gestionar procesos de arrendamiento, validar identidades, realizar 
+              análisis financieros, y cumplir con obligaciones contractuales y legales. El titular de los datos 
+              tiene derecho a conocer, actualizar, rectificar o suprimir su información, y puede ejercer estos 
+              derechos en cualquier momento. Al proporcionar sus datos, el titular autoriza expresamente su tratamiento 
+              conforme a nuestra política de protección de datos.
               </p>
               <button onClick={() => setMostrarModal(false)}>Cerrar</button>
             </div>
@@ -275,7 +282,7 @@ const Registro = () => {
         )}
       </div>
     </div>
-);
+  );
 };
 
 export default Registro;

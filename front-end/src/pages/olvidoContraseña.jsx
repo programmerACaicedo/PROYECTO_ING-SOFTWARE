@@ -63,7 +63,9 @@ const OlvidoContraseña = () => {
             required
             className={styles.input}
           />
-          <button
+          <div className={styles.fromButton}></div>
+          <button 
+          
             type="button"
             onClick={handleValidarYEnviar}
             className={styles.button}
@@ -76,9 +78,6 @@ const OlvidoContraseña = () => {
 
       {mostrarCodigo && (
         <div id="verification-section" className={styles.verificationSection}>
-          <label htmlFor="codigo" className={styles.label}>
-            Código de Verificación:
-          </label>
           <input
             id="codigo"
             type="text"

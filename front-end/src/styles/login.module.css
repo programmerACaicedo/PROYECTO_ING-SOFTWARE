@@ -9,47 +9,65 @@
   align-items: center;
   justify-content: center;
 }
-/*
-button {
+.submitButton {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: forestgreen;
+  padding: 12px;
+  background-color: #43a047; 
   color: white;
+  font-size: 16px;
+  font-weight: 600;
   border: none;
-  border-radius: var(--radio-input);
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  font-size: var(--font-size);
-  transition: background 0.4s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 12px;
+  margin-bottom: 5px;
 }
-*/
 
+.submitButton:hover {
+  background-color: #43a047;
+  transform: translateY(-2px);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+  background-color: #388e3c;
+}
 .loginContainer {
   background-color: rgba(0, 0, 0, 0.768);
-  padding: 2rem;
+  padding: 3rem;
   border-radius: 16px;
   color: #fff;
   width: 90%;
   height: auto;
-  max-width: 400px;
+  max-width: 490px;
   box-shadow: 0 8px 32px rgb(21, 39, 204);
 }
 
 .loginContainer h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
             
-input[type="email"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  margin: 5px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 15px;
+.inputEmail,
+.inputPassword {
   box-sizing: border-box;
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  align-items: center;
+}
+
+.inputEmail:focus,
+.inputPassword:focus {
+  border-color: #6abf69; /* tono verde suave */
+  box-shadow: 0 0 0 3px rgba(106, 191, 105, 0.2);
+  outline: none;
 }
 
 .options {
@@ -87,13 +105,14 @@ input[type="password"] {
 }
 
 .googleBtn {
-  background: rgb(197, 197, 197);
+  background: rgb(255, 255, 255);
+  margin-bottom: 30px;
   color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: bold;
@@ -113,6 +132,7 @@ input[type="password"] {
 }
 
 .registerLink {
+  margin-top: 80px;
   text-align: center;
   margin-top: 12px;
   font-size: 0.9em;

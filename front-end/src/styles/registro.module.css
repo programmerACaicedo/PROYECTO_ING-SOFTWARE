@@ -15,7 +15,7 @@
 
 .register-container {
   background-color: rgba(0, 0, 0, 0.777);
-  padding: 2rem;
+  padding: 3rem;
   border-radius: 15px;
   color: #fff;
   width: 100%;
@@ -32,18 +32,24 @@ h2 {
   width: 100%;
   padding: 12px;
   background-color: #28a745;
-  color: white;
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
   margin-top: 10px;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.2s ease;
 }
 
-button:hover {
+.registerbutton button:hover {
   background-color: #218838;
+  transform: translateY(-2px);
 }
+
+.registerbutton button:active {
+  transform: translateY(0);
+}
+
 
 .terms-container {
   color: white;
@@ -74,7 +80,8 @@ button:hover {
   color: #1308af;
 }
 
-.google-btn {
+.googlebtn {
+  width: 600px;
   background: white;
   color: #333;
   display: flex;
@@ -85,12 +92,23 @@ button:hover {
   margin-top: 10px;
   border-radius: 8px;
   font-weight: bold;
-  transition: 0.3s;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s ease;
 }
 
-.google-btn:hover {
+.googlebtn:hover {
   background: #f1f1f1;
+  transform: translateY(-2px);
 }
+
+.googlebtn:active {
+  transform: translateY(0);
+}
+
+
 
 .form-group {
   display: flex;
@@ -110,6 +128,7 @@ button:hover {
 
 .form-group input,
 .form-group select {
+  margin: 2px;
   padding: 9px;
   border: 1px solid #ccc;
   border-radius: 8px;
