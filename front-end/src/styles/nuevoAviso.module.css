@@ -1,30 +1,97 @@
 .publicarAvisoContainer {
+  margin: 0;
   display: flex;
   flex-direction: column;
-  min-height: 90vh;
-  padding: 2rem;
+  min-height: 100vh;
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
   overflow-x: hidden;
 }
 
 .headerPublicar {
-  width: 100%;
-  background-color: #f2f2f2;
-  text-align: center;
-  padding: 2rem 1rem;
-  margin: 0;
+  background-color: #ffffff;
+  padding: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
   position: relative;
-  overflow-x: hidden;
 }
 
-.headerPublicar h1 {
+.iconMenu {
+  color: black;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: block;
+  padding: 0 1rem;
+}
+
+.titulo {
   font-size: 2rem;
   font-weight: bold;
   color: #333;
   margin: 0;
-  word-wrap: break-word;
+  flex: 1;
+  text-align: center;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 245px;
+  max-height: calc(100vh - 100px);
+  flex-direction: column;
+  background-color: #1c1c1cc6;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.menuOpen {
+  display: flex;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.menu button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu button:last-child {
+  margin-bottom: 0;
+}
+
+.menu button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .seccionTitulo {
@@ -61,7 +128,7 @@
   border: 1px solid #007bff;
   object-fit: cover;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer; /* Indicar que es interactiva */
+  cursor: pointer;
 }
 
 .imageGallery {
@@ -142,14 +209,14 @@
   width: 100%;
   resize: vertical;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #080808;
   border-radius: 6px;
   font-size: 0.95rem;
 }
 
 .textoDescripcion {
   font-size: 0.85rem;
-  color: #777;
+  color: #000000;
   margin-top: 4px;
   font-style: italic;
 }
@@ -186,9 +253,10 @@
 .campoForm textarea {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   border-radius: 6px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .btnPublicar {
@@ -226,7 +294,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -244,7 +312,7 @@
 
 .modalImage {
   max-width: 100%;
-  max-height: 80vh; /* Limitar altura para evitar desbordamiento */
+  max-height: 80vh;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -271,28 +339,92 @@
   background-color: #c82333;
 }
 
-@media (max-width: 768px) {
+/* Media Queries para responsividad */
+@media (max-width: 1024px) {
+  .headerPublicar {
+    padding: 1.5rem 1rem;
+  }
+
+  .titulo {
+    font-size: 1.8rem;
+  }
+
+  .menu {
+    width: 200px;
+    max-height: calc(100vh - 80px);
+  }
+
+  .menu button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
   .contenidoPublicar {
     flex-direction: column;
     align-items: center;
+    gap: 1.5rem;
+  }
+
+  .imagenPreview {
+    width: 100%;
+    max-width: 350px;
   }
 
   .formPublicar {
     width: 100%;
-    max-width: 500px;
+    max-width: 450px;
+    padding: 1.2rem;
   }
 
-  .row {
-    flex-direction: column;
+  .seccionTitulo {
+    font-size: 1.4rem;
+    margin: 1rem 0;
   }
 
-  .headerPublicar h1 {
-    font-size: 1.6rem;
-    padding: 0 1rem;
+  .imageGallery {
+    max-height: 200px;
   }
+}
 
+@media (max-width: 768px) {
   .headerPublicar {
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .iconMenu {
+    font-size: 1.3rem;
+    padding: 0 0.8rem;
+  }
+
+  .titulo {
+    font-size: 1.5rem;
+  }
+
+  .menu {
+    width: 70%;
+    max-width: 200px;
+    max-height: calc(100vh - 60px);
+  }
+
+  .menu button {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .mainContent {
+    padding: 1.5rem;
+  }
+
+  .contenidoPublicar {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .imagenPreview {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.8rem;
   }
 
   .imagenPreview img {
@@ -301,10 +433,146 @@
   }
 
   .imageGallery {
-    max-height: 200px;
+    max-height: 180px;
+    gap: 8px;
+  }
+
+  .formPublicar {
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .campoForm input,
+  .campoForm select,
+  .campoForm textarea {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .btnPublicar {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .seccionTitulo {
+    font-size: 1.2rem;
+    margin: 0.8rem 0;
   }
 
   .modalImage {
-    max-height: 70vh; /* Ajuste para móviles */
+    max-height: 70vh;
+  }
+
+  .modalCloseButton {
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+    top: -12px;
+    right: -12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerPublicar {
+    padding: 0.8rem 0.5rem;
+  }
+
+  .iconMenu {
+    font-size: 1.2rem;
+    padding: 0 0.6rem;
+  }
+
+  .titulo {
+    font-size: 1.2rem;
+  }
+
+  .menu {
+    width: 60%;
+    max-width: 180px;
+    max-height: calc(100vh - 50px);
+  }
+
+  .menu button {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .contenidoPublicar {
+    gap: 0.8rem;
+  }
+
+  .imagenPreview {
+    max-width: 100%;
+    padding: 0.6rem;
+  }
+
+  .imagenPreview img {
+    max-width: 60px;
+    height: 60px;
+  }
+
+  .imageGallery {
+    max-height: 150px;
+    gap: 6px;
+  }
+
+  .removeImageButton {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    top: -8px;
+    right: -8px;
+  }
+
+  .btnSubirImagen {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .formPublicar {
+    padding: 0.8rem;
+  }
+
+  .campoForm label {
+    font-size: 0.9rem;
+  }
+
+  .campoForm input,
+  .campoForm select,
+  .campoForm textarea {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+
+  .btnPublicar {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .seccionTitulo {
+    font-size: 1rem;
+    margin: 0.6rem 0;
+  }
+
+  .modalImage {
+    max-height: 60vh;
+  }
+
+  .modalCloseButton {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    top: -10px;
+    right: -10px;
   }
 }
