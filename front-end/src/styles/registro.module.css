@@ -1,72 +1,90 @@
 /* src/styles/registro.module.css */
 
+/* Estilos base para la página de registro */
 .register-page {
   background-image: url("../assets/img/registro.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 96.2vh;
-  width: 98.3vw;
+  background-color: #1a1a1a; /* Fallback si la imagen no carga */
+  min-height: 100vh; /* Cubre toda la altura de la pantalla */
+  width: 100vw; /* Cubre todo el ancho de la pantalla */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  box-sizing: border-box;
 }
 
+/* Contenedor del formulario */
 .register-container {
-  background-color: rgba(0, 0, 0, 0.777);
-  padding: 3rem;
+  background-color: rgba(0, 0, 0, 0.8); /* Mayor opacidad para mejor legibilidad */
+  backdrop-filter: blur(5px); /* Efecto de desenfoque para fondo */
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   border-radius: 15px;
   color: #fff;
   width: 100%;
-  max-width: 600px;
-  box-shadow: 0 8px 32px rgb(42, 161, 52);
+  max-width: clamp(300px, 90vw, 600px); /* Escalable según pantalla */
+  box-shadow: 0 8px 32px rgba(42, 161, 52, 0.5);
 }
 
+/* Títulos */
 h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1.5rem, 5vw, 2rem);
 }
 
+/* Botón de registro */
 .register-button button {
   width: 100%;
-  padding: 12px;
+  max-width: clamp(300px, 100vw, 800px);
+  padding: clamp(10px, 2vw, 12px);
   background-color: #28a745;
-  color: rgb(255, 255, 255);
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  margin-top: 10px;
-  transition: background-color 0.3s, transform 0.2s ease;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  margin-top: 0.75rem;
+  transition: background-color 0.3s, transform 0.2s ease, box-shadow 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
 }
 
-.registerbutton button:hover {
+.register-button button:hover {
   background-color: #218838;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.registerbutton button:active {
+.register-button button:active {
   transform: translateY(0);
 }
 
+.register-button button:focus {
+  outline: 2px solid #4da3ff;
+  outline-offset: 2px;
+}
 
+/* Términos y condiciones */
 .terms-container {
-  color: white;
+  color: #ccc;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  margin-top: 10px;
+  gap: 0.5rem;
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+  margin-top: 0.75rem;
 }
 
 .terms-container label {
-  display: inline-flex;
-  flex-direction: row;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.4rem;
   cursor: pointer;
-  color: #ccc;
 }
 
 .terms-container a {
@@ -77,43 +95,56 @@ h2 {
 
 .terms-container a:hover {
   text-decoration: underline;
-  color: #1308af;
+  color: #2a71c0;
 }
 
+.googleIcon {
+  width: clamp(16px, 2.5vw, 20px); /* Tamaño responsivo */
+  height: auto; /* Mantiene proporciones */
+  vertical-align: middle; /* Alinea verticalmente con el texto */
+}
+/* Botón de Google */
 .googlebtn {
-  width: 600px;
-  background: white;
+  width: 100%;
+  max-width: clamp(300px, 100vw, 800px);
+  padding: clamp(10px, 2vw, 12px);
+  background: #fff;
   color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
-  margin-top: 10px;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s ease;
+  transition: background 0.3s, transform 0.2s ease, box-shadow 0.2s;
+  min-height: 44px;
 }
 
 .googlebtn:hover {
   background: #f1f1f1;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .googlebtn:active {
   transform: translateY(0);
 }
 
+.googlebtn:focus {
+  outline: 2px solid #4da3ff;
+  outline-offset: 2px;
+}
 
-
+/* Formulario */
 .form-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: clamp(10px, 2vw, 15px);
 }
 
 .input-container {
@@ -128,17 +159,25 @@ h2 {
 
 .form-group input,
 .form-group select {
-  margin: 2px;
-  padding: 9px;
+  margin: 0.25rem 0;
+  padding: clamp(8px, 2vw, 10px);
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   width: 100%;
   box-sizing: border-box;
   background-color: #f8f8f8;
   color: #000;
+  transition: border-color 0.3s;
 }
 
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4da3ff;
+  outline: none;
+}
+
+/* Contenedor de contraseña */
 .password-container {
   position: relative;
 }
@@ -146,13 +185,15 @@ h2 {
 .eye-icon {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 0.75rem;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 18px;
+  font-size: clamp(14px, 2.5vw, 18px);
   user-select: none;
+  color: #666;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -167,10 +208,10 @@ h2 {
 }
 
 .modal-content {
-  background-color: white;
-  padding: 2rem;
+  background-color: #fff;
+  padding: clamp(1rem, 3vw, 2rem);
   border-radius: 12px;
-  max-width: 600px;
+  max-width: clamp(300px, 90vw, 600px);
   width: 90%;
   color: #000;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -178,32 +219,34 @@ h2 {
 
 .modal-content h3 {
   margin-top: 0;
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
 }
 
 .modal-content p {
-  margin-top: 1rem;
-  font-size: 1rem;
+  margin: 1rem 0;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   line-height: 1.5;
 }
 
 .modal-content button {
-  margin-top: 1.5rem;
-  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  padding: clamp(0.5rem, 2vw, 0.75rem) 1rem;
   background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
 }
 
 .modal-content button:hover {
   background-color: #0056b3;
 }
 
+/* Mensajes de error/éxito */
 .mensaje {
   margin-bottom: 1rem;
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   border-radius: 8px;
   font-weight: bold;
   text-align: center;
@@ -222,12 +265,48 @@ h2 {
   border: 1px solid #33cc33;
 }
 
-@media (max-width: 600px) {
+/* Media Queries para responsividad */
+@media (max-width: 768px) {
   .input-container {
     flex: 1 1 100%;
   }
 
   .register-container {
-    padding: 1.5rem;
+    padding: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .googlebtn {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: clamp(1.2rem, 6vw, 1.5rem);
+  }
+
+  .register-page {
+    padding: 0.5rem;
+  }
+
+  .terms-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .register-container {
+    max-width: 700px;
+  }
+}
+
+@media (min-resolution: 2dppx) {
+  .register-container {
+    font-size: 1.1rem;
+  }
+
+  .eye-icon {
+    font-size: 20px;
   }
 }
