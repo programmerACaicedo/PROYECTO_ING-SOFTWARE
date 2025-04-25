@@ -1,74 +1,120 @@
 .perfilContainer {
-  background-color: #f4f4f4;
-  min-height: 90vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem;
+  min-height: 100vh;
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
 }
 
 .header {
-  background-color: transparent;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.titulo h1 {
-  font-size: 1.8rem;
-  color: #111;
-  font-weight: bold;
-}
-
-.containerPerfil {
+  background-color: #ffffff;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100vw;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .iconMenu {
-  display: none;
+  color: black;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: block;
+  padding: 0 1rem;
+}
+
+.titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+form h3 {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: -10px;
+  margin-top: px;
+  padding: 0%;
+  color: #444;
 }
 
 .menu {
+  margin-top: 70px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 245px;
+  height: 88.6vh;
+  flex-direction: column;
+  background-color: #1c1c1cc6;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.menuOpen {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .menu button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu button:last-child {
+  margin-bottom: 0;
+}
+
+.menu button:hover {
   background-color: #007bff;
   color: white;
-  border: none;
-  padding: 0.5rem 0.8rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
 }
 
 .mainContent {
-  width: 100%;
-  max-width: 900px;
-  background-color: white;
-  padding: 2rem;
-  border-radius: 10px;
+  flex: 1;
   display: flex;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  gap: 2rem;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .perfilForm {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  gap: 2rem;
+  max-width: 800px;
   width: 100%;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .fotoPerfil {
-  width: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,93 +126,197 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  background-color: #ddd;
+  border: 2px solid #007bff;
+}
+
+.fotoButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .btnSeleccionarArchivo {
   background-color: #007bff;
   color: white;
-  padding: 0.4rem 1rem;
+  padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnSeleccionarArchivo:hover {
+  background-color: #0056b3;
+}
+
+.btnEliminarFoto {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnEliminarFoto:hover {
+  background-color: #c82333;
 }
 
 .datosPersonales {
   flex: 1;
-  min-width: 250px;
 }
 
 .datosPersonales h2 {
+  font-size: 1.5rem;
   margin-bottom: 1rem;
-  font-size: 1.4rem;
-  font-weight: bold;
+}
+
+.datosPersonales form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .datosPersonales label {
-  display: block;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
   font-weight: bold;
 }
 
 .datosPersonales input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.2rem;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 5px;
 }
 
-.datosPersonales button[type="submit"] {
+.datosPersonales input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.btnActualizar {
+  align-self: flex-start;
   background-color: #28a745;
   color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 0.6rem;
-  width: 100%;
-  border-radius: 4px;
-  font-weight: bold;
-  margin-top: 1rem;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnActualizar:hover {
+  background-color: #218838;
 }
 
 .eliminarCuenta {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .btnEliminar {
   background-color: #dc3545;
   color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 0.6rem;
-  width: 100%;
-  border-radius: 4px;
-  font-weight: bold;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnEliminar:hover {
+  background-color: #c82333;
 }
 
 .error {
   color: red;
   font-size: 0.9rem;
+  margin-top: 5px;
 }
 
-.mensaje {
-  margin-top: 1rem;
+.mensajeExito {
   color: green;
   font-weight: bold;
+  font-size: 1rem;
+  margin-top: 5px;
 }
 
 .confirmarEliminacion {
-  background-color: white;
-  padding: 1rem;
-  margin-top: 2rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #cccccc;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
   text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  color: #000000;
+  font-weight: bold;
+
+}
+
+.confirmarEliminacion p {
+  margin-bottom: 1rem;
+}
+
+.confirmarEliminacion ul {
+  text-align: left;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
 }
 
 .confirmarEliminacion button {
-  margin: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
+  margin: 0 0.5rem;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+}
+
+.confirmarEliminacion button:first-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirmarEliminacion button:first-child:hover {
+  background-color: #c82333;
+}
+
+.confirmarEliminacion button:last-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.confirmarEliminacion button:last-child:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .perfilForm {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fotoPerfil img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .datosPersonales {
+    width: 100%;
+  }
+
+  .titulo {
+    font-size: 1.5rem;
+  }
 }
