@@ -66,9 +66,9 @@
   background-color: transparent;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
   z-index: 1;
-  margin-top: -29rem;
+  margin-top: -17rem;
 }
 
 .dropdownContent button {
@@ -81,12 +81,17 @@
   text-align: left;
   cursor: pointer;
   font-weight: bold;
-  margin-top: -29rem;
+  margin-top: -27rem;
 }
 
 .dropdownContent button:hover {
-  background: rgba(255, 255, 255, 0.304);
+  background: rgba(0, 68, 255, 0.304);
   margin: auto;
+}
+.dropdownContent.show {
+  opacity: 0;
+  transform: scaleY(1);
+  pointer-events: auto;
 }
 
 .nuevoAvisoBtn {
