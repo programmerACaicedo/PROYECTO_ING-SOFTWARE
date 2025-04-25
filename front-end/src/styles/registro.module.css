@@ -210,7 +210,7 @@ h2 {
   transition: border-color 0.3s;
   touch-action: manipulation; /* Mejora interacción en móviles */
   -webkit-text-size-adjust: 100%; /* Evita ajustes de tamaño de texto en iOS */
-  -webkit-appearance: none; /* Elimina estilos nativos en iOS */
+  -webkit-appearance: none; /* Elimina estilos predeterminados en iOS */
 }
 
 .form-group input:focus,
