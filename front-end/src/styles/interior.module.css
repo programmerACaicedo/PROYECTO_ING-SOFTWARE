@@ -1,21 +1,5 @@
-/* interior.css */
 
-/* Fondo de la página (imagen de ejemplo, ajústalo a tu imagen) */
-.interior-page {
-  /*background: url("../assets/img/img_bg.png") no-repeat center center;*/
-  background-size: cover;;
-  min-height: 100vh;
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  color: #fff; /* Texto en blanco para resaltar sobre el fondo */
-  max-width: 100vw; /* Evita el desbordamiento horizontal */
-}
-
-/* Encabezado */
-.interior-page header {
-  width: 100%;
+.interiorPage header {
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg);
   background-size: cover;
@@ -23,143 +7,131 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 60vh; /* Ocupa la mitad de la altura de la ventana */
+  height: 64vh;
+
   width: 100vw;
   padding: 1rem;
-  box-sizing: border-box;  
+  box-sizing: border-box;
 }
-.interior-page header::after {
+.interiorPage header::after {
   content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Ajusta la altura del degradado */
+  height: 64px;
   background: linear-gradient(to bottom, transparent, rgba(23, 104, 196, 0.8));
   pointer-events: none;
 }
 
-/* Título principal */
 .interior {
   color: #000000;
-  text-align: center; 
+  text-align: center;
   font-size: 2rem;
   margin: 0.6rem 0;
   text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
-  margin-top: -19rem;
+  margin-top: -29rem;
   flex-direction: row;
 }
 
-/* Contenedor del botón Alquileres y su dropdown */
-.menu-container {
+.menuContainer {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  position: relative; /* Necesario para posicionar el dropdown */
+  gap: 2rem;
+
+  position: relative;
 }
 
-/* Botón "Alquileres" */
-.alquileres-btn {
-  background-color: transparent; /* Un color naranja para diferenciar */
-  color: rgb(255, 255, 255);
+.alquileresBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
   padding: 12px 24px;
   font-size: 2rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: -21rem;
+  padding: 4rem;
+  margin-top: -28rem;
   flex: 1;
-  color: rgb(0, 0, 0);
   font-weight: bold;
 }
 
-.alquileres-btn:hover {
+.alquileresBtn:hover {
   background-color: rgba(255, 255, 255, 0.304);
 }
 
-/* Dropdown que aparece al pulsar el botón */
-.dropdown-content {
+.dropdownContent {
   position: absolute;
-  top: 90px; /* Ajusta según tu layout */
+  top: 90px;
   left: 0;
   background-color: transparent;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   z-index: 1;
-  margin-top: -15rem;
-
+  margin-top: -29rem;
 }
 
-/* Botones dentro del dropdown */
-.dropdown-content button {
+.dropdownContent button {
   background: #ffffff;
   color: rgb(0, 0, 0);
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  margin: 5px 0;
   width: 100%;
   text-align: left;
   cursor: pointer;
   font-weight: bold;
-  margin-top: -19rem;
+  margin-top: -29rem;
 }
 
-.dropdown-content button:hover {
+.dropdownContent button:hover {
   background: rgba(255, 255, 255, 0.304);
   margin: auto;
 }
 
-/* Botón "Nuevo Aviso" */
-.nuevo-aviso-btn {
-  background-color: transparent; /* Un color naranja para diferenciar */
-  color: rgb(255, 255, 255);
+.nuevoAvisoBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
   padding: 12px 24px;
   font-size: 2rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: -20rem;
+  margin-top: -28rem;
   flex: 1;
-  color: rgb(0, 0, 0);
   font-weight: bold;
   border: #7a2222;
   border-width: 10px;
-
 }
 
-.nuevo-aviso-btn:hover {
+.nuevoAvisoBtn:hover {
   background-color: rgba(255, 255, 255, 0.304);
 }
 
-.perfil-btn {
-  background-color: transparent; /* Un color naranja para diferenciar */
-  color: rgb(255, 255, 255);
+.perfilBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
   padding: 12px 24px;
   font-size: 2rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: -20rem;
+  margin-top: -28rem;
   flex: 1;
-  color: rgb(0, 0, 0);
   font-weight: bold;
 }
 
-.perfil-btn:hover {
+.perfilBtn:hover {
   background-color: rgba(255, 255, 255, 0.304);
 }
 
-
-/* Sección de publicaciones */
 .publicaciones {
   text-align: center;
   padding: 1rem;
   color: #000000;
 }
 
-.publicaciones-list {
+.publicacionesList {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
@@ -182,26 +154,26 @@
 .publicacion h3 {
   margin: 0 0 10px;
 }
-/* Responsividad: para pantallas grandes */
+
 @media (min-width: 768px) {
-  .interior-page {
+  .interiorPage {
     width: 100%;
     margin: 0;
   }
 }
 
-/* Responsividad: para móviles, se ajusta a 100% */
 @media (max-width: 767px) {
-  .interior-page header h1 {
+  .interiorPage header h1 {
     font-size: 2rem;
   }
-  .alquileres-btn,
-  .nuevo-aviso-btn {
+  .alquileresBtn,
+  .nuevoAvisoBtn {
     max-width: none;
-    width: 100%; 
+    width: 100%;
   }
 }
-.splash-screen {
+
+.splashScreen {
   position: fixed;
   inset: 0;
   background: linear-gradient(135deg, #ffffff, #3c5ccd90);
@@ -211,7 +183,7 @@
   z-index: 9999;
 }
 
-.splash-screen h1 {
+.splashScreen h1 {
   font-size: 3.5rem;
   font-weight: 700;
   color: #fff;

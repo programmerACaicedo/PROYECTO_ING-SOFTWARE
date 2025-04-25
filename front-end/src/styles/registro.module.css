@@ -1,20 +1,12 @@
-body {
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* src/styles/registro.module.css */
 
 .register-page {
   background-image: url("../assets/img/registro.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 96.2vh;
+  width: 98.3vw;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,8 +28,7 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
-
-.register-button {
+.register-button button {
   width: 100%;
   padding: 12px;
   background-color: #28a745;
@@ -50,12 +41,10 @@ h2 {
   transition: 0.3s;
 }
 
-
 button:hover {
   background-color: #218838;
 }
 
-/* Estilo para el checkbox y el enlace */
 .terms-container {
   color: white;
   display: flex;
@@ -74,10 +63,6 @@ button:hover {
   color: #ccc;
 }
 
-.terms-container input {
-  width: auto;
-}
-
 .terms-container a {
   color: #4da3ff;
   text-decoration: none;
@@ -89,7 +74,6 @@ button:hover {
   color: #1308af;
 }
 
-/* Estilo para el botón de Google */
 .google-btn {
   background: white;
   color: #333;
@@ -207,19 +191,18 @@ button:hover {
   transition: all 0.3s ease;
 }
 
-.mensaje.error {
+.error {
   background-color: #ffe0e0;
   color: #a60000;
   border: 1px solid #ff4d4d;
 }
 
-.mensaje.exito {
+.exito {
   background-color: #e0ffe0;
   color: #006600;
   border: 1px solid #33cc33;
 }
 
-/* 📱 Responsivo para móviles */
 @media (max-width: 600px) {
   .input-container {
     flex: 1 1 100%;

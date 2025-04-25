@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/olvidoContraseña.module.css";
+import styles from "../styles/olvidoContraseña.module.css"; // Import with a variable 'styles'
 
 const OlvidoContraseña = () => {
   const [correo, setCorreo] = useState("");
@@ -8,7 +8,6 @@ const OlvidoContraseña = () => {
   const [mensajeError, setMensajeError] = useState("");
 
   const validarCorreo = (correo) => {
-    // Expresión regular básica para correos electrónicos válidos
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(correo);
   };
@@ -26,15 +25,12 @@ const OlvidoContraseña = () => {
       return;
     }
 
-    // Si todo está correcto
     setMensajeError("");
     setMostrarCodigo(true);
-
-    // Aquí podrías enviar el código de verificación
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <h2>Recuperar mi Contraseña</h2>
 
       <div id="email-form">

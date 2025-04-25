@@ -1,16 +1,4 @@
-/* Tus estilos actuales */
-body { 
-  background-size: cover;
-  background-repeat: no-repeat;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.login-page {
+.loginPage {
   background-image: url("../assets/img/log.png");
   background-size: cover;
   background-position: center;
@@ -22,18 +10,18 @@ body {
   justify-content: center;
 }
 
-.login-container {
+.loginContainer {
   background-color: rgba(0, 0, 0, 0.768);
   padding: 2rem;
   border-radius: 16px;
   color: #fff;
   width: 90%;
-  height: auto; /* Permite que se ajuste según el contenido */
+  height: auto;
   max-width: 400px;
   box-shadow: 0 8px 32px rgb(21, 39, 204);
 }
 
-.login-container h2 {
+.loginContainer h2 {
   text-align: center;
   margin-bottom: 1rem;
 }
@@ -49,17 +37,6 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-.button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 5px;
-}
-
-button:hover {
-  background-color: #119618;
-}
-  
 .options {
   justify-content: space-between;
   color: rgb(255, 255, 255);
@@ -69,6 +46,7 @@ button:hover {
   font-size: 0.9rem;
   margin-top: 10px;
 }
+
 .options label {
   display: inline-flex;
   flex-direction: row;
@@ -76,7 +54,7 @@ button:hover {
   gap: 8px;
   cursor: pointer;
   color: #fffbfbd6;
-  margin-right: 12px; 
+  margin-right: 12px;
 }
 
 .options input {
@@ -93,7 +71,7 @@ button:hover {
   text-decoration: underline;
 }
 
-.google-btn {
+.googleBtn {
   background: rgb(197, 197, 197);
   color: #333;
   display: flex;
@@ -110,93 +88,42 @@ button:hover {
   transition: background-color 0.3s ease;
 }
 
-.google-btn:hover {
+.googleBtn:hover {
   background-color: #067300;
 }
 
-.google-btn img {
+.googleBtn img {
   width: 18px;
   height: 18px;
 }
 
-.register-link {
+.registerLink {
   text-align: center;
   margin-top: 12px;
   font-size: 0.9em;
 }
 
-.register-link a {
+.registerLink a {
   color: #4da6ff;
   text-decoration: none;
   font-weight: bold;
 }
 
-.register-link a:hover {
+.registerLink a:hover {
   text-decoration: underline;
 }
 
-.floating-error {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #e63946;
-  color: #fff;
-  padding: 16px 32px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    transform: translate(-50%, -100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-container {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
-
-.password-container {
+.passwordContainer {
   position: relative;
 }
 
-.password-container input {
+.passwordContainer input {
   width: 100%;
   padding-right: 40px;
   box-sizing: border-box;
 }
 
-.icon-btn {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #333;
-}
-
-.eye-icon {
+.eyeIcon {
   position: absolute;
   top: 50%;
   right: 10px;
@@ -208,13 +135,14 @@ button:hover {
   justify-content: center;
 }
 
-.eye-icon:hover {
+.eyeIcon:hover {
   color: #000;
 }
 
-/* Nuevos estilos para el mensaje de error dentro del contenedor */
-.mensaje {
-  margin-bottom: 1rem;
+.error {
+  background-color: #ffe0e0;
+  color: #a60000;
+  border: 1px solid #ff4d4d;
   padding: 12px;
   border-radius: 8px;
   font-weight: bold;
@@ -222,12 +150,7 @@ button:hover {
   transition: all 0.3s ease;
 }
 
-.mensaje.error {
-  background-color: #ffe0e0;
-  color: #a60000;
-  border: 1px solid #ff4d4d;
-}
-.mensaje.oculto {
+.oculto {
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
@@ -235,4 +158,17 @@ button:hover {
   margin: 0;
   padding: 0;
   border: none;
+}
+
+@media (max-width: 480px) {
+  .loginContainer {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
