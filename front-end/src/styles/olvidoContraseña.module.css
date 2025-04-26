@@ -74,7 +74,7 @@ button {
 }
 
 .button {
-  width: clamp(150px, 40vw, 250px);
+  width: clamp(200px, 40vw, 300px);
   margin-bottom: clamp(1rem, 3vw, 1.25rem);
   padding: clamp(0.6rem, 2vw, 0.75rem);
   font-size: clamp(16px, 2.5vw, 1.125rem); /* Mínimo 16px para evitar zoom automático */
