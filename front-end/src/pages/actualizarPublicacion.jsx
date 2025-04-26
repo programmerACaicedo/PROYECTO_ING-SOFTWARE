@@ -17,6 +17,16 @@ const ActualizarPublicacion = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [imageError, setImageError] = useState("");
+  const [selectedPreview, setSelectedPreview] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = (src) => {
+    setSelectedPreview(src);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPreview(null);
+  };
 
   // Carga simulada de datos
   useEffect(() => {
@@ -116,8 +126,10 @@ const ActualizarPublicacion = () => {
          // No actualizamos las imágenes inválidas
        } else {
          setImageError("");
-         setFormData(f => ({ ...f, imagenes: validFiles }));
-       }
+         setFormData(f => ({
+             ...f,
+             imagenes: [...f.imagenes, ...validFiles].slice(0, 10)
+           }));       }
        setMensajeExito("");
      };
     
@@ -139,13 +151,23 @@ const ActualizarPublicacion = () => {
       newErr.descripcionEspacio =
         "Máx. 500 caracteres";
     // Imágenes
+    if (formData.imagenes.length < 3) {
+      newErr.imagenes = "Debes subir al menos 3 imágenes.";
+    } else if (formData.imagenes.length > 10) {
+      newErr.imagenes = "No puedes subir más de 10 imágenes.";
+    }
+  
+    // Validación de formato y tamaño de cada imagen
     formData.imagenes.forEach((img, i) => {
       const ext = img.name.split(".").pop().toLowerCase();
-      if (!["png", "jpg", "jpeg"].includes(ext))
+      if (!["png", "jpg", "jpeg"].includes(ext)) {
         newErr[`imagen-${i}`] = `Formato inválido: ${img.name}`;
-      if (img.size > 5 * 1024 * 1024)
+      }
+      if (img.size > 5 * 1024 * 1024) {
         newErr[`imagen-${i}`] = `Máx. 5MB: ${img.name}`;
+      }
     });
+  
 
     setErrores(newErr);
     return Object.keys(newErr).length === 0;
@@ -224,14 +246,15 @@ const ActualizarPublicacion = () => {
         <div className={styles.imagenPreview}>
           {previewUrls.length > 0 ? (
             <div className={styles.imageGallery}>
-              {previewUrls.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`Vista previa ${i + 1}`}
-                  className={styles.modalImage}
-                />
-              ))}
+{previewUrls.map((src, i) => (
+  <img
+    key={i}
+    src={src}
+    alt={`Vista previa ${i + 1}`}
+    className={styles.modalImage}
+    onClick={() => openModal(src)}
+  />
+))}
             </div>
           ) : (
             <div className={styles.imagenVacia}>
@@ -244,13 +267,22 @@ const ActualizarPublicacion = () => {
           <input
             id="imagenes-upload"
             type="file"
-            multiple
             accept="image/png,image/jpeg"
+            multiple            
             onChange={handleImagenesChange}
             style={{ display: "none" }}
           />
-          {imageError && <p className={styles.error}>{imageError}</p>}
-          
+          {errores.imagenes && (
+           <p className={styles.error}>{errores.imagenes}</p>
+          )}
+          {Object.keys(errores)
+            .filter(key => key.startsWith("imagen-"))
+            .map(key => (
+              <p key={key} className={styles.error}>
+                {errores[key]}
+              </p>
+            ))}
+
         </div>
 
         <form className={styles.formActualizar} onSubmit={handleSubmit}>
@@ -337,6 +369,15 @@ const ActualizarPublicacion = () => {
       {mensajeExito && (
         <p className={styles.mensajeExito}>{mensajeExito}</p>
       )}
+      {isModalOpen && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <img src={selectedPreview} alt="Ampliada" className={styles.modalImageLarge} />
+            <button className={styles.modalCloseButton} onClick={closeModal}>×</button>
+          </div>
+  </div>
+)}
+
     </div>
   );
 };
