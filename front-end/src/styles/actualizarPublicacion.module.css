@@ -1,123 +1,415 @@
 .actualizarPublicacionContainer {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem;
-  font-family: Arial, sans-serif;
-  color: #333;
-}
-
-/* Header con menú y título */
-.headerActualizar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  background-color: #ccc;
-}
-
-.menuBtn {
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: black;
-  position: left;
-}
-
-.headerActualizar h1 {
   margin: 0;
-  font-size: 1.8rem;
-  color: black;
-}
-
-/* Título de la sección */
-.tituloSeccion {
-  text-align: center;
-  margin-top: 0;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-/* Select para escoger la publicación */
-.selectPublicacion {
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Formulario */
-.formActualizar {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.headerActualizar {
+  background-color: #0284c7;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.iconMenu {
+  color: black;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: block;
+  padding: 0 1rem;
+}
+
+.titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.menu {
+  margin-top: 100px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 245px;
+  height: 85.5vh;
+  flex-direction: column;
+  background-color: #1c1c1cc6;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.menuOpen {
+  display: flex;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.menu button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu button:last-child {
+  margin-bottom: 0;
+}
+
+.menu button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.seccionTitulo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #444;
+}
+
+.contenidoActualizar {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.imagenPreview {
+  width: 300px;
+  padding: 1rem;
+  background-color: #fff;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imagenPreview img {
+  width: 100%;
+  max-width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Indicar que es interactiva */
+}
+
+.imageGallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 15px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.imageContainer {
+  padding: 2px;
+  margin-top: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.removeImageButton {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.removeImageButton:hover {
+  background-color: #c82333;
+}
+/* contenedor de búsqueda */
+.searchContainer {
+  position: relative;
+  margin: 1rem 0;
+}
+
+/* input de búsqueda */
+.searchInput {
+  width: 500px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* lista de sugerencias */
+.suggestionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  color: #000000;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-top: none;
+  max-height: 200px;
+  max-width: 500px;
+  overflow-y: auto;
+  z-index: 10;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* cada sugerencia */
+.suggestionItem {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.suggestionItem:hover {
+  background-color: #f0f0f0;
+}
+
+.imagenVacia {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #007bff;
+  font-weight: bold;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.btnSubirImagen {
+  margin-top: 1rem;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.btnSubirImagen:hover {
+  background-color: #0056b3;
+}
+
+.imagenPreview label {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.imagenPreview textarea {
+  margin-top: 0.5rem;
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid #080808;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.textoDescripcion {
+  font-size: 0.85rem;
+  color: #000000;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.formActualizar {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
 .campoForm {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .campoForm label {
   font-weight: bold;
-  margin-bottom: 0.3rem;
+  margin-bottom: 5px;
 }
 
-.campoForm input[type="text"],
-.campoForm textarea,
-.campoForm select {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
+.campoForm input,
+.campoForm select,
 .campoForm textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-/* Botón de guardar cambios */
-.btnGuardarCambios {
-  background-color: #007bff;
-  color: white;
-  padding: 0.7rem 1.2rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 10px;
   font-size: 1rem;
-  align-self: flex-start; /* para que no se extienda todo el ancho */
+  border: 1px solid #000000;
+  border-radius: 6px;
+  width: 100%;
 }
 
-.btnGuardarCambios:hover {
-  background-color: #0056b3;
+.btnActualizar {
+  align-self: center;
+  padding: 12px 24px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Mensajes */
+.btnActualizar:hover {
+  background-color: #218838;
+}
+
 .error {
   color: red;
   font-size: 0.9rem;
-  margin-top: 0.2rem;
 }
 
-.exito {
+.mensajeExito {
   color: green;
   font-weight: bold;
+  font-size: 1rem;
   margin-top: 1rem;
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
-  .actualizarPublicacionContainer {
-    padding: 0.5rem;
+/* Estilos del modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalImage {
+  max-width: 100%;
+  max-height: 80vh; /* Limitar altura para evitar desbordamiento */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.modalCloseButton:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+  .contenidoPublicar {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .formActualizar {
-    gap: 0.5rem;
+  .formPublicar {
+    width: 100%;
+    max-width: 500px;
   }
 
-  .campoForm input[type="text"],
-  .campoForm textarea,
-  .campoForm select {
-    font-size: 0.9rem;
+  .row {
+    flex-direction: column;
+  }
+
+  .headerActualizar {
+    padding: 1.5rem 1rem;
+  }
+
+  .imagenPreview img {
+    max-width: 80px;
+    height: 80px;
+  }
+
+  .imageGallery {
+    max-height: 200px;
+  }
+
+  .modalImage {
+    max-height: 70vh; /* Ajuste para móviles */
   }
 }
