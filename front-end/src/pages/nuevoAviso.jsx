@@ -29,6 +29,7 @@ const PublicarAviso = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const[isMenuClosed, setIsMenuClosed] = useState(false);
   // Limpiar URLs de vista previa al desmontar el componente
   useEffect(() => {
     return () => {
@@ -207,7 +208,7 @@ const PublicarAviso = () => {
   };
 
   const closeMenu = () => {
-    setIsMenuOpen(false);
+    setIsMenuClosed(!isMenuClosed);
   };
 
 
@@ -218,7 +219,7 @@ const PublicarAviso = () => {
        <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
     </header>
 
-    <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
+    <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen  :  ""} ${styles.menu} ${isMenuClosed ? styles.isMenuClosed : ""}`}>
        <button onClick={() => { navigate("/interior"); closeMenu(); }}>Inicio</button>
        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>

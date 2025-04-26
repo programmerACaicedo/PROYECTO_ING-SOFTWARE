@@ -1,3 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: clamp(14px, 1.5vw, 16px); /* Escala con el zoom */
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
 .loginPage {
   background-image: url("../assets/img/log.png");
   background-size: cover;
@@ -8,24 +25,89 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: auto; /* Permite desplazamiento con zoom extremo */
 }
+
+.loginContainer {
+  background-color: rgba(0, 0, 0, 0.768);
+  padding: clamp(1rem, 4vw, 2.5rem);
+  border-radius: clamp(0.5rem, 2vw, 1rem);
+  color: #fff;
+  width: 90%;
+  max-width: clamp(280px, 80vw, 450px);
+  height: auto;
+  box-shadow: 0 0.5rem 2rem rgb(21, 39, 204);
+  backdrop-filter: blur(5px); /* Opcional: efecto vidrio */
+}
+
+.loginContainer h2 {
+  text-align: center;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+}
+
+.inputEmail,
+.inputPassword {
+  width: 100%;
+  padding: clamp(0.6rem, 2vw, 0.8rem) clamp(0.8rem, 2.5vw, 1rem);
+  margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+  border: 1.5px solid #ccc;
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
+  font-size: clamp(1rem, 2.5vw, 1.1rem); /* Mínimo 16px para evitar zoom en móviles */
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputEmail:focus,
+.inputPassword:focus {
+  border-color: #6abf69;
+  box-shadow: 0 0 0 3px rgba(106, 191, 105, 0.2);
+  outline: none;
+}
+
+.passwordContainer {
+  position: relative;
+}
+
+.passwordContainer input {
+  width: 100%;
+  padding-right: clamp(2rem, 5vw, 2.5rem);
+}
+
+.eyeIcon {
+  position: absolute;
+  top: 50%;
+  right: clamp(0.5rem, 2vw, 0.625rem);
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+.eyeIcon:hover {
+  color: #000;
+}
+
 .submitButton {
   width: 100%;
-  padding: 12px;
-  background-color: #43a047; 
+  padding: clamp(0.6rem, 2vw, 0.75rem);
+  background-color: #43a047;
   color: white;
-  font-size: 16px;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 12px;
-  margin-bottom: 5px;
+  margin-top: clamp(0.5rem, 2vw, 0.75rem);
+  margin-bottom: clamp(0.25rem, 1vw, 0.3125rem);
 }
 
 .submitButton:hover {
-  background-color: #43a047;
+  background-color: #4caf50;
   transform: translateY(-2px);
 }
 
@@ -33,71 +115,71 @@
   transform: translateY(0);
   background-color: #388e3c;
 }
-.loginContainer {
-  background-color: rgba(0, 0, 0, 0.768);
-  padding: 3rem;
-  border-radius: 16px;
-  color: #fff;
-  width: 90%;
-  height: auto;
-  max-width: 490px;
-  box-shadow: 0 8px 32px rgb(21, 39, 204);
-}
-
-.loginContainer h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-            
-.inputEmail,
-.inputPassword {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  border: 1.5px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #f9f9f9;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  align-items: center;
-}
-
-.inputEmail:focus,
-.inputPassword:focus {
-  border-color: #6abf69; /* tono verde suave */
-  box-shadow: 0 0 0 3px rgba(106, 191, 105, 0.2);
-  outline: none;
-}
 
 .options {
   justify-content: space-between;
   color: rgb(255, 255, 255);
   display: flex;
+  flex-direction: row; /* Siempre en fila */
+  flex-wrap: wrap; /* Permite ajustar si no caben */
   align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  margin-top: 10px;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  margin-top: clamp(0.5rem, 2vw, 0.625rem);
 }
 
 .options label {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
   cursor: pointer;
   color: #fffbfbd6;
-  margin-right: 12px;
+  margin-right: clamp(0.5rem, 2vw, 0.75rem);
+  white-space: nowrap; /* Evita que el texto se divida */
 }
 
 .options input {
-  width: auto;
+  appearance: none; /* Quita el estilo predeterminado del checkbox */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: clamp(1rem, 3vw, 1.2rem);
+  height: clamp(1rem, 3vw, 1.2rem);
+  border: 2px solid #fffbfbd6; /* Borde personalizado */
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.options input:checked {
+  background-color: #43a047; /* Color de fondo cuando está marcado */
+  border-color: #43a047;
+}
+
+.options input:checked::after {
+  content: '\2713'; /* Símbolo de check (✔) */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: clamp(0.6rem, 2vw, 0.8rem);
+  font-weight: bold;
+}
+
+.options input:focus {
+  outline: none;
+  border-color: #6abf69;
+  box-shadow: 0 0 0 3px rgba(106, 191, 105, 0.2);
 }
 
 .options a {
   color: #ffffffc9;
   text-decoration: none;
   font-weight: bold;
+  white-space: nowrap; /* Evita que el enlace se divida */
 }
 
 .options a:hover {
@@ -106,36 +188,35 @@
 
 .googleBtn {
   background: rgb(255, 255, 255);
-  margin-bottom: 30px;
+  margin-bottom: clamp(1rem, 4vw, 1.875rem);
   color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 10px;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
+  padding: clamp(0.6rem, 2vw, 0.75rem);
+  border-radius: clamp(0.4rem, 1.5vw, 0.625rem);
   cursor: pointer;
   font-weight: bold;
-  font-size: 15px;
+  font-size: clamp(0.8rem, 2.5vw, 0.9375rem);
   border: none;
   width: 100%;
   transition: background-color 0.3s ease;
 }
 
 .googleBtn:hover {
-  background-color: #067300;
+  background-color: #f1f1f1;
 }
 
 .googleBtn img {
-  width: 18px;
-  height: 18px;
+  width: clamp(1rem, 3vw, 1.125rem);
+  height: clamp(1rem, 3vw, 1.125rem);
 }
 
 .registerLink {
-  margin-top: 80px;
   text-align: center;
-  margin-top: 12px;
-  font-size: 0.9em;
+  margin-top: clamp(0.5rem, 2vw, 0.75rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
 }
 
 .registerLink a {
@@ -148,46 +229,22 @@
   text-decoration: underline;
 }
 
-.passwordContainer {
-  position: relative;
-}
-
-.passwordContainer input {
-  width: 100%;
-  padding-right: 40px;
-  box-sizing: border-box;
-}
-
-.eyeIcon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.eyeIcon:hover {
-  color: #000;
-}
-
 .error {
   background-color: #ffe0e0;
   color: #a60000;
   border: 1px solid #ff4d4d;
-  padding: 12px;
-  border-radius: 8px;
+  padding: clamp(0.6rem, 2vw, 0.75rem);
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
   font-weight: bold;
   text-align: center;
   transition: all 0.3s ease;
+  min-height: clamp(2rem, 6vw, 3rem);
+  margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
 }
 
 .oculto {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-0.625rem);
   pointer-events: none;
   height: 0;
   margin: 0;
@@ -195,15 +252,83 @@
   border: none;
 }
 
+/* Media Queries para pantallas y zoom */
+@media (max-width: 768px) {
+  .loginContainer {
+    padding: clamp(0.8rem, 3vw, 1.5rem);
+    max-width: 95%;
+  }
+
+  .loginContainer h2 {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+}
+
 @media (max-width: 480px) {
   .loginContainer {
-    padding: 1.5rem;
-    margin: 1rem;
+    padding: clamp(0.6rem, 2.5vw, 1rem);
+    margin: clamp(0.5rem, 2vw, 1rem);
   }
 
   .options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    gap: clamp(0.2rem, 0.8vw, 0.4rem);
+    font-size: clamp(0.7rem, 1.8vw, 0.8125rem);
+  }
+
+  .options label {
+    margin-right: clamp(0.3rem, 1.5vw, 0.5rem);
+  }
+
+  .options input {
+    width: clamp(0.9rem, 2.5vw, 1rem);
+    height: clamp(0.9rem, 2.5vw, 1rem);
+  }
+
+  .submitButton,
+  .googleBtn {
+    padding: clamp(0.5rem, 1.5vw, 0.625rem);
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  }
+}
+
+@media (max-width: 320px) {
+  .loginContainer {
+    padding: clamp(0.5rem, 2vw, 0.8rem);
+    width: 98%;
+  }
+
+  .inputEmail,
+  .inputPassword,
+  .submitButton,
+  .googleBtn {
+    font-size: clamp(1rem, 2.5vw, 1.05rem); /* Mínimo 16px para evitar zoom */
+  }
+
+  .eyeIcon {
+    font-size: clamp(0.8rem, 2.5vw, 0.875rem);
+  }
+
+  .options {
+    gap: clamp(0.15rem, 0.6vw, 0.3rem);
+    font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+  }
+
+  .options label {
+    margin-right: clamp(0.2rem, 1vw, 0.4rem);
+  }
+
+  .options input {
+    width: clamp(0.8rem, 2vw, 0.9rem);
+    height: clamp(0.8rem, 2vw, 0.9rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  html {
+    font-size: clamp(16px, 1.8vw, 18px);
+  }
+
+  .loginContainer {
+    max-width: clamp(450px, 40vw, 500px);
   }
 }

@@ -20,7 +20,7 @@ img {
   padding: 2rem;
   border-radius: 20px;
   width: 90%;
-  max-width: 800px;
+  max-width: 900px;
   color: #ffffff;
 }
 
@@ -29,23 +29,42 @@ nav {
 }
 
 nav a {
-  margin: 0 10px;
   color: #fff;
   text-decoration: none;
   font-weight: bold;
   background-color: #007bff;
   padding: 10px 20px;
   border-radius: 10px;
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .mainHeader nav ul {
   display: flex;
-  justify-content: center; /* Centra los botones horizontalmente */
-  gap: 20px; /* Espaciado entre los botones */
+  justify-content: center; /* Centers the buttons horizontally */
+  gap: 15px; /* Reduced spacing for mobile */
   list-style: none;
   padding: 0;
+  flex-wrap: wrap; /* Allows wrapping if needed, but should fit side by side */
 }
 
 .title {
   color: #ffffff;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  nav a {
+    padding: 8px 15px; /* Slightly smaller padding for mobile */
+    font-size: 14px; /* Smaller font size for better fit */
+  }
+
+  .mainHeader nav ul {
+    gap: 10px; /* Even smaller gap for mobile */
+    flex-wrap: nowrap; /* Ensures buttons stay side by side */
+  }
+
+  .hero {
+    padding: 1.5rem; /* Reduced padding for mobile */
+    width: 95%; /* Slightly wider for smaller screens */
+  }
 }
