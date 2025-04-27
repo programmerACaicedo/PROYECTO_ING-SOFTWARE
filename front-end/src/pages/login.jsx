@@ -92,7 +92,14 @@ const Login = () => {
     }
     localStorage.setItem("reciénIniciado", "true");
     navigate("/interior");
+
+    if (email === "admin@gmail.com") {
+      navigate("/admin"); // Envía al panel de administrador
+    } else {
+      navigate("/interior"); // Envía al panel de usuario normal
+    }
   };
+  
 
   return (
     <div className={styles.loginPage}>
