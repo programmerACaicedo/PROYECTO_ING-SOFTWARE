@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/interior.module.css"; // Importar con variable 'styles'
+import styles from "../styles/interior.module.css";
 
 const Interior = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
-  
+
   const [mostrarSplash, setMostrarSplash] = useState(() => {
     const fueRecienIniciado = localStorage.getItem("reciénIniciado") === "true";
     if (fueRecienIniciado) {
@@ -52,37 +52,38 @@ const Interior = () => {
 
       {!mostrarSplash && (
         <div className={styles.interiorPage}>
-          <header>
-            <div className={styles.interior}>
-              <h1>Servicio de Arrendamientos🏘️</h1>
-            </div>
-            <div className={styles.menuContainer}>
-              <button
-                className={styles.alquileresBtn}
-                onClick={() => setMostrarMenu(!mostrarMenu)}
-              >
-                Alquileres
-              </button>
-              {mostrarMenu && (
-                <div className={styles.dropdownContent}>
-                  <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
-                  <button onClick={() => filterPublications("bodega")}>Bodegas</button>
-                  <button onClick={() => filterPublications("garajes")}>Garajes</button>
-                  <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
-                </div>
+          <header className={styles.header1}>
+            <div className={styles.barraRectangular}>
+              <div className={styles.interior}>
+                <h1>Servicio de Arrendamientos🏘️</h1>
+              </div>
+              <div className={styles.menuContainer}>
+                <button
+                  className={styles.alquileresBtn}
+                  onClick={() => setMostrarMenu(!mostrarMenu)}
+                >
+                  Alquileres
+                </button>
+                {mostrarMenu && (
+                  <div className={styles.dropdownContent}>
+                    <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
+                    <button onClick={() => filterPublications("bodega")}>Bodegas</button>
+                    <button onClick={() => filterPublications("garajes")}>Garajes</button>
+                    <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
+                  </div>
+                )}
+              </div>
+              {isPropietario && (
+                <>
+                  <button className={styles.nuevoAvisoBtn} onClick={handleNuevoAviso}>
+                    Nuevo Aviso
+                  </button>
+                  <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
+                    Mi Perfil
+                  </button>
+                </>
               )}
             </div>
-
-            {isPropietario && (
-              <>
-                <button className={styles.nuevoAvisoBtn} onClick={handleNuevoAviso}>
-                  Nuevo Aviso
-                </button>
-                <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
-                  Mi Perfil
-                </button>
-              </>
-            )}
           </header>
 
           <section className={styles.publicaciones}>
