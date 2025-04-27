@@ -8,6 +8,7 @@ import Login from "./pages/login";
 import Registro from "./pages/registro";
 import OlvidoContraseña from "./pages/olvidoContraseña";
 import Interior from "./pages/mainInterior";
+import InteriorAdmin from "./pages/InteriorAdmin";
 import NuevoAviso from "./pages/nuevoAviso";
 import Perfil from "./pages/perfil";
 import ActualizarPublicacion from "./pages/actualizarPublicacion";
@@ -27,6 +28,7 @@ function App() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/olvido-contraseña" element={<OlvidoContraseña />} />
           <Route path="/interior" element={<Interior />} />
+          <Route path="/admin" element={<InteriorAdmin />} />
           <Route path="/nuevo-aviso" element={<NuevoAviso />} />
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/actualizar-publicacion/:id" element={<ActualizarPublicacion />} />

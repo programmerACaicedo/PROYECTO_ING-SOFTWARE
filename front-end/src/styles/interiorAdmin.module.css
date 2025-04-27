@@ -1,0 +1,253 @@
+
+.interiorPage { 
+  align-self: flex-start;  /* anula el align-items:center del padre */
+  height: 100vh;           /* ocupa toda la ventana */
+  margin: 0;
+  }
+
+.interiorPage header {
+  padding: 0;
+  position: relative;
+  background: url(../assets/img/Panoramic_Cali_Col.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 64vh;
+  width: 100vw;
+  box-sizing: border-box;
+}
+.interiorPage header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, rgba(23, 104, 196, 0.8));
+  pointer-events: none;
+}
+
+.interior {
+  color: #000000;
+  text-align: center;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.menuContainer {
+  display: flex;
+  gap: 2rem;
+
+  position: relative;
+}
+
+.alquileresBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4rem;
+  flex: 1;
+  font-weight: bold;
+}
+
+.alquileresBtn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+.dropdownContent {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.dropdownContent button {
+  background: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dropdownContent button:hover {
+  background: rgba(0, 68, 255, 0.304);
+  margin: auto;
+}
+.dropdownContent.show {
+  opacity: 0;
+  transform: scaleY(1);
+  pointer-events: auto;
+}
+
+.nuevoAvisoBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1;
+  font-weight: bold;
+  border: #7a2222;
+  border-width: 10px;
+}
+
+.nuevoAvisoBtn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+.perfilBtn {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  padding: 12px 24px;
+  font-size: 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1;
+  font-weight: bold;
+}
+
+.perfilBtn:hover {
+  background-color: rgba(255, 255, 255, 0.304);
+}
+
+.publicaciones {
+  text-align: center;
+  padding: 1rem;
+  color: #000000;
+}
+
+.publicacionesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.publicacion {
+  background-color: rgba(255,255,255,0.85);
+  color: #333;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.publicacion:hover {
+  background-color: rgba(255,255,255,1);
+}
+
+.publicacion h3 {
+  margin: 0 0 10px;
+}
+/* Contenedor de las opciones del Admin */
+.adminOptions {
+  display: flex;
+  width: 100%;
+  gap: 1rem;          /* espacio entre tarjetas */
+  margin: 2rem 0;
+  padding: 0 1rem;
+  justify-content: stretch;
+}
+
+/* Cada “card” se comporta como un botón */
+.optionCard {
+  flex: 1;             /* ocupa igual espacio que la otra */
+  max-width: none;     /* quita el límite para poder estirarse */
+  background-color: #0284c7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.optionCard:hover {
+  background-color: #0369a1;
+  transform: translateY(-4px);
+}
+
+.optionCard h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.optionCard p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* En móviles, apilar verticalmente */
+@media (max-width: 600px) {
+  .adminOptions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .optionCard {
+    max-width: 100%;
+  }
+}
+
+
+@media (min-width: 768px) {
+  .interiorPage {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .interiorPage header h1 {
+    font-size: 2rem;
+  }
+  .alquileresBtn,
+  .nuevoAvisoBtn {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+.splashScreen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #ffffff, #3c5ccd90);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.splashScreen h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in forwards;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  letter-spacing: 1px;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
