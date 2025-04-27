@@ -49,14 +49,14 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
-    margin-bottom: 20%;
-    height: 100px;
+    margin-bottom: 10%;
+    height: ;
   }
 
   .interior {
     color: #000000;
     text-align: center;
-    font-size: 1rem; /* Reducido para 100% zoom */
+    font-size: 1.5rem; /* Reducido para 100% zoom */
     margin: 0.3rem 0;
     text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
     flex: 1;
