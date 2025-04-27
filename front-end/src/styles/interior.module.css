@@ -1,3 +1,18 @@
+/* Asegurar compatibilidad general */
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 /* Estilos para el header y su contenido */
 .interiorPage header {
   position: relative;
@@ -7,14 +22,15 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 57.7vh; /* Ajustado para proporciones correctas al 100% zoom */
+  height: 50vh; /* Ajustado para mejor proporción */
   width: 100vw;
   padding: 0;
   box-sizing: border-box;
+  margin: 0;
 }
 
 .header1 {
-  position: relative; /* Cambiado de fixed a relative para que el contenido fluya debajo */
+  position: relative;
   background-color: #0284c7;
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -23,7 +39,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  height: 300px; /* Ajustado para proporciones correctas */
+  height: 20vmin; /* Altura proporcional */
 }
 
 .interiorPage header::after {
@@ -32,7 +48,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 30px;
+  height: 2vmin;
   background: linear-gradient(to bottom, transparent, rgba(23, 104, 196, 0.8));
   pointer-events: none;
 }
@@ -45,18 +61,21 @@
     justify-content: space-between;
     align-items: center;
     background-color: #3c5ccd90;
-    padding: 0.5rem; /* Reducido para mejor proporción */
+    padding: 0.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    margin-bottom: 10%;
-    height: ;
+    width: 100vw; /* Ancho relativo */
+    max-width: 100vw; /* Límite máximo */
+    margin: 0 auto 10vh auto;
+    height: 100px;
+    margin-bottom: 18%;
+
   }
 
   .interior {
     color: #000000;
     text-align: center;
-    font-size: 1.5rem; /* Reducido para 100% zoom */
+    font-size: 1rem;
     margin: 0.3rem 0;
     text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
     flex: 1;
@@ -64,60 +83,30 @@
 
   .menuContainer {
     display: flex;
-    gap: 1rem; /* Reducido para mejor proporción */
+    gap: 1rem;
     position: relative;
-    flex: 1;
+
     justify-content: center;
   }
 
-  .alquileresBtn {
+  .alquileresBtn,
+  .nuevoAvisoBtn,
+  .perfilBtn {
     background-color: transparent;
     color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    text-align: center;
   }
 
-  .alquileresBtn:hover {
+  .alquileresBtn:hover,
+  .nuevoAvisoBtn:hover,
+  .perfilBtn:hover {
     background-color: rgba(255, 255, 255, 0.304);
-  }
-
-  .dropdownContent {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: transparent;
-    padding: 8px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
-    z-index: 1;
-  }
-
-  .dropdownContent button {
-    background: #ffffff;
-    color: rgb(0, 0, 0);
-    padding: 6px 12px; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 6px;
-    font-size: 1rem; /* Reducido para 100% zoom */
-  }
-
-  .dropdownContent button:hover {
-    background: rgba(0, 68, 255, 0.304);
-  }
-
-  .dropdownContent.show {
-    opacity: 1;
-    transform: scaleY(1);
-    pointer-events: auto;
   }
 
   .nuevoAvisoBtn {
@@ -150,17 +139,86 @@
     text-align: center;
   }
 
-  .perfilBtn:hover {
+  .alquileresBtn {
+    margin-left: 8px; 
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 8px 16px; /* Reducido para 100% zoom */
+    font-size: 1.5rem; /* Reducido para 100% zoom */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .alquileresBtn:hover {
     background-color: rgba(255, 255, 255, 0.304);
+  }
+
+  .dropdownContent {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: transparent;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    z-index: 1;
+  }
+
+  .dropdownContent button {
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .dropdownContent button:hover {
+    background: rgba(0, 68, 255, 0.304);
+  }
+
+  .dropdownContent.show {
+    opacity: 1;
+    transform: scaleY(1);
+    pointer-events: auto;
+  }
+
+  .publicaciones {
+    text-align: center;
+    padding: 1rem;
+    color: #000000;
+  }
+  
+  .publicacionesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .publicacion {
+    background-color: rgba(255,255,255,0.85);
+    color: #333;
+    padding:2.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
   }
 }
 
 /* Estilos para pantallas pequeñas (móviles) */
 @media (max-width: 767px) {
   .interiorPage header {
-    height: 150px; /* Reducido para mobile */
+    height: 60vh;
     flex-direction: column;
-    padding: 0;
+    padding: 1rem;
     background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
     background-size: cover;
     align-items: center;
@@ -175,61 +233,70 @@
   }
 
   .interiorPage header::after {
-    height: 20px;
+    height: 3vmin;
+  }
+
+  .header1 {
+    height: 15vmin;
   }
 
   .barraRectangular {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     background-color: #3c5ccd90;
-    padding: 0.3rem; /* Reducido para mobile */
+    padding: 0.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 90%;
+    width: 90vw;
+    margin: 0 auto;
   }
 
   .interior {
-    font-size: 1rem; /* Reducido para mobile */
-    margin: 0.3rem 0;
-    text-align: center;
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
   }
 
   .menuContainer {
-    width: 100%;
+    display: flex;
     flex-direction: column;
-    gap: 0.3rem; /* Reducido para mobile */
-    margin-top: 0.3rem;
-    align-items: center;
+    align-items: center; /* Esto ya lo tienes, perfecto */
+    justify-content: center; /* AGREGA ESTO para centrar en vertical */
+    width: 300px; /* O ajústalo según necesites */
   }
+  
+  
+  .menuContainer button {
+    border-radius: 10px;
+    justify-items: center;
+    margin: 2px;
+    width: 360px;
 
+  }
   .alquileresBtn,
   .nuevoAvisoBtn,
   .perfilBtn {
-    border-radius: 8px;
     width: 100%;
-    padding: 4px; /* Reducido para mobile */
-    font-size: 0.9rem; /* Reducido para mobile */
-    font-weight: bold;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    margin: 0.3rem 0;
   }
-
+  
   .perfilBtn {
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
   }
 
   .dropdownContent {
     position: static;
-    margin-top: 0.2rem;
     width: 100%;
+    background-color: transparent;
+    padding: 0.5rem;
   }
 
   .dropdownContent button {
-    margin-top: 0;
     width: 100%;
-    padding: 4px; /* Reducido para mobile */
-    font-size: 0.8rem; /* Reducido para mobile */
-    margin-bottom: 4px;
+    padding: 0.5rem;
+    font-size: 1rem;
   }
 
   .publicaciones {
@@ -249,7 +316,7 @@
   .publicacion {
     background-color: rgba(255, 255, 255, 0.85);
     color: #333;
-    padding: 0.8rem;
+    padding: 0.75rem;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
@@ -266,7 +333,7 @@
   }
 
   .splashScreen h1 {
-    font-size: 1.5rem; /* Reducido para mobile */
+    font-size: 1.8rem;
     font-weight: 700;
     color: #fff;
     text-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
@@ -328,14 +395,9 @@
   letter-spacing: 1px;
 }
 
-/* Asegurar compatibilidad general */
-html {
-  font-size: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  min-width: 320px;
-  overflow-x: hidden;
-  margin: 0; /* Asegurar que no haya márgenes en el body */
+/* Animación */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
