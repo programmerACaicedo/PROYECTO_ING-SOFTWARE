@@ -11,6 +11,7 @@ import com.apiweb.backend.Exception.InvalidUserRoleException;
 import com.apiweb.backend.Exception.ResourceNotFoundException;
 import com.apiweb.backend.Model.AvisosModel;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ENUM.EstadoAviso;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -44,6 +45,10 @@ public class AvisosServiceImp implements IAvisosService{
         if (avisoExistente.isPresent()) {
             throw new InvalidAvisoConfigurationException("Ya existe un aviso en esa ubicacion.");
         }
+        if (aviso.getEstado() != null) {
+            throw new InvalidAvisoConfigurationException("El aviso no puede tener un estado al momento de crearse, ya que al crearse el sistema le asignara el estado disponible por defecto.");
+        }
+        aviso.setEstado(EstadoAviso.Disponible);
         return avisosRepository.save(aviso);
     }
     @Override
