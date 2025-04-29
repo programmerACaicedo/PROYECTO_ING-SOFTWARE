@@ -1,5 +1,7 @@
 package com.apiweb.backend.Model;
 
+import org.bson.types.ObjectId;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UbicacionInmueble {
-    private String edificio;
-    private String piso;
+public class PropietarioAviso {
+    private ObjectId usuario_id;
+    private String nombre;
 }

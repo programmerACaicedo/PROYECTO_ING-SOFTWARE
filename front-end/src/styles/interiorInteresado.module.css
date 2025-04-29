@@ -3,7 +3,7 @@ html {
   font-size: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
-}
+}zzz
 
 body {
   min-width: 320px;
@@ -53,7 +53,7 @@ body {
   pointer-events: none;
 }
 
-/* Barra rectangular para título, alquileres, nuevo aviso y perfil en computadoras */
+/* Barra rectangular para título, alquileres y perfil en computadoras */
 @media (min-width: 768px) {
   .barraRectangular {
     display: flex;
@@ -85,12 +85,10 @@ body {
     display: flex;
     gap: 1rem;
     position: relative;
-
     justify-content: center;
   }
 
   .alquileresBtn,
-  .nuevoAvisoBtn,
   .perfilBtn {
     background-color: transparent;
     color: rgb(0, 0, 0);
@@ -104,27 +102,12 @@ body {
   }
 
   .alquileresBtn:hover,
-  .nuevoAvisoBtn:hover,
   .perfilBtn:hover {
     background-color: rgba(255, 255, 255, 0.304);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .nuevoAvisoBtn {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    flex: 1;
-    text-align: center;
-  }
-
-  .nuevoAvisoBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
-  }
 
   .perfilBtn {
     background-color: transparent;
@@ -137,7 +120,9 @@ body {
     font-weight: bold;
     flex: 1;
     text-align: center;
+ 
   }
+
 
   .alquileresBtn {
     margin-left: 8px; 
@@ -149,10 +134,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-  }
-
-  .alquileresBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
+    width: 370px;
   }
 
   .dropdownContent {
@@ -258,6 +240,7 @@ body {
     to { opacity: 1; }
   }
   
+  
 }
 
 /* Estilos para pantallas pequeñas (móviles) */
@@ -313,7 +296,7 @@ body {
 
   }
   .alquileresBtn,
-  .nuevoAvisoBtn,
+
   .perfilBtn {
     width: 100%;
     padding: 0.5rem;
