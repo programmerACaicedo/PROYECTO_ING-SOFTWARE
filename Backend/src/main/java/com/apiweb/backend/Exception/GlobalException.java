@@ -2,12 +2,13 @@ package com.apiweb.backend.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 // Clase para manejar excepciones globales
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalException {
 
     // Manejo genérico de excepciones
@@ -74,5 +75,27 @@ public class GlobalException {
     @ExceptionHandler(PublicacionDeletionException.class)
     public ResponseEntity<String> handlePublicacionDeletionException(PublicacionDeletionException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    //Excepciones de vila
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleInvalidFormat(HttpMessageNotReadableException ex) {
+        String detalle = ex.getMostSpecificCause().getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato inválido en la solicitud: " + detalle);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND); // 404 Not Found
+    }
+
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ResponseEntity<String> handleInvalidUserRoleException(InvalidUserRoleException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
+    }
+
+    @ExceptionHandler(InvalidAvisoConfigurationException.class)
+    public ResponseEntity<String> handleInvalidAvisoConfigurationException(InvalidAvisoConfigurationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
     }
 }
