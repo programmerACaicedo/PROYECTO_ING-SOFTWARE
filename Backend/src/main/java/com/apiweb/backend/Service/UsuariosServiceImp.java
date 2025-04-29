@@ -23,19 +23,48 @@ public class UsuariosServiceImp implements IUsuariosService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Autowired
+    private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public String registroUsuario(UsuariosModel usuario) {
         try {
-        if (usuariosRepository.findByCorreo(usuario.getCorreo()) != null) {
-            throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado.");
-        }
-        String contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
-        usuario.setContrasena(contrasenaEncriptada);
-        usuariosRepository.save(usuario);
-        return "El usuario " + usuario.getNombre() + " fue registrado con éxito";
+            // 1. Verificar si el correo ya está registrado
+            UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
+            if (usuarioExistente != null) {
+                throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado");
+            }
+
+            // 2. Encriptar la contraseña
+            String contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
+            usuario.setContrasena(contrasenaEncriptada);
+            
+            // 3. Establecer estado de verificación
+            usuario.setVerificado(false);
+
+            // 4. Guardar usuario en la base de datos
+            UsuariosModel usuarioGuardado = usuariosRepository.save(usuario);
+
+            // 5. Generar token JWT con ID del usuario
+            String tokenVerificacion = jwtTokenService.generarToken(usuarioGuardado.getId());
+
+            // 6. Enviar correo de verificación
+            emailService.enviarEmailVerificacion(
+                usuario.getCorreo(),
+                usuario.getNombre(),
+                tokenVerificacion
+            );
+
+            return "Usuario registrado con éxito. Por favor verifica tu cuenta mediante el enlace enviado a " + usuario.getCorreo();
+
+        } catch (UserRegistrationException e) {
+            throw e; // Relanzar excepción específica
         } catch (Exception e) {
-        throw new UserRegistrationException("Error al registrar el usuario: " + e.getMessage());
+            // 7. Manejo de errores genéricos
+            throw new UserRegistrationException("Error al registrar el usuario: " + e.getMessage());
         }
     }
 

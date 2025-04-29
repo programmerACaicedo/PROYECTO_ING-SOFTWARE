@@ -24,6 +24,7 @@ public class UsuariosModel {
     private int telefono;
     private TipoUsuario tipo;
     private String palabra_seguridad;
+    private boolean verificado;
     private ArrayList<Calificaciones> calificaciones = new ArrayList<Calificaciones>();
     private ArrayList<Notificaciones> notificaciones = new ArrayList<Notificaciones>();
     private String foto;
