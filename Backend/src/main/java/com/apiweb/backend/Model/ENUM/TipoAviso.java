@@ -1,5 +1,5 @@
 package com.apiweb.backend.Model.ENUM;
 
-public enum tipoInmueble {
+public enum TipoAviso {
     Apartamento, Casa, Bodega, Parqueadero, Habitacion
 }
