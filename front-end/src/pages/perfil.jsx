@@ -10,6 +10,7 @@ const Perfil = () => {
     telefono: "",
     contraseña: "",
     foto: null,
+    email: "",
   });
   const [initialData, setInitialData] = useState({ ...formData });
   const [mensajes, setMensajes] = useState([]);
@@ -18,8 +19,54 @@ const Perfil = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
+        const response = await fetch("/api/user", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          const userData = {
+            nombre: user.nombre || "",
+            email: user.email || "",
+            telefono: user.telefono || "",
+            foto: user.foto ? { url: user.foto } : null,
+          };
+          setFormData(userData);
+          setInitialData(userData);
+        } else {
+          setMensajes((prevMensajes) => [
+            ...prevMensajes,
+            { texto: "Error al cargar los datos del usuario", tipo: "error" },
+          ]);
+          navigate("/login");
+        }
+      } catch (error) {
+        setMensajes((prevMensajes) => [
+          ...prevMensajes,
+          { texto: "Error de conexión con el servidor", tipo: "error" },
+        ]);
+        navigate("/login");
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  useEffect(() => {
     return () => {
-      if (formData.foto) {
+      if (formData.foto && formData.foto instanceof File) {
         URL.revokeObjectURL(URL.createObjectURL(formData.foto));
       }
     };
@@ -110,6 +157,12 @@ const Perfil = () => {
       }
     }
 
+    if (!formData.email) {
+      newErrores.push({ texto: "El correo es obligatorio", tipo: "error" });
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrores.push({ texto: "El correo electrónico no es válido", tipo: "error" });
+    }
+
     if (newErrores.length > 0) {
       setMensajes((prevMensajes) => [...prevMensajes, ...newErrores]);
       return false;
@@ -124,16 +177,21 @@ const Perfil = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("nombre", formData.nombre);
     formDataToSend.append("telefono", formData.telefono);
+    formDataToSend.append("email", formData.email);
     if (formData.contraseña) {
       formDataToSend.append("contraseña", formData.contraseña);
     }
-    if (formData.foto) {
+    if (formData.foto && formData.foto instanceof File) {
       formDataToSend.append("foto", formData.foto);
     }
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("/api/perfil", {
         method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formDataToSend,
       });
       const data = await response.json();
@@ -164,8 +222,13 @@ const Perfil = () => {
 
   const confirmarEliminacion = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("/api/eliminar-cuenta", {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
 
@@ -175,6 +238,7 @@ const Perfil = () => {
           { texto: "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.", tipo: "success" },
         ]);
         setConfirmarEliminar(false);
+        localStorage.removeItem("token");
         setTimeout(() => navigate("/"), 2000);
       } else {
         setMensajes((prevMensajes) => [
@@ -221,7 +285,9 @@ const Perfil = () => {
             <img
               src={
                 formData.foto
-                  ? URL.createObjectURL(formData.foto)
+                  ? formData.foto instanceof File
+                    ? URL.createObjectURL(formData.foto)
+                    : formData.foto.url
                   : "/assets/pictograma-persona.png"
               }
               alt="Foto de Perfil"
@@ -259,6 +325,17 @@ const Perfil = () => {
           <div className={styles.datosPersonales}>
             <h2>Actualiza tus datos</h2>
             <form onSubmit={handleSubmit}>
+              <h3>Correo Electrónico</h3>
+              <label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Ingresa tu correo electrónico"
+                />
+              </label>
+
               <h3>Nombre</h3>
               <label>
                 <input
