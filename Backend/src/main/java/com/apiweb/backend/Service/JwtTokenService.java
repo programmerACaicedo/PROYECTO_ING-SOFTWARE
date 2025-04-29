@@ -1,46 +1,49 @@
 package com.apiweb.backend.Service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
 
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
 public class JwtTokenService {
 
-    @Value("${jwt.secret}") // Clave secreta desde application.properties
-    private String secretKey;
+    // Define una clave secreta fija (de al menos 64 caracteres)
+    private static final String CLAVE_SECRETA_FIJA = "estaEsUnaClaveSecretaMuySeguraYDeAlMenos64CaracteresParaHS512";
+    private static final Key CLAVE_SECRETA = Keys.hmacShaKeyFor(CLAVE_SECRETA_FIJA.getBytes());
 
-    @Value("${jwt.expiration}") // Tiempo de expiración en milisegundos (24h)
-    private long expirationMs;
-
-    // Genera un token JWT con el ID del usuario y tiempo de expiración
-    @SuppressWarnings("deprecation")
-    public String generarToken(ObjectId userId) {
-        return Jwts.builder()
-                .setSubject(userId.toString()) // ID del usuario como sujeto del token
-                .setIssuedAt(new Date()) // Fecha de creación
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // Expira en 24h
-                .signWith(SignatureAlgorithm.HS512, secretKey) // Firma con algoritmo HS512
-                .compact();
-    }
-
-    // Valida el token y retorna el ID del usuario si es válido
-    public String validarToken(String token) {
+    public String generarTokenVerificacion(String correo, long segundosExpiracion) {
         try {
-            @SuppressWarnings("deprecation")
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody();
-            
-            return claims.getSubject(); // Retorna el ID del usuario
+            Date ahora = new Date();
+            Date expiracion = new Date(ahora.getTime() + (segundosExpiracion * 1000));
+    
+            return Jwts.builder()
+                    .setSubject(correo) // El correo será el "subject" del token
+                    .setIssuedAt(ahora)
+                    .setExpiration(expiracion)
+                    .signWith(CLAVE_SECRETA) // Usa la clave secreta configurada
+                    .compact();
         } catch (Exception e) {
-            return null; // Token inválido o expirado
+            System.out.println("Error al generar el token: " + e.getMessage());
+            throw new RuntimeException("Error al generar el token.");
+        }
+    }
+    
+    public String validarTokenVerificacion(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(CLAVE_SECRETA) // Usa la misma clave secreta que al generar el token
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject(); // Devuelve el "subject" (correo) del token
+        } catch (Exception e) {
+            System.out.println("Error al validar el token: " + e.getMessage());
+            throw new RuntimeException("Token inválido o expirado.");
         }
     }
 }

@@ -3,7 +3,7 @@ package com.apiweb.backend.Service;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.apiweb.backend.Exception.LoginFailedException;
@@ -21,7 +21,8 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Autowired
     IUsuariosRepository usuariosRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtTokenService jwtTokenService;
@@ -32,39 +33,50 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Override
     public String registroUsuario(UsuariosModel usuario) {
         try {
-            // 1. Verificar si el correo ya está registrado
-            UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
-            if (usuarioExistente != null) {
-                throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado");
+            if (usuariosRepository.findByCorreo(usuario.getCorreo()) != null) {
+                throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado.");
             }
 
-            // 2. Encriptar la contraseña
             String contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
             usuario.setContrasena(contrasenaEncriptada);
-            
-            // 3. Establecer estado de verificación
-            usuario.setVerificado(false);
+            usuariosRepository.save(usuario);
 
-            // 4. Guardar usuario en la base de datos
-            UsuariosModel usuarioGuardado = usuariosRepository.save(usuario);
+            // Generar token de verificación válido por 24 horas
+            String token = jwtTokenService.generarTokenVerificacion(usuario.getCorreo(), 24 * 60 * 60);
+            String enlaceVerificacion = "http://localhost:8080/appi/usuario/verificar?token=" + token;
 
-            // 5. Generar token JWT con ID del usuario
-            String tokenVerificacion = jwtTokenService.generarToken(usuarioGuardado.getId());
-
-            // 6. Enviar correo de verificación
-            emailService.enviarEmailVerificacion(
+            // Enviar correo de verificación
+            emailService.sendEmail(
                 usuario.getCorreo(),
-                usuario.getNombre(),
-                tokenVerificacion
+                "Verificación de cuenta",
+                "Por favor, verifica tu cuenta haciendo clic en el siguiente enlace: " + enlaceVerificacion
             );
 
-            return "Usuario registrado con éxito. Por favor verifica tu cuenta mediante el enlace enviado a " + usuario.getCorreo();
-
-        } catch (UserRegistrationException e) {
-            throw e; // Relanzar excepción específica
+            return "El usuario " + usuario.getNombre() + " fue registrado con éxito. Se ha enviado un correo de verificación.";
         } catch (Exception e) {
-            // 7. Manejo de errores genéricos
             throw new UserRegistrationException("Error al registrar el usuario: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public String verificarCuenta(String token) {
+        try {
+            // Validar el token y obtener el correo
+            String correo = jwtTokenService.validarTokenVerificacion(token);
+
+            // Buscar el usuario por correo
+            UsuariosModel usuario = usuariosRepository.findByCorreo(correo);
+            if (usuario == null) {
+                throw new UserNotFoundException("Usuario no encontrado con el correo: " + correo);
+            }
+
+            // Activar la cuenta del usuario
+            usuario.setVerificado(true);
+            usuariosRepository.save(usuario);
+
+            return "Cuenta verificada con éxito.";
+        } catch (Exception e) {
+            throw new RuntimeException("Error al verificar la cuenta: " + e.getMessage());
         }
     }
 
