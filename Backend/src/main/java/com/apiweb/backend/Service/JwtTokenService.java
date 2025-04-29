@@ -1,11 +1,9 @@
 package com.apiweb.backend.Service;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 

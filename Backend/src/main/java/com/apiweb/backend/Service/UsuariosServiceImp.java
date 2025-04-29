@@ -1,6 +1,8 @@
 package com.apiweb.backend.Service;
 
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +13,8 @@ import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Exception.UserRegistrationException;
 import com.apiweb.backend.Exception.UserDeletionException;
 import com.apiweb.backend.Exception.UserUpdateException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 
 import com.apiweb.backend.Model.UsuariosModel;
@@ -20,15 +24,15 @@ import com.apiweb.backend.Repository.IUsuariosRepository;
 public class UsuariosServiceImp implements IUsuariosService {
     @Autowired
     IUsuariosRepository usuariosRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtTokenService jwtTokenService;
-
     @Autowired
     private EmailService emailService;
+    private final ConcurrentHashMap<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> tiempoBloqueo = new ConcurrentHashMap<>();
+
 
     @Override
     public String registroUsuario(UsuariosModel usuario) {
@@ -83,21 +87,52 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Override
     public String iniciarSesion(UsuariosModel usuario) {
         try {
-        // Buscar el usuario por correo
-        UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
-        if (usuarioExistente == null) {
-            throw new LoginFailedException("El correo proporcionado no está registrado.");
-        }
+            String correo = usuario.getCorreo();
 
-        // Validar la contraseña
-        if (!passwordEncoder.matches(usuario.getContrasena(), usuarioExistente.getContrasena())) {
-            throw new LoginFailedException("La contraseña es incorrecta.");
-        }
+            // Verificar si el usuario está bloqueado
+            if (tiempoBloqueo.containsKey(correo)) {
+                long tiempoRestante = System.currentTimeMillis() - tiempoBloqueo.get(correo);
+                if (tiempoRestante < TimeUnit.MINUTES.toMillis(1)) {
+                    throw new LoginFailedException("La cuenta está bloqueada. Intenta nuevamente después de 1 minuto.");
+                } else {
+                    tiempoBloqueo.remove(correo);
+                    intentosFallidos.remove(correo);
+                }
+            }
 
-        return "Inicio de sesión exitoso";
+            // Buscar el usuario por correo
+            UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(correo);
+            if (usuarioExistente == null) {
+                throw new LoginFailedException("El correo proporcionado no está registrado.");
+            }
+
+            // Validar la contraseña
+            if (!passwordEncoder.matches(usuario.getContrasena(), usuarioExistente.getContrasena())) {
+                intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+
+                if (intentosFallidos.get(correo) >= 5) {
+                    tiempoBloqueo.put(correo, System.currentTimeMillis());
+                    throw new LoginFailedException("Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 1 minuto.");
+                }
+
+                throw new LoginFailedException("La contraseña es incorrecta.");
+            }
+
+            // Verificar palabra de seguridad si hay 3 o más intentos fallidos
+            if (intentosFallidos.getOrDefault(correo, 0) >= 3) {
+                if (!usuarioExistente.getPalabra_seguridad().equals(usuario.getPalabra_seguridad())) {
+                    throw new LoginFailedException("La palabra de seguridad es incorrecta.");
+                }
+            }
+
+            // Restablecer intentos fallidos al iniciar sesión correctamente
+            intentosFallidos.remove(correo);
+            tiempoBloqueo.remove(correo);
+
+            return "Inicio de sesión exitoso";
         } catch (Exception e) {
-        throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
-        }  
+            throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
+        }
     }
 
     @Override
