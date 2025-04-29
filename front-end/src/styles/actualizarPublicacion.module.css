@@ -10,7 +10,7 @@
 
 .headerActualizar {
   background-color: #0284c7;
-  padding: 2rem;
+  padding: 1.7rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100vw;
   display: flex;
@@ -38,20 +38,20 @@
 }
 
 .menu {
-  margin-top: 100px;
+  margin-top: 119px;
   display: none;
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
-  height: 85.5vh;
+  width: clamp(200px, 30vw, 245px);
+  height: 83.6vh;
   flex-direction: column;
   background-color: #1c1c1cc6;
-  padding: 1rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
   z-index: 1000;
 }
+
 
 .menuOpen {
   display: flex;
@@ -99,7 +99,7 @@
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
-  margin: 1.5rem 0;
+  margin-bottom: 10px;
   color: #444;
 }
 
@@ -108,9 +108,11 @@
   gap: 2rem;
   justify-content: center;
   flex-wrap: wrap;
+
 }
 
 .imagenPreview {
+  height: 67vh;
   width: 300px;
   padding: 1rem;
   background-color: #fff;
@@ -176,7 +178,7 @@
 /* contenedor de búsqueda */
 .searchContainer {
   position: relative;
-  margin: 1rem 0;
+  margin-bottom: 10px;
 }
 
 /* input de búsqueda */
@@ -268,7 +270,10 @@
 }
 
 .formActualizar {
+  color: #000000c1;
+  text-align: le;
   width: 500px;
+  height: 67vh;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
