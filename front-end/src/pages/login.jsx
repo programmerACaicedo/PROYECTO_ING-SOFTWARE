@@ -96,7 +96,7 @@ const Login = () => {
     if (email === "admin@gmail.com") {
       navigate("/admin"); // Envía al panel de administrador
     } else {
-      navigate("/interior"); // Envía al panel de usuario normal
+      navigate("/propietario"); // Envía al panel de usuario normal
     }
   };
   
