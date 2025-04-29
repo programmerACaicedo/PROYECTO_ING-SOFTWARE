@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interior.module.css";
 
-const Interior = () => {
+const InteriorPropietario = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
@@ -20,7 +20,7 @@ const Interior = () => {
 
   useEffect(() => {
     if (mostrarSplash) {
-      const timer = setTimeout(() => setMostrarSplash(false), 1500);
+      const timer = setTimeout(() => setMostrarSplash(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [mostrarSplash]);
@@ -110,4 +110,4 @@ const Interior = () => {
   );
 };
 
-export default Interior;
+export default InteriorPropietario;

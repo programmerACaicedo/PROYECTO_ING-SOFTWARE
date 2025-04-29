@@ -94,7 +94,7 @@ body {
 .submitButton {
   width: 100%;
   padding: clamp(0.6rem, 2vw, 0.75rem);
-  background-color: #43a047;
+  background-color: #193ced;
   color: white;
   font-size: clamp(0.85rem, 2.5vw, 1rem);
   font-weight: 600;
@@ -107,13 +107,13 @@ body {
 }
 
 .submitButton:hover {
-  background-color: #4caf50;
+  background-color: #000a8c;
   transform: translateY(-2px);
 }
 
 .submitButton:active {
   transform: translateY(0);
-  background-color: #388e3c;
+  background-color: #000a8c;
 }
 
 .options {
