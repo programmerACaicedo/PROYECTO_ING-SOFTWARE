@@ -1,6 +1,9 @@
 package com.apiweb.backend.Service;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +12,9 @@ import org.springframework.stereotype.Service;
 import com.apiweb.backend.Exception.InvalidAvisoConfigurationException;
 import com.apiweb.backend.Exception.InvalidUserRoleException;
 import com.apiweb.backend.Exception.ResourceNotFoundException;
+import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AvisosModel;
+import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.EstadoAviso;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
@@ -26,7 +31,7 @@ public class AvisosServiceImp implements IAvisosService{
 
     @Override
     public AvisosModel crearAviso(AvisosModel aviso) {
-        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuario_id());
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
         if (!usuarioExiste.isPresent()) {
             throw new ResourceNotFoundException("El usuario no existe.");
         }
@@ -56,6 +61,9 @@ public class AvisosServiceImp implements IAvisosService{
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe.");
+        }
+        if (aviso.getEstado() == EstadoAviso.Reportado) {
+            throw new InvalidAvisoConfigurationException("El estado del aviso no puede ser actualizado si se encuentra reportado");
         }
         AvisosModel avisoActualizado = avisoExiste.get();
 
@@ -112,6 +120,74 @@ public class AvisosServiceImp implements IAvisosService{
         AvisosModel aviso = avisoExiste.get();
         avisosRepository.deleteById(id);
         return "El aviso " + aviso.getNombre() + "fue eliminado con éxito.";
+    }
+
+    
+
+    @Override 
+    public List<AvisosModel> listarAvisos() {
+        return avisosRepository.findAll();
+    }
+
+
+    @Override
+    public List<AvisosModel> listarAvisosPropietario(ObjectId propietarioId) {
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(propietarioId);
+        if (!usuarioExiste.isPresent()){
+            throw new UserNotFoundException("El usuario no existe");
+        }
+        UsuariosModel usuario = usuarioExiste.get();
+        if (usuario.getTipo() != TipoUsuario.propietario){
+            throw new InvalidUserRoleException("Solamente un propietario puede listar sus avisos.");
+        }
+        
+        return avisosRepository.findByPropietarioIdUsuarioId(propietarioId);
+    }
+
+
+    @Override
+    public AvisosModel actualizarEstadoSiendoAdministrador(ObjectId id, AvisosModel aviso){
+        Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
+        if (!avisoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El aviso no existe.");
+        }
+        AvisosModel avisoActualizado = avisoExiste.get();
+        if (aviso.getEstado() == EstadoAviso.Arrendado) {
+            throw new InvalidAvisoConfigurationException("Un administrador solo puede cambiar el estado a Reportar, Disponible o Inactivo");
+        }
+        if (aviso.getEstado() == EstadoAviso.EnProceso) {
+            throw new InvalidAvisoConfigurationException("Un administrador solo puede cambiar el estado a Reportar, Disponible o Inactivo");
+        }
+
+        if (aviso.getEstado() != null) {
+            avisoActualizado.setEstado(aviso.getEstado());
+        }
+        return avisosRepository.save(avisoActualizado);
+        
+    }
+
+    @Override
+    public AvisosModel crearReporte(ObjectId id, ReporteAviso reporte) {
+        Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
+        if (!avisoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El aviso no existe.");
+        }
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(reporte.getUsuarioReporta());
+        if (!usuarioExiste.isPresent()) {
+            throw new ResourceNotFoundException("El usuario no existe.");
+        }
+        AvisosModel avisoActualizado = avisoExiste.get();
+
+        
+        reporte.setFecha(Instant.now());
+        avisoActualizado.setEstado(EstadoAviso.Reportado);
+        avisoActualizado.setReporte(reporte);
+        return avisosRepository.save(avisoActualizado);  
+    }
+
+    @Override
+    public List<AvisosModel> listarAvisosConReportes() {
+        return avisosRepository.findByReporteIsNotNull();
     }
     
 }
