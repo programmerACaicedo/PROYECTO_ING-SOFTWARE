@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registrarUsuario } from "../services/conexiones"; // Asegúrate de que esta función exista
 import styles from "../styles/registro.module.css";
 
 const Registro = () => {
@@ -10,6 +11,7 @@ const Registro = () => {
   const [verPassword, setVerPassword] = useState(false);
   const [verConfirmar, setVerConfirmar] = useState(false);
   const googleButtonRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -24,6 +26,7 @@ const Registro = () => {
 
   const navigate = useNavigate();
 
+  // Carga del script de Google para autenticación
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -31,8 +34,7 @@ const Registro = () => {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id:
-            "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
+          client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com", // Reemplaza con tu client_id real
           callback: async (response) => {
             try {
               const res = await fetch("http://localhost:8080/api/login/google", {
@@ -46,7 +48,8 @@ const Registro = () => {
                 mostrarMensaje("¡Registro con Google exitoso!", "exito");
                 setTimeout(() => navigate("/login"), 1200);
               } else {
-                mostrarMensaje("Error al registrar con Google", "error");
+                const errorData = await res.json();
+                mostrarMensaje(errorData.message || "Error al registrar con Google", "error");
               }
             } catch (error) {
               mostrarMensaje("Error de conexión con el servidor", "error");
@@ -67,20 +70,26 @@ const Registro = () => {
     return () => document.body.removeChild(script);
   }, []);
 
+  // Manejo de cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormulario({ ...formulario, [name]: value });
   };
 
+  // Mostrar mensajes con timeout manejado
   const mostrarMensaje = (texto, tipo) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     setMensaje(texto);
     setTipoMensaje(tipo);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setMensaje("");
       setTipoMensaje("");
     }, 3000);
   };
 
+  // Funciones de validación
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
   const validarContraseña = (contraseña) =>
@@ -88,6 +97,7 @@ const Registro = () => {
       contraseña
     );
 
+  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,29 +135,19 @@ const Registro = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: formulario.nombre,
-          apellidos: formulario.apellidos,
-          correo: formulario.correo,
-          telefono: formulario.telefono,
-          contraseña: formulario.contraseña,
-          seguridad: formulario.seguridad,
-          tipoUsuario: formulario.tipoUsuario,
-        }),
+      const respuesta = await registrarUsuario({
+        nombre: formulario.nombre,
+        apellidos: formulario.apellidos,
+        correo: formulario.correo,
+        telefono: formulario.telefono,
+        contraseña: formulario.contraseña,
+        seguridad: formulario.seguridad,
+        tipoUsuario: formulario.tipoUsuario,
       });
-
-      if (response.ok) {
-        mostrarMensaje("¡Registro exitoso!", "exito");
-        setTimeout(() => navigate("/login"), 1200);
-      } else {
-        const errorData = await response.json();
-        mostrarMensaje(errorData.message || "Error al registrar usuario", "error");
-      }
+      mostrarMensaje("¡Registro exitoso!", "exito");
+      setTimeout(() => navigate("/login"), 1200);
     } catch (error) {
-      mostrarMensaje("Error de conexión con el servidor", "error");
+      mostrarMensaje(error.message || "Error al registrar usuario", "error");
     }
   };
 
@@ -261,7 +261,7 @@ const Registro = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="">Tipo de Usuario</option>
+                <option value="">Seleccione tipo de usuario</option>
                 <option value="propietario">Propietario</option>
                 <option value="interesado">Interesado</option>
               </select>
@@ -290,10 +290,16 @@ const Registro = () => {
           </div>
 
           <div className={styles["register-button"]}>
-            <button type="submit">Registrar</button>
+            <button type="submit" disabled={!aceptaTerminos}>
+              Registrar
+            </button>
           </div>
 
-          <button type="button" className={styles.googlebtn} ref={googleButtonRef}>
+          <button
+            type="button"
+            className={styles.googlebtn}
+            ref={googleButtonRef}
+          >
             <img
               src="https://img.icons8.com/color/16/000000/google-logo.png"
               alt="Google Logo"
@@ -308,12 +314,15 @@ const Registro = () => {
             <div className={styles["modal-content"]}>
               <h3>Tratamiento de Datos Personales</h3>
               <p>
-              En Servicio de Arrendamiento, los datos personales recolectados son tratados de forma segura y 
-              confidencial, con el fin de gestionar procesos de arrendamiento, validar identidades, realizar 
-              análisis financieros, y cumplir con obligaciones contractuales y legales. El titular de los datos 
-              tiene derecho a conocer, actualizar, rectificar o suprimir su información, y puede ejercer estos 
-              derechos en cualquier momento. Al proporcionar sus datos, el titular autoriza expresamente su tratamiento 
-              conforme a nuestra política de protección de datos.
+                En Servicio de Arrendamiento, los datos personales recolectados
+                son tratados de forma segura y confidencial, con el fin de
+                gestionar procesos de arrendamiento, validar identidades,
+                realizar análisis financieros, y cumplir con obligaciones
+                contractuales y legales. El titular de los datos tiene derecho a
+                conocer, actualizar, rectificar o suprimir su información, y
+                puede ejercer estos derechos en cualquier momento. Al
+                proporcionar sus datos, el titular autoriza expresamente su
+                tratamiento conforme a nuestra política de protección de datos.
               </p>
               <button onClick={() => setMostrarModal(false)}>Cerrar</button>
             </div>
@@ -325,3 +334,5 @@ const Registro = () => {
 };
 
 export default Registro;
+            
+        
