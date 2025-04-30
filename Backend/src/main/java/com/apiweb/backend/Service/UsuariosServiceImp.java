@@ -114,7 +114,7 @@ public class UsuariosServiceImp implements IUsuariosService {
                     throw new LoginFailedException("Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 1 minuto.");
                 }
 
-                throw new LoginFailedException("La contraseña es incorrecta.");
+                throw new LoginFailedException("El correo o la contraseña es incorrecta.");
             }
 
             // Verificar palabra de seguridad si hay 3 o más intentos fallidos
