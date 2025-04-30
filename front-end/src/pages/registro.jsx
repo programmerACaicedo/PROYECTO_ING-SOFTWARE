@@ -1,4 +1,3 @@
-// src/pages/Registro.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/registro.module.css";
@@ -34,8 +33,24 @@ const Registro = () => {
         window.google.accounts.id.initialize({
           client_id:
             "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
-          callback: (response) => {
-            console.log("Token JWT recibido:", response.credential);
+          callback: async (response) => {
+            try {
+              const res = await fetch("http://localhost:8080/api/login/google", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: response.credential }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem("token", data.token);
+                mostrarMensaje("¡Registro con Google exitoso!", "exito");
+                setTimeout(() => navigate("/login"), 1200);
+              } else {
+                mostrarMensaje("Error al registrar con Google", "error");
+              }
+            } catch (error) {
+              mostrarMensaje("Error de conexión con el servidor", "error");
+            }
           },
           ux_mode: "popup",
           auto_select: false,
@@ -73,7 +88,7 @@ const Registro = () => {
       contraseña
     );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (Object.values(formulario).some((campo) => campo === "")) {
@@ -109,8 +124,31 @@ const Registro = () => {
       return;
     }
 
-    mostrarMensaje("¡Registro exitoso!", "exito");
-    setTimeout(() => navigate("/login"), 1200);
+    try {
+      const response = await fetch("http://localhost:8080/api/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: formulario.nombre,
+          apellidos: formulario.apellidos,
+          correo: formulario.correo,
+          telefono: formulario.telefono,
+          contraseña: formulario.contraseña,
+          seguridad: formulario.seguridad,
+          tipoUsuario: formulario.tipoUsuario,
+        }),
+      });
+
+      if (response.ok) {
+        mostrarMensaje("¡Registro exitoso!", "exito");
+        setTimeout(() => navigate("/login"), 1200);
+      } else {
+        const errorData = await response.json();
+        mostrarMensaje(errorData.message || "Error al registrar usuario", "error");
+      }
+    } catch (error) {
+      mostrarMensaje("Error de conexión con el servidor", "error");
+    }
   };
 
   return (

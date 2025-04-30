@@ -10,4 +10,5 @@ public interface IUsuariosService {
     public String recuperarContrasena(UsuariosModel usuario);
     public UsuariosModel actualizarUsuario(ObjectId id, UsuariosModel usuario);
     public String eliminarUsuario(ObjectId id);
+    public String verificarCuenta(String token);
 }

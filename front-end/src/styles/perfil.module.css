@@ -25,7 +25,7 @@ body {
 
 .header {
   background-color: #0284c7;
-  padding: clamp(1rem, 3vw, 2rem);
+  padding: 1.7rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100vw;
   display: flex;
@@ -63,13 +63,13 @@ form h3 {
 }
 
 .menu {
-  margin-top: 100px;
+  margin-top: 119px;
   display: none;
   position: absolute;
   top: 0;
   left: 0;
   width: clamp(200px, 30vw, 245px);
-  height: 85.5vh;
+  height: 83.6vh;
   flex-direction: column;
   background-color: #1c1c1cc6;
   padding: clamp(0.5rem, 2vw, 1rem);
@@ -125,6 +125,7 @@ form h3 {
 }
 
 .perfilForm {
+  height: 73vh;
   display: flex;
   gap: clamp(1rem, 3vw, 2rem);
   max-width: clamp(600px, 80vw, 800px);
@@ -238,6 +239,7 @@ form h3 {
 }
 
 .btnActualizar {
+  width: 155px;
   align-self: center; /* Centra el botón horizontalmente */
   background-color: #28a745;
   color: white;
@@ -258,7 +260,7 @@ form h3 {
 }
 
 .eliminarCuenta {
-  margin-top: clamp(1rem, 3vw, 2rem);
+  margin-top: 10px;
   text-align: center; /* Centra el botón eliminarCuenta */
 }
 
