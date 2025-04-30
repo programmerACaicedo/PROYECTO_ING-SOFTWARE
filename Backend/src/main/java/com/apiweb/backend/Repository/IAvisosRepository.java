@@ -1,5 +1,6 @@
 package com.apiweb.backend.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -10,4 +11,7 @@ import com.apiweb.backend.Model.UbicacionAviso;
 
 public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId> {
     Optional<AvisosModel> findByUbicacion(UbicacionAviso ubicacion);
+    void deleteByPropietarioId_Usuario_id(ObjectId usuarioId);
+    List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
+    List<AvisosModel> findByReporteIsNotNull();
 }
