@@ -11,7 +11,7 @@ import com.apiweb.backend.Model.UbicacionAviso;
 
 public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId> {
     Optional<AvisosModel> findByUbicacion(UbicacionAviso ubicacion);
-    void deleteByPropietarioId_Usuario_id(ObjectId usuarioId);
+    void deleteByPropietarioId_UsuarioId(ObjectId usuarioId);
     List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
     List<AvisosModel> findByReporteIsNotNull();
 }
