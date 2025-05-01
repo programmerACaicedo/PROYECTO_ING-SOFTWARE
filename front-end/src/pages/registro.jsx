@@ -129,6 +129,11 @@ const Registro = () => {
       return;
     }
 
+    if (!formulario.seguridad) {
+      mostrarMensaje("Por favor, ingresa una palabra de seguridad.", "error");
+      return;
+    }
+
     if (!aceptaTerminos) {
       mostrarMensaje("Debes aceptar el tratamiento de datos personales.", "error");
       return;
@@ -136,13 +141,12 @@ const Registro = () => {
 
     try {
       const respuesta = await registrarUsuario({
-        nombre: formulario.nombre,
-        apellidos: formulario.apellidos,
+        nombre: `${formulario.nombre} ${formulario.apellidos}`,
         correo: formulario.correo,
         telefono: formulario.telefono,
-        contraseña: formulario.contraseña,
-        seguridad: formulario.seguridad,
-        tipoUsuario: formulario.tipoUsuario,
+        contrasena: formulario.contraseña,
+        palabra_seguridad: formulario.seguridad, // Este valor debe estar presente
+        tipo: formulario.tipoUsuario,
       });
       mostrarMensaje("¡Registro exitoso!", "exito");
       setTimeout(() => navigate("/login"), 1200);
@@ -334,5 +338,4 @@ const Registro = () => {
 };
 
 export default Registro;
-            
-        
+

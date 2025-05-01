@@ -17,13 +17,13 @@ api.interceptors.response.use(
 
 export const registrarUsuario = async (datosRegistro) => {
     try {
-      console.log('Sending request to:', api.defaults.baseURL + '/registrar');
-      const respuesta = await api.post("/registrar", datosRegistro);
+      console.log('Sending request to:', api.defaults.baseURL + '/usuario/registrar');
+      const respuesta = await api.post("/usuario/registrar", datosRegistro);
       return respuesta.data;
     } catch (error) {
       console.error("Error al registrar usuario:", error.response || error.message);
       throw error;
     }
-  };
+};
 
 export default api;

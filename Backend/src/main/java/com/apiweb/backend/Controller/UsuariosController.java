@@ -18,13 +18,16 @@ import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Service.IUsuariosService;
 
 @RestController
-@RequestMapping("/appi/usuario")
+@RequestMapping("/api/usuario")
 public class UsuariosController {
     @Autowired IUsuariosService usuariosService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<String> registroUsuario(@RequestBody UsuariosModel usuario){
-        return new ResponseEntity<>(usuariosService.registroUsuario(usuario), HttpStatus.CREATED);
+    public ResponseEntity<String> registroUsuario(@RequestBody UsuariosModel usuario) {
+        System.out.println("Datos recibidos: " + usuario);
+        String resultado = usuariosService.registroUsuario(usuario);
+        System.out.println("Resultado del servicio: " + resultado);
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
     @GetMapping("/verificar")
