@@ -17,12 +17,18 @@ import java.util.concurrent.TimeUnit;
 
 
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Repository.IAcuerdosRepository;
+import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
 
 @Service
 public class UsuariosServiceImp implements IUsuariosService {
     @Autowired
     IUsuariosRepository usuariosRepository;
+    @Autowired
+    IAvisosRepository avisosRepository;
+    @Autowired
+    IAcuerdosRepository acuerdosRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -179,8 +185,26 @@ public class UsuariosServiceImp implements IUsuariosService {
         UsuariosModel buscarUsuarioA = usuariosRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con el ID: " + id));
         String nombre = buscarUsuarioA.getNombre();
+        String correo = buscarUsuarioA.getCorreo();
 
+
+        //Eliminación de los acuerdos del usuario
+        acuerdosRepository.deleteByArrendatario_UsuarioId(id);
+
+        //Eliminación del usuario
         usuariosRepository.deleteById(id);
+
+        //Eliminación de las publicaciones del usuario
+        avisosRepository.deleteByPropietarioId_UsuarioId(id);
+
+        //Envio de mensaje de confirmacion
+        emailService.sendEmail(
+                correo,
+                "Confirmación de eliminación de cuenta",
+                "Hola " + nombre + ",\n\nTu cuenta ha sido eliminada exitosamente. Si tienes alguna duda, no dudes en contactarnos.\n\nSaludos,\nEquipo de Soporte"
+            );
+
+
         return "El usuario " + nombre + " fue eliminado con éxito";
     } catch (Exception e) {
         throw new UserDeletionException("Error al eliminar el usuario con ID: " + id + ". Detalles: " + e.getMessage());

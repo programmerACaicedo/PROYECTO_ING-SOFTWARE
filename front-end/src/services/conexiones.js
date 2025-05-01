@@ -1,0 +1,29 @@
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:8080/api", // Base URL for API requests
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Error en la solicitud:", error.response || error.message);
+    return Promise.reject(error);
+  }
+);
+
+export const registrarUsuario = async (datosRegistro) => {
+    try {
+      console.log('Sending request to:', api.defaults.baseURL + '/registrar');
+      const respuesta = await api.post("/registrar", datosRegistro);
+      return respuesta.data;
+    } catch (error) {
+      console.error("Error al registrar usuario:", error.response || error.message);
+      throw error;
+    }
+  };
+
+export default api;
