@@ -42,6 +42,11 @@ const InteriorPropietario = () => {
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
   const handleNuevoAviso = () => navigate("/nuevo-aviso");
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+  };
+
   return (
     <>
       {mostrarSplash && (
@@ -83,6 +88,9 @@ const InteriorPropietario = () => {
                   </button>
                 </>
               )}
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+                Cerrar Sesión
+              </button>
             </div>
           </header>
 

@@ -40,6 +40,10 @@ const InteriorInteresado = () => {
   };
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+  };
   return (
     <>
       {mostrarSplash && (
@@ -76,6 +80,9 @@ const InteriorInteresado = () => {
                   Mi Perfil
                 </button>
               )}
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+               Cerrar Sesión
+            </button>
             </div>
           </header>
 

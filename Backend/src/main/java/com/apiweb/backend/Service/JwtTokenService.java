@@ -3,6 +3,7 @@ package com.apiweb.backend.Service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import java.util.Date;
@@ -30,6 +31,18 @@ public class JwtTokenService {
             throw new RuntimeException("Error al generar el token.");
         }
     }
+
+    public String generarToken(Map<String, Object> claims, long segundosExpiracion) {
+        Date ahora = new Date();
+        Date expiracion = new Date(ahora.getTime() + (segundosExpiracion * 1000));
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(ahora)
+                .setExpiration(expiracion)
+                .signWith(CLAVE_SECRETA) // Usa una clave secreta segura
+                .compact();
+    }
     
     public String validarTokenVerificacion(String token) {
         try {
@@ -39,6 +52,19 @@ public class JwtTokenService {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject(); // Devuelve el "subject" (correo) del token
+        } catch (Exception e) {
+            System.out.println("Error al validar el token: " + e.getMessage());
+            throw new RuntimeException("Token inválido o expirado.");
+        }
+    }
+
+    public Map<String, Object> validarToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(CLAVE_SECRETA) // Usa la misma clave secreta que al generar el token
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody(); // Devuelve todos los claims del token
         } catch (Exception e) {
             System.out.println("Error al validar el token: " + e.getMessage());
             throw new RuntimeException("Token inválido o expirado.");

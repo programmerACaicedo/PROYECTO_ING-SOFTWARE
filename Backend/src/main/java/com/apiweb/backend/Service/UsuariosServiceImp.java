@@ -1,7 +1,7 @@
 package com.apiweb.backend.Service;
 
 
-import java.util.concurrent.ConcurrentHashMap;
+
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,10 @@ import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Exception.UserRegistrationException;
 import com.apiweb.backend.Exception.UserDeletionException;
 import com.apiweb.backend.Exception.UserUpdateException;
-import java.util.concurrent.TimeUnit;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Repository.IAcuerdosRepository;
@@ -35,9 +37,9 @@ public class UsuariosServiceImp implements IUsuariosService {
     private JwtTokenService jwtTokenService;
     @Autowired
     private EmailService emailService;
-    private final ConcurrentHashMap<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Long> tiempoBloqueo = new ConcurrentHashMap<>();
-
+    
+    private Map<String, Integer> intentosFallidos = new HashMap<>();
+    private Map<String, Long> tiempoBloqueo = new HashMap<>();
 
     @Override
     public String registroUsuario(UsuariosModel usuario) {
@@ -134,7 +136,17 @@ public class UsuariosServiceImp implements IUsuariosService {
             intentosFallidos.remove(correo);
             tiempoBloqueo.remove(correo);
 
-            return "Inicio de sesión exitoso";
+            // Crear claims con la información del usuario
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", usuarioExistente.getId());
+            claims.put("correo", usuarioExistente.getCorreo());
+            claims.put("tipo", usuarioExistente.getTipo());
+            claims.put("nombre", usuarioExistente.getNombre());
+
+            // Generar el token JWT
+            String token = jwtTokenService.generarToken(claims, 60 * 60 * 24); // Token válido por 24 horas
+
+            return token; // Devolver el token al frontend
         } catch (Exception e) {
             throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
         }

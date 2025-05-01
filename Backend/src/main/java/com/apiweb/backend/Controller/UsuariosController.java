@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Service.IUsuariosService;
+import com.apiweb.backend.Exception.LoginFailedException;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuario")
@@ -36,9 +39,14 @@ public class UsuariosController {
         return new ResponseEntity<>(resultado, HttpStatus.OK);
     }
 
-    @PostMapping("/ingresar")
-    public ResponseEntity<String> iniciarSesion(@RequestBody UsuariosModel usuario){
-        return new ResponseEntity<>(usuariosService.iniciarSesion(usuario), HttpStatus.OK);
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UsuariosModel usuario) {
+        try {
+            String token = usuariosService.iniciarSesion(usuario);
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (LoginFailedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
     @PostMapping("/recuperar")
