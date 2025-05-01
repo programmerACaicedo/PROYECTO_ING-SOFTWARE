@@ -1,7 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
-import styles from "../styles/login.module.css"; // Importamos el módulo de estilo
+import styles from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { iniciarSesion } from "../services/conexiones";
+import { jwtDecode } from "jwt-decode";
+
+const obtenerInformacionUsuario = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const usuario = jwtDecode(token);
+    return usuario; // Contiene la información del usuario (id, correo, tipo, etc.)
+  } catch (error) {
+    console.error("Error al decodificar el token:", error);
+    return null;
+  }
+};
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,18 +28,67 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const googleButtonRef = useRef(null); // Ref para el botón de Google
+  const googleButtonRef = useRef(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const usuario = jwtDecode(token);
+        console.log("Usuario autenticado:", usuario);
+        setIsAuthenticated(true);
+
+        // Redirigir automáticamente según el tipo de usuario
+        if (usuario.tipo === "propietario") {
+          navigate("/propietario");
+        } else if (usuario.tipo === "interesado") {
+          navigate("/interesado");
+        } else {
+          navigate("/interior");
+        }
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        setErrorMessage("Error al procesar la sesión. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+      }
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
-      const handleCredentialResponse = (response) => {
-        console.log("Token JWT recibido:", response.credential);
-        setIsAuthenticated(true);
-        localStorage.setItem("reciénIniciado", "true");
-        navigate("/interior");
+      const handleCredentialResponse = async (response) => {
+        try {
+          const res = await fetch("http://localhost:8080/api/login/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: response.credential }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem("token", data.token);
+            setIsAuthenticated(true);
+            localStorage.setItem("reciénIniciado", "true");
+            // Redirigir según el tipo de usuario
+            if (data.tipoUsuario) {
+              if (data.tipoUsuario === "propietario") {
+                navigate("/propietario");
+              } else if (data.tipoUsuario === "interesado") {
+                navigate("/interesado");
+              } else {
+                navigate("/interior");
+              }
+            } else {
+              setErrorMessage("Tipo de usuario no definido. Contacte al administrador.");
+            }
+          } else {
+            setErrorMessage("Error al iniciar sesión con Google");
+          }
+        } catch (error) {
+          setErrorMessage("Error de conexión con el servidor");
+        }
       };
 
       if (window.google) {
@@ -70,36 +136,51 @@ const Login = () => {
     }
   }, [errorMessage]);
 
-  const handleLoginSubmit = (event) => {
+  const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-    if (!emailRegex.test(email) || !passwordRegex.test(password)) {
-      setErrorMessage("❌Credenciales Incorrectas");
-      return;
-    }
+    try {
+      const credenciales = {
+        correo: email,
+        contrasena: password,
+      };
 
-    setIsAuthenticated(true);
-    if (rememberMe) {
-      localStorage.setItem("savedEmail", email);
-      localStorage.setItem("savedPassword", password);
-      localStorage.setItem("rememberMe", "true");
-    } else {
-      localStorage.removeItem("savedEmail");
-      localStorage.removeItem("savedPassword");
-      localStorage.removeItem("rememberMe");
-    }
-    localStorage.setItem("reciénIniciado", "true");
-    navigate("/interior");
+      // Llamar al servicio para iniciar sesión
+      const data = await iniciarSesion(credenciales);
 
-    if (email === "admin@gmail.com") {
-      navigate("/admin"); // Envía al panel de administrador
-    } else {
-      navigate("/propietario"); // Envía al panel de usuario normal
+      // Verificar si el token está presente en la respuesta
+      console.log("Respuesta del backend:", data);
+
+      if (!data.token) {
+        setErrorMessage("El servidor no devolvió un token. Verifica el backend.");
+        return;
+      }
+
+      // Guardar el token en localStorage
+      localStorage.setItem("token", data.token);
+
+      // Decodificar el token para obtener la información del usuario
+      const usuario = jwtDecode(data.token);
+
+      console.log("Información del usuario:", usuario);
+
+      // Redirigir según el tipo de usuario
+      if (usuario.tipo) {
+        if (usuario.tipo === "propietario") {
+          navigate("/propietario");
+        } else if (usuario.tipo === "interesado") {
+          navigate("/interesado");
+        } else {
+          navigate("/interior");
+        }
+      } else {
+        setErrorMessage("Tipo de usuario no definido. Contacte al administrador.");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      setErrorMessage("Credenciales incorrectas o error en el servidor");
     }
   };
-  
 
   return (
     <div className={styles.loginPage}>

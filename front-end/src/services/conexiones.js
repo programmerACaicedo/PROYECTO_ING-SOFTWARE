@@ -14,7 +14,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+//Registro de usuario
 export const registrarUsuario = async (datosRegistro) => {
     try {
       console.log('Sending request to:', api.defaults.baseURL + '/usuario/registrar');
@@ -24,6 +24,16 @@ export const registrarUsuario = async (datosRegistro) => {
       console.error("Error al registrar usuario:", error.response || error.message);
       throw error;
     }
+};
+//Login de usuario
+export const iniciarSesion = async (credenciales) => {
+  try {
+    const respuesta = await api.post("/usuario/login", credenciales);
+    return respuesta.data; // Asegúrate de que el backend envíe el token en `respuesta.data.token`
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error.response || error.message);
+    throw error;
+  }
 };
 
 export default api;
