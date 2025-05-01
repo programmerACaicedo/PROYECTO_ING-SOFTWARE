@@ -42,7 +42,7 @@ public class AvisosController {
 
     @GetMapping("/listarAvisos")
     public ResponseEntity<List<AvisosModel>> listarAvisos(){
-        return new ResponseEntity<List<AvisosModel>> (avisosService.listarAvisos(), HttpStatus.OK); //testear
+        return new ResponseEntity<List<AvisosModel>> (avisosService.listarAvisos(), HttpStatus.OK); 
     }
 
 
@@ -58,7 +58,7 @@ public class AvisosController {
 
     @PutMapping("/reportar/{id}")
     public ResponseEntity<AvisosModel> crearReporte(@PathVariable("id") ObjectId id,@RequestBody ReporteAviso reporte){
-        return new ResponseEntity<AvisosModel>(avisosService.crearReporte(id, reporte), HttpStatus.OK); //testear
+        return new ResponseEntity<AvisosModel>(avisosService.crearReporte(id, reporte), HttpStatus.OK); 
     }
 
     @GetMapping("/listarReportes")
