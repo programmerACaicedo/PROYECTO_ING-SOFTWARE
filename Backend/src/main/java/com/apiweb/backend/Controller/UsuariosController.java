@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -71,7 +70,7 @@ public class UsuariosController {
             String correo = (String) tokenData.get("correo");
             UsuariosModel usuario = usuariosRepository.findByCorreo(correo);
             if (usuario == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new HashMap<>(), HttpStatus.NOT_FOUND);
             }
 
             // Crear un mapa para la respuesta con el id como cadena
@@ -86,7 +85,7 @@ public class UsuariosController {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new HashMap<>(), HttpStatus.UNAUTHORIZED);
         }
     }
 
