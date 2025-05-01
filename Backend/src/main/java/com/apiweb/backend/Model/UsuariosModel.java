@@ -21,7 +21,7 @@ public class UsuariosModel {
     private String nombre;
     private String correo;
     private String contrasena;
-    private int telefono;
+    private String telefono; // Cambiar de Integer a String
     private TipoUsuario tipo;
     private String palabra_seguridad;
     private boolean verificado;
