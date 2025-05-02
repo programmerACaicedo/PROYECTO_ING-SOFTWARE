@@ -18,6 +18,7 @@ export default function DetalleAvisoAdmin() {
     },
     // ...
   ]);*/
+  
   // después — mete aquí todos tus avisos
   const [avisos] = useState([
      {
