@@ -13,7 +13,7 @@ const obtenerInformacionUsuario = () => {
 
   try {
     const usuario = jwtDecode(token);
-    return usuario; // Contiene la información del usuario (id, correo, tipo, etc.)
+    return usuario;
   } catch (error) {
     console.error("Error al decodificar el token:", error);
     return null;
@@ -34,13 +34,13 @@ const Login = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    localStorage.setItem("reciénIniciado", "true");
     if (token) {
       try {
         const usuario = jwtDecode(token);
         console.log("Usuario autenticado:", usuario);
         setIsAuthenticated(true);
 
-        // Redirigir automáticamente según el tipo de usuario
         if (usuario.tipo === "propietario") {
           navigate("/propietario");
         } else if (usuario.tipo === "interesado") {
@@ -73,7 +73,6 @@ const Login = () => {
             localStorage.setItem("token", data.token);
             setIsAuthenticated(true);
             localStorage.setItem("reciénIniciado", "true");
-            // Redirigir según el tipo de usuario
             if (data.tipoUsuario) {
               if (data.tipoUsuario === "propietario") {
                 navigate("/propietario");
@@ -177,13 +176,22 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       const usuario = jwtDecode(data.token);
 
+      // Guardar o eliminar credenciales según el estado de rememberMe
+      if (rememberMe && !mostrarPalabraSeguridad) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("savedPassword", password);
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedPassword");
+        localStorage.removeItem("rememberMe");
+      }
+
       // Redirigir según el tipo de usuario
       if (usuario.tipo === "propietario") {
         navigate("/propietario");
       } else if (usuario.tipo === "interesado") {
-        navigate("/interesado");
-      } else {
-        navigate("/interior");
+        navigate("/interesado");   
       }
     } catch (error) {
       console.error("Error completo:", error);
@@ -249,16 +257,16 @@ const Login = () => {
             />
           )}
           <div className={styles.options}>
-          <label>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            Guardar credenciales
-          </label>
-          <a href="/olvido-contraseña">Olvidé mi contraseña</a>
-        </div>
+            <label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              Guardar credenciales
+            </label>
+            <a href="/olvido-contraseña">Olvidé mi contraseña</a>
+          </div>
           <button type="submit" className={styles.submitButton}>
             Ingresar
           </button>

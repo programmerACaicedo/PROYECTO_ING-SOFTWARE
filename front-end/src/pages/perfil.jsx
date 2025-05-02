@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import styles from "../styles/perfil.module.css";
 import { obtenerUsuario, actualizarUsuario, eliminarCuenta } from "../services/conexiones";
-import axios from "axios";
 import defaultProfilePicture from "../assets/img/por_defecto.png";
 
 const Perfil = () => {
@@ -31,9 +30,8 @@ const Perfil = () => {
         return;
       }
 
-      // Decodifica el token para obtener datos básicos
       const decodedToken = jwtDecode(token);
-      console.log("Decoded Token:", decodedToken);
+      setTipoUsuario(decodedToken.tipo || "");
       const id = typeof decodedToken.id === "string"
         ? decodedToken.id
         : decodedToken.id?._id || "";
@@ -53,9 +51,7 @@ const Perfil = () => {
         ...userDataFromToken,
       }));
 
-      // Obtener datos adicionales del backend usando Axios
       const user = await obtenerUsuario();
-      console.log("Backend User Data:", user);
       const backendId = typeof user.id === "string" ? user.id : user.id?._id || "";
       setFormData((prevData) => ({
         ...prevData,
@@ -83,6 +79,27 @@ const Perfil = () => {
   useEffect(() => {
     fetchUserData();
   }, [navigate]);
+
+  const handleInicioClick = () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const usuario = jwtDecode(token);
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
+      }
+    } catch (error) {
+      console.error("Error al decodificar el token:", error);
+      navigate("/login");
+    }
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
     return () => {
@@ -199,11 +216,23 @@ const Perfil = () => {
     }
 
     try {
-      console.log("Datos enviados al backend:", formData); // Verifica los datos antes de enviarlos
-      const updatedUser = await actualizarUsuario(formData.id, formData); // Enviar como JSON
+      console.log("Datos enviados al backend:", formData);
+      const updatedUser = await actualizarUsuario(formData.id, formData);
       console.log("Usuario actualizado:", updatedUser);
+
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Perfil actualizado correctamente", tipo: "success" },
+      ]);
+
+      await fetchUserData(); // Actualiza la vista en el frontend
+      setFormData((prevData) => ({ ...prevData, contrasena: "" })); // Limpia la contraseña
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Error al actualizar el perfil", tipo: "error" },
+      ]);
     }
   };
 
@@ -248,9 +277,11 @@ const Perfil = () => {
       </header>
 
       <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={() => { navigate("/interior"); closeMenu(); }}>Inicio</button>
+        <button onClick={handleInicioClick}>Inicio</button>
         <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
+        {tipoUsuario === "propietario" && (
         <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
+        )}
         <button onClick={() => { navigate("/publicacion/1"); closeMenu(); }}>Ver Publicación 1</button>
         <button onClick={() => { navigate("/publicacion/2"); closeMenu(); }}>Ver Publicación 2</button>
       </nav>
@@ -268,7 +299,7 @@ const Perfil = () => {
               }
               alt="Foto de Perfil"
               onError={(e) => {
-                e.target.src = defaultProfilePicture; // Asignar imagen predeterminada si falla
+                e.target.src = defaultProfilePicture;
               }}
             />
             <div className={styles.fotoButtons}>
