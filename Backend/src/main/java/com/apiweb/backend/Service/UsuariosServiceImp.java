@@ -97,7 +97,7 @@ public class UsuariosServiceImp implements IUsuariosService {
     public String iniciarSesion(UsuariosModel usuario) {
         try {
             String correo = usuario.getCorreo();
-            final int MAX_INTENTOS = 5;
+            final int MAX_INTENTOS = 7;
             final long BLOQUEO_DURACION = TimeUnit.HOURS.toMillis(2); // 2 hours lockout
     
             // Verificar si el usuario está bloqueado
@@ -164,7 +164,7 @@ public class UsuariosServiceImp implements IUsuariosService {
                     intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
                     int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
     
-                    if (intentosFallidos.get(correo) >= 3) {
+                    if (intentosFallidos.get(correo) >= 5) {
                         throw new LoginFailedException(
                             String.format("Debes ingresar la palabra de seguridad para continuar. Te quedan %d intentos.", intentosRestantes)
                         );
