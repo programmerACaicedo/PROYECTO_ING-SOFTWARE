@@ -196,7 +196,7 @@ const Login = () => {
         } else if (mensajeError.includes("Credenciales incorrectas")) {
           setErrorMessage("Credenciales incorrectas.");
         } else if (mensajeError.includes("bloqueada")) {
-          setErrorMessage("La cuenta está bloqueada. Intenta nuevamente después de 1 minuto.");
+          setErrorMessage(mensajeError);
         } else {
           setErrorMessage(mensajeError || "Error desconocido.");
         }

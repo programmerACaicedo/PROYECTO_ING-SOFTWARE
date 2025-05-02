@@ -93,85 +93,110 @@ public class UsuariosServiceImp implements IUsuariosService {
             throw new RuntimeException("Error al verificar la cuenta: " + e.getMessage());
         }
     }
-@Override
-public String iniciarSesion(UsuariosModel usuario) {
-    try {
-        String correo = usuario.getCorreo();
-
-        // Verificar si el usuario está bloqueado
-        if (tiempoBloqueo.containsKey(correo)) {
-            long tiempoRestante = System.currentTimeMillis() - tiempoBloqueo.get(correo);
-            if (tiempoRestante < TimeUnit.MINUTES.toMillis(1)) {
-                throw new LoginFailedException("La cuenta está bloqueada. Intenta nuevamente después de 1 minuto.");
+    @Override
+    public String iniciarSesion(UsuariosModel usuario) {
+        try {
+            String correo = usuario.getCorreo();
+            final int MAX_INTENTOS = 5;
+            final long BLOQUEO_DURACION = TimeUnit.HOURS.toMillis(2); // 2 hours lockout
+    
+            // Verificar si el usuario está bloqueado
+            if (tiempoBloqueo.containsKey(correo)) {
+                long tiempoInicioBloqueo = tiempoBloqueo.get(correo);
+                long tiempoTranscurrido = System.currentTimeMillis() - tiempoInicioBloqueo;
+                long tiempoRestante = BLOQUEO_DURACION - tiempoTranscurrido;
+    
+                if (tiempoRestante > 0) {
+                    long minutosRestantes = TimeUnit.MILLISECONDS.toMinutes(tiempoRestante);
+                    long segundosRestantes = TimeUnit.MILLISECONDS.toSeconds(tiempoRestante) % 60;
+                    String mensajeBloqueo = String.format(
+                        "La cuenta está bloqueada. Intenta nuevamente en %d minutos y %d segundos.",
+                        minutosRestantes, segundosRestantes
+                    );
+                    throw new LoginFailedException(mensajeBloqueo);
+                } else {
+                    tiempoBloqueo.remove(correo);
+                    intentosFallidos.remove(correo);
+                }
+            }
+    
+            // Buscar el usuario por correo
+            UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(correo);
+            if (usuarioExistente == null) {
+                throw new LoginFailedException("El correo proporcionado no está registrado.");
+            }
+    
+            // Verificar si se proporcionó palabra_seguridad
+            String palabraSeguridad = usuario.getPalabra_seguridad();
+            if (palabraSeguridad != null && !palabraSeguridad.trim().isEmpty()) {
+                // Validar palabra_seguridad
+                if (!palabraSeguridad.equals(usuarioExistente.getPalabra_seguridad())) {
+                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+                    if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
+                        tiempoBloqueo.put(correo, System.currentTimeMillis());
+                        throw new LoginFailedException(
+                            "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
+                        );
+                    }
+                    throw new LoginFailedException(
+                        String.format("Palabra de seguridad incorrecta. Te quedan %d intentos.", intentosRestantes)
+                    );
+                }
             } else {
-                tiempoBloqueo.remove(correo);
-                intentosFallidos.remove(correo);
-            }
-        }
-
-        // Buscar el usuario por correo
-        UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(correo);
-        if (usuarioExistente == null) {
-            throw new LoginFailedException("El correo proporcionado no está registrado.");
-        }
-
-        // Verificar si se proporcionó palabra_seguridad
-        String palabraSeguridad = usuario.getPalabra_seguridad();
-        if (palabraSeguridad != null && !palabraSeguridad.trim().isEmpty()) {
-            // Validar palabra_seguridad
-            if (!palabraSeguridad.equals(usuarioExistente.getPalabra_seguridad())) {
-                intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-                if (intentosFallidos.get(correo) >= 5) {
-                    tiempoBloqueo.put(correo, System.currentTimeMillis());
-                    throw new LoginFailedException("Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 1 minuto.");
+                // Validar contraseña si no se proporcionó palabra_seguridad
+                String contrasena = usuario.getContrasena();
+                if (contrasena == null || contrasena.trim().isEmpty()) {
+                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+                    if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
+                        tiempoBloqueo.put(correo, System.currentTimeMillis());
+                        throw new LoginFailedException(
+                            "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
+                        );
+                    }
+                    throw new LoginFailedException(
+                        String.format("La contraseña es obligatoria cuando no se proporciona palabra de seguridad. Te quedan %d intentos.", intentosRestantes)
+                    );
                 }
-                throw new LoginFailedException("Palabra de seguridad incorrecta.");
-            }
-        } else {
-            // Validar contraseña si no se proporcionó palabra_seguridad
-            String contrasena = usuario.getContrasena();
-            if (contrasena == null || contrasena.trim().isEmpty()) {
-                intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-                if (intentosFallidos.get(correo) >= 5) {
-                    tiempoBloqueo.put(correo, System.currentTimeMillis());
-                    throw new LoginFailedException("Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 1 minuto.");
+    
+                if (!passwordEncoder.matches(contrasena, usuarioExistente.getContrasena())) {
+                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+    
+                    if (intentosFallidos.get(correo) >= 3) {
+                        throw new LoginFailedException(
+                            String.format("Debes ingresar la palabra de seguridad para continuar. Te quedan %d intentos.", intentosRestantes)
+                        );
+                    }
+    
+                    throw new LoginFailedException(
+                        String.format("Credenciales incorrectas. Te quedan %d intentos.", intentosRestantes)
+                    );
                 }
-                throw new LoginFailedException("La contraseña es obligatoria cuando no se proporciona palabra de seguridad.");
             }
-
-            if (!passwordEncoder.matches(contrasena, usuarioExistente.getContrasena())) {
-                intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-
-                if (intentosFallidos.get(correo) >= 3) {
-                    throw new LoginFailedException("Debes ingresar la palabra de seguridad para continuar.");
-                }
-
-                throw new LoginFailedException("Credenciales incorrectas.");
-            }
+    
+            // Login exitoso: resetear intentos fallidos y bloqueo
+            intentosFallidos.remove(correo);
+            tiempoBloqueo.remove(correo);
+    
+            // Crear claims con la información del usuario
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", usuarioExistente.getId().toString());
+            claims.put("correo", usuarioExistente.getCorreo());
+            claims.put("tipo", usuarioExistente.getTipo());
+            claims.put("nombre", usuarioExistente.getNombre());
+            claims.put("telefono", usuarioExistente.getTelefono());
+            claims.put("foto", usuarioExistente.getFoto());
+            claims.put("verificado", usuarioExistente.isVerificado());
+            claims.put("palabra_seguridad", usuarioExistente.getPalabra_seguridad());
+    
+            // Generar el token JWT
+            return jwtTokenService.generarToken(claims, 60 * 60 * 24);
+        } catch (Exception e) {
+            throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
         }
-
-        // Login exitoso: resetear intentos fallidos y bloqueo
-        intentosFallidos.remove(correo);
-        tiempoBloqueo.remove(correo);
-
-        // Crear claims con la información del usuario
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", usuarioExistente.getId().toString());
-        claims.put("correo", usuarioExistente.getCorreo());
-        claims.put("tipo", usuarioExistente.getTipo());
-        claims.put("nombre", usuarioExistente.getNombre());
-        claims.put("telefono", usuarioExistente.getTelefono());
-        claims.put("foto", usuarioExistente.getFoto());
-        claims.put("verificado", usuarioExistente.isVerificado());
-        claims.put("palabra_seguridad", usuarioExistente.getPalabra_seguridad());
-
-        // Generar el token JWT
-        return jwtTokenService.generarToken(claims, 60 * 60 * 24);
-    } catch (Exception e) {
-        throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
     }
-}
-
     @Override
     public String recuperarContrasena(UsuariosModel usuario) {
         try {
