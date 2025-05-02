@@ -27,6 +27,8 @@ const Login = () => {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [mostrarPalabraSeguridad, setMostrarPalabraSeguridad] = useState(false);
+  const [palabraSeguridad, setPalabraSeguridad] = useState("");
   const navigate = useNavigate();
   const googleButtonRef = useRef(null);
 
@@ -139,46 +141,68 @@ const Login = () => {
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
+    // Validar campos requeridos
+    if (!email.trim()) {
+      setErrorMessage("El correo es obligatorio.");
+      return;
+    }
+
+    if (mostrarPalabraSeguridad && !palabraSeguridad.trim()) {
+      setErrorMessage("La palabra de seguridad no puede estar vacía.");
+      return;
+    }
+
+    if (!mostrarPalabraSeguridad && !password.trim()) {
+      setErrorMessage("La contraseña es obligatoria.");
+      return;
+    }
+
     try {
+      // Construir el objeto credenciales según el modo de autenticación
       const credenciales = {
         correo: email,
-        contrasena: password,
+        ...(mostrarPalabraSeguridad
+          ? { palabra_seguridad: palabraSeguridad }
+          : { contrasena: password }),
       };
 
-      // Llamar al servicio para iniciar sesión
+      console.log("Credenciales enviadas:", credenciales);
       const data = await iniciarSesion(credenciales);
-
-      // Verificar si el token está presente en la respuesta
-      console.log("Respuesta del backend:", data);
 
       if (!data.token) {
         setErrorMessage("El servidor no devolvió un token. Verifica el backend.");
         return;
       }
 
-      // Guardar el token en localStorage
       localStorage.setItem("token", data.token);
-
-      // Decodificar el token para obtener la información del usuario
       const usuario = jwtDecode(data.token);
 
-      console.log("Información del usuario:", usuario);
-
       // Redirigir según el tipo de usuario
-      if (usuario.tipo) {
-        if (usuario.tipo === "propietario") {
-          navigate("/propietario");
-        } else if (usuario.tipo === "interesado") {
-          navigate("/interesado");
-        } else {
-          navigate("/interior");
-        }
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
       } else {
-        setErrorMessage("Tipo de usuario no definido. Contacte al administrador.");
+        navigate("/interior");
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      setErrorMessage("Credenciales incorrectas o error en el servidor");
+      console.error("Error completo:", error);
+      if (error.response) {
+        const mensajeError = error.response.data;
+
+        if (mensajeError.includes("palabra de seguridad")) {
+          setMostrarPalabraSeguridad(true);
+          setErrorMessage("Debes ingresar la palabra de seguridad para continuar.");
+        } else if (mensajeError.includes("Credenciales incorrectas")) {
+          setErrorMessage("Credenciales incorrectas.");
+        } else if (mensajeError.includes("bloqueada")) {
+          setErrorMessage("La cuenta está bloqueada. Intenta nuevamente después de 1 minuto.");
+        } else {
+          setErrorMessage(mensajeError || "Error desconocido.");
+        }
+      } else {
+        setErrorMessage("Error de conexión con el servidor.");
+      }
     }
   };
 
@@ -214,32 +238,42 @@ const Login = () => {
               {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
+          {mostrarPalabraSeguridad && (
+            <input
+              type="text"
+              placeholder="Palabra de Seguridad"
+              required
+              value={palabraSeguridad}
+              onChange={(e) => setPalabraSeguridad(e.target.value)}
+              className={styles.inputPassword}
+            />
+          )}
           <div className={styles.options}>
-            <label>
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              Guardar credenciales
-            </label>
-            <a href="/olvido-contraseña">Olvidé mi contraseña</a>
-          </div>
+          <label>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            Guardar credenciales
+          </label>
+          <a href="/olvido-contraseña">Olvidé mi contraseña</a>
+        </div>
           <button type="submit" className={styles.submitButton}>
             Ingresar
           </button>
-          <button
-            type="button"
-            className={styles.googleBtn}
-            ref={googleButtonRef}
-          >
-            <img
-              src="https://img.icons8.com/color/16/000000/google-logo.png"
-              alt="Google Logo"
-            />
-            Continuar con Google
-          </button>
         </form>
+        <button
+          type="button"
+          className={styles.googleBtn}
+          ref={googleButtonRef}
+        >
+          <img
+            src="https://img.icons8.com/color/16/000000/google-logo.png"
+            alt="Google Logo"
+          />
+          Continuar con Google
+        </button>
         <p className={styles.registerLink}>
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>

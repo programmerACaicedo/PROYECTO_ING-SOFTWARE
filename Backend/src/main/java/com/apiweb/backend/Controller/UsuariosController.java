@@ -50,7 +50,9 @@ public class UsuariosController {
     public ResponseEntity<?> login(@RequestBody UsuariosModel usuario) {
         try {
             String token = usuariosService.iniciarSesion(usuario);
-            return ResponseEntity.ok(Map.of("token", token));
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            return ResponseEntity.ok(response);
         } catch (LoginFailedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
