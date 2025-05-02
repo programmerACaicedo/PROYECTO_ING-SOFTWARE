@@ -15,6 +15,12 @@ import Perfil from "./pages/perfil";
 import ActualizarPublicacion from "./pages/actualizarPublicacion";
 import DetallePublicacion from "./pages/detallePublicacion";
 import PublicacionesFiltradas from "./pages/publicacionesFiltradas";
+import ConfirmarAvisos from "./pages/confirmarAvisos";
+import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
+
+
+
+
 
 // Ahora importas el módulo
 import styles from "./styles/App.module.css";
@@ -36,6 +42,8 @@ function App() {
           <Route path="/actualizar-publicacion/:id" element={<ActualizarPublicacion />} />
           <Route path="/publicacion/:id" element={<DetallePublicacion />} />
           <Route path="/publicaciones/:tipo" element={<PublicacionesFiltradas />} />
+          <Route path="/admin/confirmar-avisos" element={<ConfirmarAvisos />} />
+          <Route path="/admin/aviso/:id" element={<DetalleAvisoAdmin />} />
         </Routes>
       </BackgroundWrapper>
     </BrowserRouter>
