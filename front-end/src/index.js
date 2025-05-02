@@ -1,15 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App"; // Asegúrate de que la ruta sea correcta
-import "./styles/index.module.css"; // Si hay un archivo de estilos, revisa que existe
+import "./styles/index.module.css"; // Revisa que este archivo exista
+import { AuthProvider } from "./services/AuthContext"; // Importa el proveedor de contexto
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-
 root.render(
-  <div className="index-page">
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-  </div>
+  <AuthProvider> {/* Envolver la aplicación con el proveedor */}
+    <div className="index-page">
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </div>
+  </AuthProvider>
 );

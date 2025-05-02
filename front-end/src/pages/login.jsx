@@ -1,27 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import styles from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { iniciarSesion } from "../services/conexiones";
 import { jwtDecode } from "jwt-decode";
-
-const obtenerInformacionUsuario = () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const usuario = jwtDecode(token);
-    return usuario;
-  } catch (error) {
-    console.error("Error al decodificar el token:", error);
-    return null;
-  }
-};
+import { AuthContext } from "../services/AuthContext";
 
 const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { login } = useContext(AuthContext); // Obtener la función login del contexto
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
@@ -31,30 +17,6 @@ const Login = () => {
   const [palabraSeguridad, setPalabraSeguridad] = useState("");
   const navigate = useNavigate();
   const googleButtonRef = useRef(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    localStorage.setItem("reciénIniciado", "true");
-    if (token) {
-      try {
-        const usuario = jwtDecode(token);
-        console.log("Usuario autenticado:", usuario);
-        setIsAuthenticated(true);
-
-        if (usuario.tipo === "propietario") {
-          navigate("/propietario");
-        } else if (usuario.tipo === "interesado") {
-          navigate("/interesado");
-        } else {
-          navigate("/interior");
-        }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        setErrorMessage("Error al procesar la sesión. Por favor, inicie sesión nuevamente.");
-        localStorage.removeItem("token");
-      }
-    }
-  }, [navigate]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -70,8 +32,7 @@ const Login = () => {
           });
           if (res.ok) {
             const data = await res.json();
-            localStorage.setItem("token", data.token);
-            setIsAuthenticated(true);
+            login(data.token); // Usar la función login del contexto
             localStorage.setItem("reciénIniciado", "true");
             if (data.tipoUsuario) {
               if (data.tipoUsuario === "propietario") {
@@ -82,7 +43,7 @@ const Login = () => {
                 navigate("/interior");
               }
             } else {
-              setErrorMessage("Tipo de usuario no definido. Contacte al administrador.");
+              setErrorMessage("Tipo de usuario no definido.");
             }
           } else {
             setErrorMessage("Error al iniciar sesión con Google");
@@ -140,7 +101,6 @@ const Login = () => {
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
-    // Validar campos requeridos
     if (!email.trim()) {
       setErrorMessage("El correo es obligatorio.");
       return;
@@ -157,7 +117,6 @@ const Login = () => {
     }
 
     try {
-      // Construir el objeto credenciales según el modo de autenticación
       const credenciales = {
         correo: email,
         ...(mostrarPalabraSeguridad
@@ -165,18 +124,25 @@ const Login = () => {
           : { contrasena: password }),
       };
 
-      console.log("Credenciales enviadas:", credenciales);
       const data = await iniciarSesion(credenciales);
 
       if (!data.token) {
-        setErrorMessage("El servidor no devolvió un token. Verifica el backend.");
+        setErrorMessage("El servidor no devolvió un token.");
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      const usuario = jwtDecode(data.token);
+      login(data.token); // Usar la función login del contexto
+      localStorage.setItem("reciénIniciado", "true");
 
-      // Guardar o eliminar credenciales según el estado de rememberMe
+      const usuario = jwtDecode(data.token);
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
+      } else {
+        navigate("/interior");
+      }
+
       if (rememberMe && !mostrarPalabraSeguridad) {
         localStorage.setItem("savedEmail", email);
         localStorage.setItem("savedPassword", password);
@@ -186,25 +152,15 @@ const Login = () => {
         localStorage.removeItem("savedPassword");
         localStorage.removeItem("rememberMe");
       }
-
-      // Redirigir según el tipo de usuario
-      if (usuario.tipo === "propietario") {
-        navigate("/propietario");
-      } else if (usuario.tipo === "interesado") {
-        navigate("/interesado");   
-      }
     } catch (error) {
       console.error("Error completo:", error);
       if (error.response) {
         const mensajeError = error.response.data;
-
         if (mensajeError.includes("palabra de seguridad")) {
           setMostrarPalabraSeguridad(true);
-          setErrorMessage("Debes ingresar la palabra de seguridad para continuar.");
+          setErrorMessage("Ingresa la palabra de seguridad.");
         } else if (mensajeError.includes("Credenciales incorrectas")) {
           setErrorMessage("Credenciales incorrectas.");
-        } else if (mensajeError.includes("bloqueada")) {
-          setErrorMessage(mensajeError);
         } else {
           setErrorMessage(mensajeError || "Error desconocido.");
         }
