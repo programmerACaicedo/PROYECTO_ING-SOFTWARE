@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/interior.module.css";
+import styles from "../styles/interiorInteresado.module.css";
 
-const Interior = () => {
+const InteriorInteresado = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
@@ -20,7 +20,7 @@ const Interior = () => {
 
   useEffect(() => {
     if (mostrarSplash) {
-      const timer = setTimeout(() => setMostrarSplash(false), 1500);
+      const timer = setTimeout(() => setMostrarSplash(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [mostrarSplash]);
@@ -38,10 +38,12 @@ const Interior = () => {
     setMostrarMenu(false);
     navigate(`/publicaciones/${tipo}`);
   };
-
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
-  const handleNuevoAviso = () => navigate("/nuevo-aviso");
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+  };
   return (
     <>
       {mostrarSplash && (
@@ -74,15 +76,13 @@ const Interior = () => {
                 )}
               </div>
               {isPropietario && (
-                <>
-                  <button className={styles.nuevoAvisoBtn} onClick={handleNuevoAviso}>
-                    Nuevo Aviso
-                  </button>
-                  <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
-                    Mi Perfil
-                  </button>
-                </>
+                <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
+                  Mi Perfil
+                </button>
               )}
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+               Cerrar Sesión
+            </button>
             </div>
           </header>
 
@@ -110,4 +110,4 @@ const Interior = () => {
   );
 };
 
-export default Interior;
+export default InteriorInteresado;

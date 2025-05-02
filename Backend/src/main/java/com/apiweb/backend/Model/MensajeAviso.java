@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UbicacionInmueble {
-    private String edificio;
-    private String piso;
+public class MensajeAviso {
+    private String descripcion;
+    private String fecha;
 }

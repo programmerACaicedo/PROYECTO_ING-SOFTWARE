@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   background-color: #0284c7; /* color de fondo, ajústalo a tu gusto */
-  padding: 2rem;
+  padding: 1.89rem;
   border-bottom: 1px solid #ddd;
   flex-shrink: 0; /* evita que el header se contraiga */
 }
@@ -57,20 +57,20 @@ form h3 {
 }
 
 .menu {
-  margin-top: 97px;
+  margin-top: 119px;
   display: none;
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
-  height: 85.8vh;
+  width: clamp(200px, 30vw, 245px);
+  height: 83.6vh;
   flex-direction: column;
   background-color: #1c1c1cc6;
-  padding: 1rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
   z-index: 1000;
 }
+
 
 .menuOpen {
   display: flex;

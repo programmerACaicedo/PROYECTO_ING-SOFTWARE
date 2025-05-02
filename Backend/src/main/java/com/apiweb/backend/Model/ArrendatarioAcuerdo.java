@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ArrendatarioAcuerdo {
     @Id
-    private ObjectId idUsuario;
+    private ObjectId usuarioId;
     private String nombre;
 }

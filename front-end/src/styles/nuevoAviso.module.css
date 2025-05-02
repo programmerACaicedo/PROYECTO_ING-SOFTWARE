@@ -10,7 +10,7 @@
 
 .headerPublicar {
   background-color: #0284c7;
-  padding: 2rem;
+  padding: 1.7rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100vw;
   display: flex;
@@ -38,18 +38,17 @@
 }
 
 .menu {
-  margin-top: 100px;
+  margin-top: 119px;
   display: none;
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
-  height: 85.5vh;
+  width: clamp(200px, 30vw, 245px);
+  height: 83.6vh;
   flex-direction: column;
   background-color: #1c1c1cc6;
-  padding: 1rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
   z-index: 1000;
 }
 
@@ -102,10 +101,12 @@
 }
 
 .seccionTitulo {
+
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
-  margin: 1.5rem 0;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   color: #444;
 }
 
@@ -114,10 +115,12 @@
   gap: 2rem;
   justify-content: center;
   flex-wrap: wrap;
+  min-height: 20.2vh;
 }
 
 .imagenPreview {
   width: 300px;
+  height: 65vh;
   padding: 1rem;
   background-color: #fff;
   border: 2px dashed #007bff;
@@ -229,11 +232,14 @@
 }
 
 .formPublicar {
+  text-align: left;
+  color: #000000c1;
   width: 500px;
+  height: 65vh;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 1.5rem;
   border-radius: 10px;
 }

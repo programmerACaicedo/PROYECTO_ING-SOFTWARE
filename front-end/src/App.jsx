@@ -7,7 +7,8 @@ import Main from "./pages/main";
 import Login from "./pages/login";
 import Registro from "./pages/registro";
 import OlvidoContraseña from "./pages/olvidoContraseña";
-import Interior from "./pages/mainInterior";
+import InteriorPropietario from "./pages/InteriorPropietario";
+import InteriorInteresado from "./pages/InteriorInteresado";
 import InteriorAdmin from "./pages/InteriorAdmin";
 import NuevoAviso from "./pages/nuevoAviso";
 import Perfil from "./pages/perfil";
@@ -33,7 +34,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/olvido-contraseña" element={<OlvidoContraseña />} />
-          <Route path="/interior" element={<Interior />} />
+          <Route path="/propietario" element={<InteriorPropietario />} />
+          <Route path="/interesado" element={<InteriorInteresado />} />
           <Route path="/admin" element={<InteriorAdmin />} />
           <Route path="/nuevo-aviso" element={<NuevoAviso />} />
           <Route path="/perfil" element={<Perfil />} />

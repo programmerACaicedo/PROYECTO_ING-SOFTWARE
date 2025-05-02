@@ -25,6 +25,6 @@ public class AcuerdosModel {
     private String razonCancelacion;
     private String estado;
     private String archivoContrato;
-    private ArrayList<CalificacionesServicios> calificacionServicio = new ArrayList<CalificacionesServicios>(); // Este atributo hace ref a el documento embebido
-    private ArrendatarioAcuerdo arrendatario;// Este atributo hace ref a el documento embebido 
+    private ArrayList<CalificacionesServicios> calificacionServicio = new ArrayList<CalificacionesServicios>();
+    private ArrendatarioAcuerdo arrendatario;
 } 
