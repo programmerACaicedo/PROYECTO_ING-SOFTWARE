@@ -91,7 +91,7 @@ const Registro = () => {
 
   // Funciones de validación
   const validarCorreo = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
-  const validarTelefono = (telefono) => /^\d{7,15}$/.test(telefono);
+  const validarTelefono = (telefono) => /^\d{10}$/.test(telefono);
   const validarContraseña = (contraseña) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.?]).{8,}$/.test(
       contraseña
@@ -112,7 +112,7 @@ const Registro = () => {
     }
 
     if (!validarTelefono(formulario.telefono)) {
-      mostrarMensaje("El teléfono debe tener entre 7 y 15 dígitos.", "error");
+      mostrarMensaje("El teléfono debe tener 10 dígitos.", "error");
       return;
     }
 
@@ -135,6 +135,7 @@ const Registro = () => {
     }
 
     if (!aceptaTerminos) {
+      console.log("El usuario no aceptó los términos.");
       mostrarMensaje("Debes aceptar el tratamiento de datos personales.", "error");
       return;
     }
@@ -145,13 +146,18 @@ const Registro = () => {
         correo: formulario.correo,
         telefono: formulario.telefono,
         contrasena: formulario.contraseña,
-        palabra_seguridad: formulario.seguridad, // Este valor debe estar presente
+        palabra_seguridad: formulario.seguridad,
         tipo: formulario.tipoUsuario,
       });
       mostrarMensaje("¡Registro exitoso!", "exito");
-      setTimeout(() => navigate("/login"), 1200);
+      setTimeout(() => navigate("/login"), 1000);
     } catch (error) {
-      mostrarMensaje(error.message || "Error al registrar usuario", "error");
+      if (error.response && error.response.status === 400) {
+        // Manejar el caso de correo ya registrado
+        mostrarMensaje("El correo ingresado ya está registrado. Intenta con otro.", "error");
+      } else {
+        mostrarMensaje(error.message || "Error al registrar usuario", "error");
+      }
     }
   };
 
@@ -208,7 +214,12 @@ const Registro = () => {
                 placeholder="Teléfono"
                 name="telefono"
                 value={formulario.telefono}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    handleChange(e);
+                  }
+                }}
                 required
               />
             </div>
@@ -294,7 +305,7 @@ const Registro = () => {
           </div>
 
           <div className={styles["register-button"]}>
-            <button type="submit" disabled={!aceptaTerminos}>
+            <button type="submit" disabled={false}>
               Registrar
             </button>
           </div>
