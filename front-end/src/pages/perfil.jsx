@@ -21,6 +21,7 @@ const Perfil = () => {
   const [confirmarEliminar, setConfirmarEliminar] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [tipoUsuario, setTipoUsuario] = useState("");
 
   const fetchUserData = async () => {
     try {
