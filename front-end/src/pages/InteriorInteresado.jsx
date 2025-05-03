@@ -42,6 +42,7 @@ const InteriorInteresado = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("sesionActiva");
     navigate("/login"); // Redirige al usuario a la página de inicio de sesión
   };
   return (

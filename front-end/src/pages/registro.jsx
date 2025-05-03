@@ -150,7 +150,7 @@ const Registro = () => {
         tipo: formulario.tipoUsuario,
       });
       mostrarMensaje("¡Registro exitoso!", "exito");
-      setTimeout(() => navigate("/login"), 1000);
+      setTimeout(() => navigate("/login"), 800);
     } catch (error) {
       if (error.response && error.response.status === 400) {
         // Manejar el caso de correo ya registrado

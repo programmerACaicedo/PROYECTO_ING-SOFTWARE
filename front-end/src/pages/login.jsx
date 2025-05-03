@@ -34,7 +34,9 @@ const Login = () => {
             const data = await res.json();
             login(data.token); // Usar la función login del contexto
             localStorage.setItem("reciénIniciado", "true");
+
             if (data.tipoUsuario) {
+              localStorage.setItem("sesionActiva", "true");
               if (data.tipoUsuario === "propietario") {
                 navigate("/propietario");
               } else if (data.tipoUsuario === "interesado") {
