@@ -16,7 +16,8 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todas las rutas
-                        .allowedOrigins("http://localhost:3000") // Permite solicitudes desde React
+                        .allowedOrigins("https://fkzklx7z-3000.use2.devtunnels.ms/") // Permite solicitudes desde React
+                        .allowedOrigins("http://localhost:3000") // Permite solicitudes desde React en localhost
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
                         .allowedHeaders("*") // Permite todos los encabezados
                         .allowCredentials(true); // Permite el envío de cookies o credenciales
