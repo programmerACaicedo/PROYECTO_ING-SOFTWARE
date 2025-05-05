@@ -1,28 +1,58 @@
-import React, { useEffect, useState, useRef } from "react";
-import styles from "../styles/login.module.css"; // Importamos el módulo de estilo
+import React, { useEffect, useState, useRef, useContext } from "react";
+import styles from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { iniciarSesion } from "../services/conexiones";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../services/AuthContext";
 
 const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { login } = useContext(AuthContext); // Obtener la función login del contexto
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [mostrarPalabraSeguridad, setMostrarPalabraSeguridad] = useState(false);
+  const [palabraSeguridad, setPalabraSeguridad] = useState("");
   const navigate = useNavigate();
-  const googleButtonRef = useRef(null); // Ref para el botón de Google
+  const googleButtonRef = useRef(null);
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
-      const handleCredentialResponse = (response) => {
-        console.log("Token JWT recibido:", response.credential);
-        setIsAuthenticated(true);
-        localStorage.setItem("reciénIniciado", "true");
-        navigate("/interior");
+      const handleCredentialResponse = async (response) => {
+        try {
+          const res = await fetch("http://localhost:8080/api/login/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: response.credential }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            login(data.token); // Usar la función login del contexto
+            localStorage.setItem("reciénIniciado", "true");
+
+            if (data.tipoUsuario) {
+              localStorage.setItem("sesionActiva", "true");
+              if (data.tipoUsuario === "propietario") {
+                navigate("/propietario");
+              } else if (data.tipoUsuario === "interesado") {
+                navigate("/interesado");
+              } else {
+                navigate("/interior");
+              }
+            } else {
+              setErrorMessage("Tipo de usuario no definido.");
+            }
+          } else {
+            setErrorMessage("Error al iniciar sesión con Google");
+          }
+        } catch (error) {
+          setErrorMessage("Error de conexión con el servidor");
+        }
       };
 
       if (window.google) {
@@ -70,36 +100,77 @@ const Login = () => {
     }
   }, [errorMessage]);
 
-  const handleLoginSubmit = (event) => {
+  const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-    if (!emailRegex.test(email) || !passwordRegex.test(password)) {
-      setErrorMessage("❌Credenciales Incorrectas");
+    if (!email.trim()) {
+      setErrorMessage("El correo es obligatorio.");
       return;
     }
 
-    setIsAuthenticated(true);
-    if (rememberMe) {
-      localStorage.setItem("savedEmail", email);
-      localStorage.setItem("savedPassword", password);
-      localStorage.setItem("rememberMe", "true");
-    } else {
-      localStorage.removeItem("savedEmail");
-      localStorage.removeItem("savedPassword");
-      localStorage.removeItem("rememberMe");
+    if (mostrarPalabraSeguridad && !palabraSeguridad.trim()) {
+      setErrorMessage("La palabra de seguridad no puede estar vacía.");
+      return;
     }
-    localStorage.setItem("reciénIniciado", "true");
-    navigate("/interior");
 
-    if (email === "admin@gmail.com") {
-      navigate("/admin"); // Envía al panel de administrador
-    } else {
-      navigate("/propietario"); // Envía al panel de usuario normal
+    if (!mostrarPalabraSeguridad && !password.trim()) {
+      setErrorMessage("La contraseña es obligatoria.");
+      return;
+    }
+
+    try {
+      const credenciales = {
+        correo: email,
+        ...(mostrarPalabraSeguridad
+          ? { palabra_seguridad: palabraSeguridad }
+          : { contrasena: password }),
+      };
+
+      const data = await iniciarSesion(credenciales);
+
+      if (!data.token) {
+        setErrorMessage("El servidor no devolvió un token.");
+        return;
+      }
+
+      login(data.token); // Usar la función login del contexto
+      localStorage.setItem("reciénIniciado", "true");
+
+      const usuario = jwtDecode(data.token);
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
+      } else {
+        navigate("/interior");
+      }
+
+      if (rememberMe && !mostrarPalabraSeguridad) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("savedPassword", password);
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedPassword");
+        localStorage.removeItem("rememberMe");
+      }
+    } catch (error) {
+      console.error("Error completo:", error);
+      if (error.response) {
+        const mensajeError = error.response.data;
+        if (mensajeError.includes("palabra de seguridad")) {
+          setMostrarPalabraSeguridad(true);
+          setErrorMessage("Ingresa la palabra de seguridad.");
+        } else if (mensajeError.includes("Credenciales incorrectas")) {
+          setErrorMessage("Credenciales incorrectas.");
+        } else {
+          setErrorMessage(mensajeError || "Error desconocido.");
+        }
+      } else {
+        setErrorMessage("Error de conexión con el servidor.");
+      }
     }
   };
-  
 
   return (
     <div className={styles.loginPage}>
@@ -133,6 +204,16 @@ const Login = () => {
               {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
+          {mostrarPalabraSeguridad && (
+            <input
+              type="text"
+              placeholder="Palabra de Seguridad"
+              required
+              value={palabraSeguridad}
+              onChange={(e) => setPalabraSeguridad(e.target.value)}
+              className={styles.inputPassword}
+            />
+          )}
           <div className={styles.options}>
             <label>
               <input
@@ -147,18 +228,18 @@ const Login = () => {
           <button type="submit" className={styles.submitButton}>
             Ingresar
           </button>
-          <button
-            type="button"
-            className={styles.googleBtn}
-            ref={googleButtonRef}
-          >
-            <img
-              src="https://img.icons8.com/color/16/000000/google-logo.png"
-              alt="Google Logo"
-            />
-            Continuar con Google
-          </button>
         </form>
+        <button
+          type="button"
+          className={styles.googleBtn}
+          ref={googleButtonRef}
+        >
+          <img
+            src="https://img.icons8.com/color/16/000000/google-logo.png"
+            alt="Google Logo"
+          />
+          Continuar con Google
+        </button>
         <p className={styles.registerLink}>
           ¿No tienes una cuenta? <a href="/registro">Regístrate aquí</a>
         </p>

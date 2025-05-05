@@ -1,76 +1,111 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import styles from "../styles/perfil.module.css";
+import {
+  obtenerUsuario,
+  actualizarUsuario,
+  eliminarCuenta,
+} from "../services/conexiones";
+import defaultProfilePicture from "../assets/img/por_defecto.png";
 
 const Perfil = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    id: "",
     nombre: "",
     telefono: "",
-    contraseña: "",
-    foto: null,
-    email: "",
+    contrasena: "",
+    foto: null, // Will store Base64 string or null
+    correo: "",
   });
   const [initialData, setInitialData] = useState({ ...formData });
   const [mensajes, setMensajes] = useState([]);
   const [confirmarEliminar, setConfirmarEliminar] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [tipoUsuario, setTipoUsuario] = useState("");
+
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const decodedToken = jwtDecode(token);
+      setTipoUsuario(decodedToken.tipo || "");
+      const id = decodedToken.id?._id || decodedToken.id || "";
+      const userDataFromToken = {
+        id,
+        nombre: decodedToken.nombre || "",
+        correo: decodedToken.correo || "",
+        telefono: decodedToken.telefono || "",
+        foto: decodedToken.foto || null,
+      };
+
+      setFormData((prevData) => ({
+        ...prevData,
+        ...userDataFromToken,
+      }));
+      setInitialData((prevData) => ({
+        ...prevData,
+        ...userDataFromToken,
+      }));
+
+      const user = await obtenerUsuario();
+      const backendId = user.id?._id || user.id || "";
+      setFormData((prevData) => ({
+        ...prevData,
+        id: backendId,
+        nombre: user.nombre || prevData.nombre,
+        correo: user.correo || prevData.correo,
+        telefono: user.telefono || prevData.telefono,
+        foto: user.foto || prevData.foto,
+      }));
+      setInitialData((prevData) => ({
+        ...prevData,
+        id: backendId,
+        nombre: user.nombre,
+        correo: user.correo,
+        telefono: user.telefono,
+        foto: user.foto,
+      }));
+    } catch (error) {
+      console.error("Error al obtener los datos del usuario:", error);
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Error al cargar los datos del usuario", tipo: "error" },
+      ]);
+    }
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
-        const response = await fetch("/api/user", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const user = await response.json();
-          const userData = {
-            nombre: user.nombre || "",
-            email: user.email || "",
-            telefono: user.telefono || "",
-            foto: user.foto ? { url: user.foto } : null,
-          };
-          setFormData(userData);
-          setInitialData(userData);
-        } else {
-          setMensajes((prevMensajes) => [
-            ...prevMensajes,
-            { texto: "Error al cargar los datos del usuario", tipo: "error" },
-          ]);
-          navigate("/login");
-        }
-      } catch (error) {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Error de conexión con el servidor", tipo: "error" },
-        ]);
-        navigate("/login");
-      }
-    };
-
     fetchUserData();
   }, [navigate]);
 
-  useEffect(() => {
-    return () => {
-      if (formData.foto && formData.foto instanceof File) {
-        URL.revokeObjectURL(URL.createObjectURL(formData.foto));
+  const handleInicioClick = () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
       }
-    };
-  }, [formData.foto]);
+
+      const usuario = jwtDecode(token);
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
+      }
+    } catch (error) {
+      console.error("Error al decodificar el token:", error);
+      navigate("/login");
+    }
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
     const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData);
@@ -79,7 +114,8 @@ const Perfil = () => {
     const handleBeforeUnload = (e) => {
       if (hasChanges) {
         e.preventDefault();
-        e.returnValue = "¿Estás seguro de que deseas salir? Tienes cambios sin guardar.";
+        e.returnValue =
+          "¿Estás seguro de que deseas salir? Tienes cambios sin guardar.";
       }
     };
 
@@ -122,7 +158,19 @@ const Perfil = () => {
       return;
     }
 
-    setFormData({ ...formData, foto: file });
+    // Convert file to Base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64String = reader.result; // Includes data:image/jpeg;base64,...
+      setFormData({ ...formData, foto: base64String });
+    };
+    reader.onerror = () => {
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Error al leer la imagen.", tipo: "error" },
+      ]);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleEliminarFoto = () => {
@@ -134,7 +182,10 @@ const Perfil = () => {
     if (!formData.nombre) {
       newErrores.push({ texto: "El nombre es obligatorio", tipo: "error" });
     } else if (!/^[A-Za-z\s]+$/.test(formData.nombre)) {
-      newErrores.push({ texto: "El nombre solo puede contener letras y espacios", tipo: "error" });
+      newErrores.push({
+        texto: "El nombre solo puede contener letras y espacios",
+        tipo: "error",
+      });
     }
 
     if (!formData.telefono) {
@@ -146,21 +197,32 @@ const Perfil = () => {
       });
     }
 
-    if (formData.contraseña) {
-      if (formData.contraseña.length < 8) {
-        newErrores.push({ texto: "La contraseña debe tener al menos 8 caracteres", tipo: "error" });
-      } else if (!/[A-Z]/.test(formData.contraseña) || !/[a-z]/.test(formData.contraseña) || !/[0-9]/.test(formData.contraseña)) {
+    if (formData.contrasena) {
+      if (formData.contrasena.length < 8) {
         newErrores.push({
-          texto: "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
+          texto: "La contraseña debe tener al menos 8 caracteres",
+          tipo: "error",
+        });
+      } else if (
+        !/[A-Z]/.test(formData.contrasena) ||
+        !/[a-z]/.test(formData.contrasena) ||
+        !/[0-9]/.test(formData.contrasena)
+      ) {
+        newErrores.push({
+          texto:
+            "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
           tipo: "error",
         });
       }
     }
 
-    if (!formData.email) {
+    if (!formData.correo) {
       newErrores.push({ texto: "El correo es obligatorio", tipo: "error" });
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrores.push({ texto: "El correo electrónico no es válido", tipo: "error" });
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
+      newErrores.push({
+        texto: "El correo electrónico no es válido",
+        tipo: "error",
+      });
     }
 
     if (newErrores.length > 0) {
@@ -172,46 +234,29 @@ const Perfil = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("nombre", formData.nombre);
-    formDataToSend.append("telefono", formData.telefono);
-    formDataToSend.append("email", formData.email);
-    if (formData.contraseña) {
-      formDataToSend.append("contraseña", formData.contraseña);
-    }
-    if (formData.foto && formData.foto instanceof File) {
-      formDataToSend.append("foto", formData.foto);
+    if (!validateForm()) {
+      console.log("Formulario no válido");
+      return;
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/perfil", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
-      const data = await response.json();
+      console.log("Datos enviados al backend:", formData);
+      const updatedUser = await actualizarUsuario(formData.id, formData);
+      console.log("Usuario actualizado:", updatedUser);
 
-      if (response.ok) {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Perfil actualizado con éxito", tipo: "success" },
-        ]);
-        setInitialData({ ...formData });
-      } else {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: data.error || "Error al actualizar el perfil", tipo: "error" },
-        ]);
-      }
-    } catch (error) {
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "Error de conexión con el servidor", tipo: "error" },
+        { texto: "Perfil actualizado correctamente", tipo: "success" },
+      ]);
+
+      await fetchUserData(); // Refresh the view
+      setFormData((prevData) => ({ ...prevData, contrasena: "" })); // Clear password
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: error.message || "Error al actualizar el perfil", tipo: "error" },
       ]);
     }
   };
@@ -222,35 +267,25 @@ const Perfil = () => {
 
   const confirmarEliminacion = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/eliminar-cuenta", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.", tipo: "success" },
-        ]);
-        setConfirmarEliminar(false);
-        localStorage.removeItem("token");
-        setTimeout(() => navigate("/"), 2000);
-      } else {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: data.error || "Error al eliminar la cuenta", tipo: "error" },
-        ]);
-        setConfirmarEliminar(false);
-      }
-    } catch (error) {
+      await eliminarCuenta();
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "Error de conexión con el servidor", tipo: "error" },
+        {
+          texto:
+            "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
+          tipo: "success",
+        },
+      ]);
+      setConfirmarEliminar(false);
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/"), 2000);
+    } catch (error) {
+      console.error("Error al eliminar cuenta:", error);
+      const errorMessage =
+        error.response?.data?.error || "Error al eliminar la cuenta";
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: errorMessage, tipo: "error" },
       ]);
       setConfirmarEliminar(false);
     }
@@ -267,33 +302,65 @@ const Perfil = () => {
   return (
     <div className={styles.perfilContainer}>
       <header className={styles.header}>
-        <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
+        <span className={styles.iconMenu} onClick={toggleMenu}>
+          ☰
+        </span>
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
       <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={() => { navigate("/interior"); closeMenu(); }}>Inicio</button>
-        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
-        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
-        <button onClick={() => { navigate("/publicacion/1"); closeMenu(); }}>Ver Publicación 1</button>
-        <button onClick={() => { navigate("/publicacion/2"); closeMenu(); }}>Ver Publicación 2</button>
+        <button onClick={handleInicioClick}>Inicio</button>
+        <button
+          onClick={() => {
+            navigate("/perfil");
+            closeMenu();
+          }}
+        >
+          Perfil
+        </button>
+        {tipoUsuario === "propietario" && (
+          <button
+            onClick={() => {
+              navigate("/nuevo-aviso");
+              closeMenu();
+            }}
+          >
+            Nuevo Aviso
+          </button>
+        )}
+        <button
+          onClick={() => {
+            navigate("/publicacion/1");
+            closeMenu();
+          }}
+        >
+          Ver Publicación 1
+        </button>
+        <button
+          onClick={() => {
+            navigate("/publicacion/2");
+            closeMenu();
+          }}
+        >
+          Ver Publicación 2
+        </button>
       </nav>
 
       <main className={styles.mainContent}>
         <div className={styles.perfilForm}>
           <div className={styles.fotoPerfil}>
             <img
-              src={
-                formData.foto
-                  ? formData.foto instanceof File
-                    ? URL.createObjectURL(formData.foto)
-                    : formData.foto.url
-                  : "/assets/pictograma-persona.png"
-              }
+              src={formData.foto || defaultProfilePicture}
               alt="Foto de Perfil"
+              onError={(e) => {
+                e.target.src = defaultProfilePicture;
+              }}
             />
             <div className={styles.fotoButtons}>
-              <label htmlFor="foto-upload" className={styles.btnSeleccionarArchivo}>
+              <label
+                htmlFor="foto-upload"
+                className={styles.btnSeleccionarArchivo}
+              >
                 Seleccionar Archivo
               </label>
               {formData.foto && (
@@ -314,9 +381,13 @@ const Perfil = () => {
               style={{ display: "none" }}
             />
             {mensajes.length > 0 && (
-              <p className={
-                mensajes[0].tipo === "success" ? styles.mensajeExito : styles.error
-              }>
+              <p
+                className={
+                  mensajes[0].tipo === "success"
+                    ? styles.mensajeExito
+                    : styles.error
+                }
+              >
                 {mensajes[0].texto}
               </p>
             )}
@@ -329,8 +400,8 @@ const Perfil = () => {
               <label>
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
+                  name="correo"
+                  value={formData.correo}
                   onChange={handleChange}
                   placeholder="Ingresa tu correo electrónico"
                 />
@@ -362,18 +433,23 @@ const Perfil = () => {
               <label>
                 <input
                   type="password"
-                  name="contraseña"
-                  value={formData.contraseña}
+                  name="contrasena"
+                  value={formData.contrasena}
                   onChange={handleChange}
                   placeholder="Mín. 8 caracteres, mayúscula, minúscula y número"
                 />
               </label>
 
-              <button type="submit" className={styles.btnActualizar}>Actualizar</button>
+              <button type="submit" className={styles.btnActualizar}>
+                Actualizar
+              </button>
             </form>
 
             <div className={styles.eliminarCuenta}>
-              <button onClick={handleEliminarCuenta} className={styles.btnEliminar}>
+              <button
+                onClick={handleEliminarCuenta}
+                className={styles.btnEliminar}
+              >
                 Eliminar Cuenta
               </button>
             </div>
@@ -382,7 +458,10 @@ const Perfil = () => {
 
         {confirmarEliminar && (
           <div className={styles.confirmarEliminacion}>
-            <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.</p>
+            <p>
+              ¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es
+              irreversible.
+            </p>
             <p>Al eliminar tu cuenta, perderás:</p>
             <ul>
               <li>Todas tus publicaciones activas.</li>

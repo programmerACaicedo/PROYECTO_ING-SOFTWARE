@@ -10,7 +10,7 @@
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg);
   background-size: cover;
-  display: flex;
+  display: flex; 
   flex-direction: row;
   align-items: center;
   justify-content: center;

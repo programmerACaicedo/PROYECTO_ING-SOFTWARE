@@ -27,6 +27,7 @@ const DetallePublicacion = () => {
   const [comentarios, setComentarios] = useState("");
   const [mensajeReporte, setMensajeReporte] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [tipoUsuario, setTipoUsuario] = useState("");
 
   useEffect(() => {
     const encontrada = publicaciones.find((p) => p.id === id);

@@ -3,7 +3,7 @@ html {
   font-size: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
-}zzz
+}
 
 body {
   min-width: 320px;
@@ -120,7 +120,20 @@ body {
     font-weight: bold;
     flex: 1;
     text-align: center;
- 
+
+  }
+
+  .logoutBtn {
+    background-color: #b7b7b7d5;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+  } 
+  .logoutBtn:hover {
+    background-color: #ff1a1a;
   }
 
 
@@ -134,7 +147,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    width: 370px;
+    width: 270px;
   }
 
   .dropdownContent {

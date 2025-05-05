@@ -1,12 +1,38 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api", // Base URL for API requests
+  baseURL: "http://localhost:8080/api", // Base URL de la API
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+// Agregar token a cada petición automáticamente
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token && config.url.startsWith("/")) {  // Solo si es ruta interna
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Manejar expiración o errores de permisos
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403) {
+      console.warn("Token inválido o sin permiso. Cerrando sesión.");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor de respuesta para manejar errores globales
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -15,15 +41,56 @@ api.interceptors.response.use(
   }
 );
 
+// Funciones de API
+
 export const registrarUsuario = async (datosRegistro) => {
-    try {
-      console.log('Sending request to:', api.defaults.baseURL + '/usuario/registrar');
-      const respuesta = await api.post("/usuario/registrar", datosRegistro);
-      return respuesta.data;
-    } catch (error) {
-      console.error("Error al registrar usuario:", error.response || error.message);
-      throw error;
-    }
+  try {
+    const respuesta = await api.post("/usuario/registrar", datosRegistro);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al registrar usuario:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const iniciarSesion = async (credenciales) => {
+  try {
+    const respuesta = await api.post("/usuario/login", credenciales);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const obtenerUsuario = async () => {
+  try {
+    const respuesta = await api.get("/usuario");
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al obtener datos del usuario:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const actualizarUsuario = async (id, datosActualizados) => {
+  try {
+    const respuesta = await api.put(`/usuario/${id}`, datosActualizados);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const eliminarCuenta = async () => {
+  try {
+    const respuesta = await api.delete("/eliminar-cuenta");
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al eliminar cuenta:", error.response || error.message);
+    throw error;
+  }
 };
 
 export default api;

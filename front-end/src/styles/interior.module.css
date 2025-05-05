@@ -139,6 +139,19 @@ body {
     text-align: center;
   }
 
+  .logoutBtn {
+    background-color: #b7b7b7d5;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+  } 
+  .logoutBtn:hover {
+    background-color: #ff1a1a;
+  }
+
   .alquileresBtn {
     margin-left: 8px; 
     background-color: transparent;
