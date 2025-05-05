@@ -106,8 +106,6 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
-        
-
         return avisosRepository.save(avisoActualizado);
     }
 
@@ -121,8 +119,6 @@ public class AvisosServiceImp implements IAvisosService{
         avisosRepository.deleteById(id);
         return "El aviso " + aviso.getNombre() + "fue eliminado con éxito.";
     }
-
-    
 
     @Override 
     public List<AvisosModel> listarAvisos() {
@@ -190,4 +186,13 @@ public class AvisosServiceImp implements IAvisosService{
         return avisosRepository.findByReporteIsNotNull();
     }
     
+    @Override
+    public List<AvisosModel> filtrarAvisos(){
+        return null;
+    }
+
+    @Override
+    public Optional<AvisosModel> desplegarAviso(ObjectId id){
+        return avisosRepository.findById(id);
+    }
 }

@@ -1,6 +1,7 @@
 package com.apiweb.backend.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 
@@ -16,4 +17,6 @@ public interface IAvisosService {
     public AvisosModel actualizarEstadoSiendoAdministrador(ObjectId id, AvisosModel aviso);
     public AvisosModel crearReporte(ObjectId id, ReporteAviso reporte);
     public List<AvisosModel> listarAvisosConReportes();
+    public List<AvisosModel> filtrarAvisos();
+    public Optional<AvisosModel> desplegarAviso(ObjectId id);
 }
