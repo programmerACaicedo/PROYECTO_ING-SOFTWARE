@@ -83,9 +83,9 @@ export const actualizarUsuario = async (id, datosActualizados) => {
   }
 };
 
-export const eliminarCuenta = async () => {
+export const eliminarCuenta = async (id) => {
   try {
-    const respuesta = await api.delete("/eliminar-cuenta");
+    const respuesta = await api.delete(`/usuario/${id}`);
     return respuesta.data;
   } catch (error) {
     console.error("Error al eliminar cuenta:", error.response || error.message);
