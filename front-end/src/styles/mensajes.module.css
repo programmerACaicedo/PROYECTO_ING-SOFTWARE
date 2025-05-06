@@ -1,218 +1,364 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: clamp(14px, 1.5vw, 16px); /* Escala con el zoom */
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
 .mensajesContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #f2f2f2;
-    font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  background-color: #0284c7;
+  padding: 1.7rem;
+  box-shadow: 0 6px 8px rgb(0, 0, 0);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.iconMenu {
+  color: black;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  cursor: pointer;
+  display: block;
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+.titulo {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.notificationBell {
+  position: relative;
+  cursor: pointer;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+.notificationCount {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+}
+
+.menu {
+  margin-top: 109px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(200px, 30vw, 245px);
+  height: 83vh;
+  flex-direction: column;
+  background-color: #1c1c1cc6;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.menuOpen {
+  display: flex;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
   }
-  
+  to {
+    transform: translateX(0);
+  }
+}
+
+.menu button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  cursor: pointer;
+  padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
+  text-align: center;
+  margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu button:last-child {
+  margin-bottom: 0;
+}
+
+.menu button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.menu button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.chatLayout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: clamp(600px, 80vw, 800px);
+  height: 73vh; /* Igual que perfilForm */
+  background-color: #fff;
+  padding: clamp(1rem, 3vw, 2rem);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.conversaciones {
+  width: 35%;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+}
+
+.conversaciones h2 {
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  margin: clamp(0.5rem, 2vw, 1rem);
+  color: #333;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.conversacion {
+  padding: clamp(0.8rem, 2vw, 1rem);
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.conversacion:hover {
+  background-color: #e8ecef;
+}
+
+.conversacion p {
+  margin: 0;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  color: #333;
+}
+
+.selected {
+  background-color: #e0e0e0;
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #efeae2; /* Fondo típico de WhatsApp */
+}
+
+.chatHeader {
+  background-color: #075e54; /* Verde de WhatsApp */
+  color: white;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chatHeader h3 {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.mensajes {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mensaje {
+  display: inline-block;
+  padding: clamp(0.5rem, 1.5vw, 0.8rem);
+  border-radius: 8px;
+  max-width: 70%;
+  position: relative;
+}
+
+.mensajeEnviado {
+  background-color: #d9fdd3; /* Verde claro para mensajes enviados */
+  margin-left: auto;
+  border-bottom-right-radius: 0;
+}
+
+.mensajeRecibido {
+  background-color: #fff;
+  margin-right: auto;
+  border-bottom-left-radius: 0;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.mensaje p {
+  margin: 0;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  color: #333;
+}
+
+.mensaje span {
+  font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+  color: #666;
+  position: absolute;
+  bottom: -1.2rem;
+  right: 0.5rem;
+}
+
+.inputArea {
+  display: flex;
+  align-items: center;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  background-color: #f0f2f5;
+  border-top: 1px solid #e0e0e0;
+  gap: 0.5rem;
+}
+
+.inputArea input {
+  flex: 1;
+  padding: clamp(0.5rem, 1.5vw, 0.8rem);
+  border: none;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.inputArea input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(7, 94, 84, 0.2); /* Verde de WhatsApp */
+}
+
+.inputArea button {
+  background-color: #075e54; /* Verde de WhatsApp */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.inputArea button:hover {
+  background-color: #064c44;
+}
+
+.error {
+  color: red;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  margin-top: clamp(3px, 1vw, 5px);
+}
+
+.noChat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
   .header {
-    background-color: #0284c7;
-    padding: 1.7rem;
-    box-shadow: 0 6px 8px rgb(0, 0, 0);
-    width: 100vw;
-    display: flex;
-    align-items: center;
+    flex-direction: row;
     justify-content: flex-start;
-    box-sizing: border-box;
-    position: relative;
-  }
-  
-  .iconMenu {
-    color: black;
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-    cursor: pointer;
-    display: block;
-    padding: 0 clamp(0.5rem, 2vw, 1rem);
-  }
-  
-  .titulo {
-    font-size: clamp(1.5rem, 5vw, 2rem);
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-    flex: 1;
-    text-align: center;
-  }
-  
-  .notificationBell {
-    position: relative;
-    cursor: pointer;
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-    padding: 0 clamp(0.5rem, 2vw, 1rem);
-  }
-  
-  .notificationCount {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: red;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-  }
-  
-  .menu {
-    margin-top: 119px;
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: clamp(200px, 30vw, 245px);
-    height: 83.6vh;
-    flex-direction: column;
-    background-color: #1c1c1cc6;
-    padding: clamp(0.5rem, 2vw, 1rem);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-  }
-  
-  .menuOpen {
-    display: flex;
-    animation: slideIn 0.3s ease forwards;
-  }
-  
-  @keyframes slideIn {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-  
-  .menu button {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-    cursor: pointer;
-    padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
-    text-align: center;
-    margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .menu button:last-child {
-    margin-bottom: 0;
-  }
-  
-  .menu button:hover {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .menu button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
-  }
-  
-  .mainContent {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding: clamp(1rem, 3vw, 2rem);
-    flex-direction: column;
     align-items: center;
+    padding: clamp(0.8rem, 2.5vw, 1.5rem);
   }
-  
-  .notificationDropdown {
-    position: absolute;
-    top: 70px;
-    right: 20px;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: clamp(0.5rem, 2vw, 1rem);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    max-width: 250px;
-    color: black;
+
+  .chatLayout {
+    flex-direction: column;
+    height: auto; /* Ajuste para que no se corte */
+    min-height: 73vh; /* Mínimo igual al perfilForm */
   }
-  
-  .notificationDropdown h3 {
-    margin: 0 0 clamp(0.3rem, 1vw, 0.5rem);
+
+  .conversaciones {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    max-height: 30vh;
+  }
+
+  .menu {
+    width: clamp(180px, 50vw, 220px);
+    height: 100vh;
+    padding: clamp(0.5rem, 1.5vw, 0.8rem);
+  }
+
+  .titulo {
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .menu {
+    width: clamp(160px, 45vw, 200px);
+  }
+
+  .notificationBell {
     font-size: clamp(1rem, 2.5vw, 1.2rem);
   }
-  
-  .notificationDropdown p {
-    margin: 0 0 clamp(0.3rem, 1vw, 0.5rem);
-    font-size: clamp(0.9rem, 2vw, 1rem);
+
+  .notificationCount {
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
   }
-  
-  .clearButton {
-    background: #f0f0f0;
-    border: none;
-    padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+@media (max-width: 320px) {
+  .menu {
+    width: clamp(140px, 40vw, 180px);
   }
-  
-  .clearButton:hover {
-    background: #e0e0e0;
+
+  .titulo {
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
   }
-  
-  .notifyButton {
-    margin-top: clamp(1rem, 3vw, 2rem);
-    padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(1rem, 3vw, 1.5rem);
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+@media (min-width: 1200px) {
+  .mainContent {
+    max-width: clamp(700px, 60vw, 800px);
   }
-  
-  .notifyButton:hover {
-    background: #0056b3;
-  }
-  
-  /* Media Queries */
-  @media (max-width: 768px) {
-    .header {
-      justify-content: flex-start;
-      padding: clamp(0.8rem, 2.5vw, 1.5rem);
-    }
-  
-    .menu {
-      width: clamp(180px, 50vw, 220px);
-      height: 100vh;
-      padding: clamp(0.5rem, 1.5vw, 0.8rem);
-    }
-  
-    .titulo {
-      font-size: clamp(1.2rem, 4vw, 1.5rem);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .menu {
-      width: clamp(160px, 45vw, 200px);
-    }
-  
-    .notificationBell {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-    }
-  
-    .notificationCount {
-      font-size: clamp(0.6rem, 1.5vw, 0.8rem);
-    }
-  }
-  
-  @media (max-width: 320px) {
-    .menu {
-      width: clamp(140px, 40vw, 180px);
-    }
-  
-    .titulo {
-      font-size: clamp(1rem, 3.5vw, 1.2rem);
-    }
-  }
-  
-  @media (min-width: 1200px) {
-    .mainContent {
-      max-width: clamp(700px, 60vw, 800px);
-    }
-  }
+}

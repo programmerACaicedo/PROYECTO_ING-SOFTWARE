@@ -93,4 +93,28 @@ export const eliminarCuenta = async (id) => {
   }
 };
 
+export const registrarAviso = async (aviso) => {
+  try {
+    const respuesta = await api.post("/avisos/registrar", aviso, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Para manejar imágenes
+      },
+    });
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al registrar aviso:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const listarAvisosConReportes = async () => {
+  try {
+    const respuesta = await api.get("/avisos/listarReportes");
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al listar avisos con reportes:", error.response || error.message);
+    throw error;
+  }
+};
+
 export default api;
