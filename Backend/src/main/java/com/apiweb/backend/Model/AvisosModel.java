@@ -31,6 +31,8 @@ public class AvisosModel {
     private UbicacionAviso ubicacion;
     private Double calificacion_prom;
     private Integer precio_mensual;
+    private Integer precioMin;
+    private Integer precioMax;
     private EstadoAviso estado;
     private ReporteAviso reporte;
     private MensajeAviso mensaje_interes;

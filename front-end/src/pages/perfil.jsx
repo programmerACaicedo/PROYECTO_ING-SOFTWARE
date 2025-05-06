@@ -303,20 +303,12 @@ const Perfil = () => {
         )}
         <button
           onClick={() => {
-            navigate("/publicacion/1");
+            navigate("/mensajes");
             closeMenu();
           }}
         >
-          Ver Publicación 1
-        </button>
-        <button
-          onClick={() => {
-            navigate("/publicacion/2");
-            closeMenu();
-          }}
-        >
-          Ver Publicación 2
-        </button>
+          Mensajes
+        </button> {/* Nuevo botón para Mensajes */}
       </nav>
 
       <main className={styles.mainContent}>

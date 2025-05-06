@@ -3,7 +3,7 @@ import styles from "../styles/olvidoContraseña.module.css";
 
 const OlvidoContraseña = () => {
   const [correo, setCorreo] = useState("");
-  const [palabra, setPalabra] = useState("");
+  const [palabra_seguridad, setPalabra_seguridad] = useState("");
   const [codigo, setCodigo] = useState("");
   const [mostrarCodigo, setMostrarCodigo] = useState(false);
   const [mostrarCambioContraseña, setMostrarCambioContraseña] = useState(false);
@@ -32,57 +32,40 @@ const OlvidoContraseña = () => {
     return regex.test(contraseña);
   };
 
-  const handleValidarYEnviar = async () => {
-    if (!correo || !palabra) {
-      setMensajeError("Por favor, llena todos los campos.");
-      return;
-    }
-
-    if (!validarCorreo(correo)) {
-      setMensajeError("El correo debe ser válido. Ej: ejemplo@dominio.com");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Paso 1: Verificar si el correo existe en la base de datos
-      const checkEmailResponse = await fetch("/api/verificar-correo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo }),
-      });
-      const emailData = await checkEmailResponse.json();
-
-      if (!checkEmailResponse.ok || !emailData.exists) {
-        throw new Error("Correo no registrado");
+    const handleValidarYEnviar = async () => {
+      if (!correo || !palabra_seguridad) {
+          setMensajeError("Por favor, llena todos los campos.");
+          return;
       }
-
-      // Paso 2: Verificar correo y palabra de seguridad
-      const response = await fetch("/api/verificar-credenciales", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, palabra }),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Error en la verificación");
+  
+      if (!validarCorreo(correo)) {
+          setMensajeError("El correo debe ser válido. Ej: ejemplo@dominio.com");
+          return;
       }
-
-      setMensajeError("");
-      setMostrarCodigo(true);
-      alert("Se ha enviado un código de verificación a tu correo.");
-    } catch (error) {
-      setMensajeError(
-        error.message === "Correo no registrado"
-          ? "Correo no registrado"
-          : error.message === "Palabra de seguridad incorrecta"
-          ? "Palabra de seguridad incorrecta"
-          : "Error en la verificación"
-      );
-    } finally {
-      setLoading(false);
-    }
+  
+      setLoading(true);
+      try {
+          console.log("Enviando datos:", { correo, palabra_seguridad });
+  
+          const response = await fetch("http://localhost:8080/api/usuario/recuperar", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ correo, palabra_seguridad: palabra_seguridad.trim().toLowerCase() }), // Normalizar antes de enviar
+          });
+  
+          if (!response.ok) {
+              const errorText = await response.text(); // Leer el error como texto
+              throw new Error(errorText || "Error al enviar el correo de restablecimiento");
+          }
+  
+          alert("Se ha enviado un correo con el enlace para restablecer tu contraseña.");
+          setMensajeError("");
+      } catch (error) {
+          console.error("Error en la solicitud:", error.message);
+          setMensajeError(error.message);
+      } finally {
+          setLoading(false);
+      }
   };
 
   const handleValidarCodigo = async () => {
@@ -170,11 +153,11 @@ const OlvidoContraseña = () => {
               disabled={loading}
             />
             <input
-              id="palabra"
+              id="palabra_seguridad"
               type="text"
               placeholder="Palabra de seguridad"
-              value={palabra}
-              onChange={(e) => setPalabra(e.target.value)}
+              value={palabra_seguridad}
+              onChange={(e) => setPalabra_seguridad(e.target.value)}
               required
               className={styles.input}
               disabled={loading}

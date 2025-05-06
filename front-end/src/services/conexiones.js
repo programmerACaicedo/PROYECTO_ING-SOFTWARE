@@ -32,6 +32,17 @@ api.interceptors.response.use(
   }
 );
 
+api.interceptors.request.use(
+  (config) => {
+      const token = localStorage.getItem("token");
+      if (token && !config.url.includes("/recuperar")) { // No agregar token para /recuperar
+          config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Interceptor de respuesta para manejar errores globales
 api.interceptors.response.use(
   (response) => response,
@@ -89,6 +100,30 @@ export const eliminarCuenta = async (id) => {
     return respuesta.data;
   } catch (error) {
     console.error("Error al eliminar cuenta:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const registrarAviso = async (aviso) => {
+  try {
+    const respuesta = await api.post("/avisos/registrar", aviso, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Para manejar imágenes
+      },
+    });
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al registrar aviso:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const listarAvisosConReportes = async () => {
+  try {
+    const respuesta = await api.get("/avisos/listarReportes");
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al listar avisos con reportes:", error.response || error.message);
     throw error;
   }
 };

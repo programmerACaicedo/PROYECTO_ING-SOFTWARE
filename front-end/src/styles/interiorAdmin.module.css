@@ -32,8 +32,15 @@
 .interior {
   color: #000000;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin: 0;
+
+  /* Propiedades para el recuadro */
+  border: 2px solid #000; /* Borde negro */
+  padding: 1rem;           /* Espacio interno para separar el texto del borde */
+  border-radius: 80px;      /* Bordes redondeados (opcional) */
+  background-color: rgba(255, 255, 255, 0.705); /* Fondo claro (opcional) */
+   box-shadow: 0 2px 20px rgb(21, 39, 204)
 }
 
 .menuContainer {
@@ -169,8 +176,8 @@
 .optionCard {
   flex: 1;             /* ocupa igual espacio que la otra */
   max-width: none;     /* quita el límite para poder estirarse */
-  background-color: #0284c7;
-  color: #fff;
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgb(21, 39, 204));
+  color: #000000;
   border: none;
   border-radius: 8px;
   padding: 1.5rem 1rem;
@@ -180,7 +187,7 @@
 }
 
 .optionCard:hover {
-  background-color: #0369a1;
+  background-color: #091c67;
   transform: translateY(-4px);
 }
 

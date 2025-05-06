@@ -51,7 +51,7 @@ form h3 {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: -10px;
-  margin-top: px;
+  margin-top: 0px;
   padding: 0%;
   color: #444;
 }
@@ -70,7 +70,6 @@ form h3 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
-
 
 .menuOpen {
   display: flex;
@@ -107,13 +106,14 @@ form h3 {
   color: white;
 }
 
+/* Contenido principal */
 .mainContent {
   flex: 1;
   display: flex;
   justify-content: center;
   padding: 2rem;
 }
-/* Contenido principal */
+
 .contenidoDetalle {
   flex: 1; /* ocupa todo el espacio restante debajo del header */
   display: flex;
@@ -127,8 +127,8 @@ form h3 {
 
 /* Imagen más grande */
 .contenidoDetalle img {
-  width: 700px;       /* ajusta según tu gusto */
-  max-width: 50vw;    /* que no supere la mitad del ancho */
+  width: 700px; /* ajusta según tu gusto */
+  max-width: 50vw; /* que no supere la mitad del ancho */
   height: auto;
   border-radius: 8px;
   object-fit: cover;
@@ -157,7 +157,7 @@ form h3 {
   margin: 0;
   font-size: 1.1rem; /* un poco más grande */
   color: #555;
-  line-height: 1.5;  /* más altura de línea para lectura */
+  line-height: 1.5; /* más altura de línea para lectura */
 }
 
 /* Botones de acción */
@@ -249,6 +249,32 @@ form h3 {
   color: green;
   font-weight: bold;
   margin-top: 1rem;
+}
+
+/* Mensaje de notificación */
+.mensajeNotificacion {
+  background-color: #fff;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: 8px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 1001; /* Asegura que esté por encima del modalFondo */
+}
+
+/* Overlay para el mensaje de notificación */
+.notificacionOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Por debajo del mensaje, pero por encima del contenido */
 }
 
 /* Responsividad */

@@ -197,22 +197,49 @@ public class UsuariosServiceImp implements IUsuariosService {
             throw new LoginFailedException("Error al iniciar sesión: " + e.getMessage());
         }
     }
+    
     @Override
     public String recuperarContrasena(UsuariosModel usuario) {
         try {
+            System.out.println("Intentando recuperar contraseña para: " + usuario.getCorreo());
+            System.out.println("Palabra de seguridad proporcionada: " + usuario.getPalabra_seguridad());
+    
             // Buscar el usuario por correo
             UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
             if (usuarioExistente == null) {
+                System.err.println("Usuario no encontrado con el correo: " + usuario.getCorreo());
                 throw new UserNotFoundException("El correo proporcionado no está registrado.");
             }
-
+    
+            // Normalizar las palabras de seguridad para evitar errores por mayúsculas/minúsculas o espacios
+            String palabraSeguridadEnviada = usuario.getPalabra_seguridad().trim().toLowerCase();
+            String palabraSeguridadAlmacenada = usuarioExistente.getPalabra_seguridad().trim().toLowerCase();
+    
             // Validar la palabra de seguridad
-            if (!usuarioExistente.getPalabra_seguridad().equals(usuario.getPalabra_seguridad())) {
+            if (!palabraSeguridadAlmacenada.equals(palabraSeguridadEnviada)) {
+                System.err.println("Palabra de seguridad incorrecta para el usuario: " + usuario.getCorreo());
                 throw new LoginFailedException("La palabra de seguridad es incorrecta.");
             }
-
-            return "Validación exitosa. Ahora puedes restablecer tu contraseña.";
+    
+            // Generar un token de restablecimiento válido por 1 hora
+            String token = jwtTokenService.generarTokenVerificacion(usuario.getCorreo(), 60 * 60);
+            String enlaceRestablecimiento = "http://localhost:3000/restablecer-contraseña?token=" + token;
+    
+            // Enviar correo con el enlace de restablecimiento
+            emailService.sendEmail(
+                usuario.getCorreo(),
+                "Restablecimiento de contraseña",
+                "Hola " + usuarioExistente.getNombre() + ",\n\n" +
+                "Hemos recibido una solicitud para restablecer tu contraseña. " +
+                "Por favor, haz clic en el siguiente enlace para continuar:\n\n" +
+                enlaceRestablecimiento + "\n\n" +
+                "Si no solicitaste este cambio, ignora este mensaje.\n\n" +
+                "Saludos,\nEquipo de Soporte"
+            );
+    
+            return "Se ha enviado un correo con el enlace para restablecer la contraseña.";
         } catch (Exception e) {
+            System.err.println("Error al recuperar contraseña: " + e.getMessage());
             throw new LoginFailedException("Error al recuperar la contraseña: " + e.getMessage());
         }
     }

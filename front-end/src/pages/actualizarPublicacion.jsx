@@ -204,7 +204,7 @@ const ActualizarPublicacion = () => {
       </header>
 
       <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={() => { navigate("/interior"); closeMenu(); }}>Inicio</button>
+        <button onClick={() => { navigate("/propietario"); closeMenu(); }}>Inicio</button>
         <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
         <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
       </nav>
