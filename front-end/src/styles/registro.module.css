@@ -25,7 +25,7 @@
   color: #fff;
   width: 100%;
   max-width: clamp(300px, 90vw, 600px); /* Escalable según pantalla */
-  box-shadow: 0 8px 32px rgba(42, 161, 52, 0.5);
+  box-shadow: 0 0.5rem 8rem rgb(21, 39, 204);
 }
 
 /* Títulos */
@@ -40,7 +40,7 @@ h2 {
   width: 100%;
   max-width: clamp(300px, 100vw, 800px);
   padding: clamp(10px, 2vw, 12px);
-  background-color: #28a745;
+  background-color: #193ced;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -57,7 +57,7 @@ h2 {
 }
 
 .register-button button:hover {
-  background-color: #218838;
+  background-color: #110a78;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -110,8 +110,8 @@ h2 {
 }
 
 .terms-container input[type="checkbox"]:checked + label::before {
-  background-color: #28a745; /* Color cuando está marcado */
-  border-color: #28a745;
+  background-color: #000bab; /* Color de fondo cuando está marcado */
+  border-color: #000000;
 }
 
 .terms-container input[type="checkbox"]:checked + label::after {
