@@ -47,8 +47,8 @@ function App() {
               <Route path="/interesado" element={<RutaProtegida><InteriorInteresado /></RutaProtegida>} />
               <Route path="/admin" element={<RutaProtegida><InteriorAdmin /></RutaProtegida>} />
               <Route path="/nuevo-aviso" element={<RutaProtegida><NuevoAviso /></RutaProtegida>} />
-              <Route path="/restablecer-contraseña/:token" element={<RestablecerContraseña />} />
               <Route path="/perfil" element={<RutaProtegida><Perfil /></RutaProtegida>} />
+              <Route path="/restablecer-contraseña" element={<RestablecerContraseña />} />
               <Route path="/actualizar-publicacion/:id" element={<RutaProtegida><ActualizarPublicacion /></RutaProtegida>} />
               <Route path="/publicacion/:id" element={<RutaProtegida><DetallePublicacion /></RutaProtegida>} />
               <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
