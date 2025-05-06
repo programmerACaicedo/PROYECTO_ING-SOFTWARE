@@ -16,9 +16,9 @@ const Perfil = () => {
     id: "",
     nombre: "",
     telefono: "",
-    contrasena: "",
-    foto: null, // Will store Base64 string or null
+    foto: null,
     correo: "",
+    rol: "", // Added rol field
   });
   const [initialData, setInitialData] = useState({ ...formData });
   const [mensajes, setMensajes] = useState([]);
@@ -44,6 +44,7 @@ const Perfil = () => {
         correo: decodedToken.correo || "",
         telefono: decodedToken.telefono || "",
         foto: decodedToken.foto || null,
+        rol: decodedToken.tipo || "", // Set rol from tipo
       };
 
       setFormData((prevData) => ({
@@ -64,6 +65,7 @@ const Perfil = () => {
         correo: user.correo || prevData.correo,
         telefono: user.telefono || prevData.telefono,
         foto: user.foto || prevData.foto,
+        rol: user.tipo || prevData.rol,
       }));
       setInitialData((prevData) => ({
         ...prevData,
@@ -72,6 +74,7 @@ const Perfil = () => {
         correo: user.correo,
         telefono: user.telefono,
         foto: user.foto,
+        rol: user.tipo,
       }));
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
@@ -158,10 +161,9 @@ const Perfil = () => {
       return;
     }
 
-    // Convert file to Base64
     const reader = new FileReader();
     reader.onload = () => {
-      const base64String = reader.result; // Includes data:image/jpeg;base64,...
+      const base64String = reader.result;
       setFormData({ ...formData, foto: base64String });
     };
     reader.onerror = () => {
@@ -197,34 +199,6 @@ const Perfil = () => {
       });
     }
 
-    if (formData.contrasena) {
-      if (formData.contrasena.length < 8) {
-        newErrores.push({
-          texto: "La contraseña debe tener al menos 8 caracteres",
-          tipo: "error",
-        });
-      } else if (
-        !/[A-Z]/.test(formData.contrasena) ||
-        !/[a-z]/.test(formData.contrasena) ||
-        !/[0-9]/.test(formData.contrasena)
-      ) {
-        newErrores.push({
-          texto:
-            "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
-          tipo: "error",
-        });
-      }
-    }
-
-    if (!formData.correo) {
-      newErrores.push({ texto: "El correo es obligatorio", tipo: "error" });
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
-      newErrores.push({
-        texto: "El correo electrónico no es válido",
-        tipo: "error",
-      });
-    }
-
     if (newErrores.length > 0) {
       setMensajes((prevMensajes) => [...prevMensajes, ...newErrores]);
       return false;
@@ -250,8 +224,7 @@ const Perfil = () => {
         { texto: "Perfil actualizado correctamente", tipo: "success" },
       ]);
 
-      await fetchUserData(); // Refresh the view
-      setFormData((prevData) => ({ ...prevData, contrasena: "" })); // Clear password
+      await fetchUserData();
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
       setMensajes((prevMensajes) => [
@@ -330,20 +303,12 @@ const Perfil = () => {
         )}
         <button
           onClick={() => {
-            navigate("/publicacion/1");
+            navigate("/mensajes");
             closeMenu();
           }}
         >
-          Ver Publicación 1
-        </button>
-        <button
-          onClick={() => {
-            navigate("/publicacion/2");
-            closeMenu();
-          }}
-        >
-          Ver Publicación 2
-        </button>
+          Mensajes
+        </button> {/* Nuevo botón para Mensajes */}
       </nav>
 
       <main className={styles.mainContent}>
@@ -402,8 +367,19 @@ const Perfil = () => {
                   type="email"
                   name="correo"
                   value={formData.correo}
-                  onChange={handleChange}
+                  readOnly
                   placeholder="Ingresa tu correo electrónico"
+                />
+              </label>
+
+              <h3>Rol</h3>
+              <label>
+                <input
+                  type="text"
+                  name="rol"
+                  value={formData.rol}
+                  readOnly
+                  placeholder="Rol del usuario"
                 />
               </label>
 
@@ -426,17 +402,6 @@ const Perfil = () => {
                   value={formData.telefono}
                   onChange={handleChange}
                   placeholder="Ingresa tu teléfono (10 dígitos)"
-                />
-              </label>
-
-              <h3>Actualizar Contraseña</h3>
-              <label>
-                <input
-                  type="password"
-                  name="contrasena"
-                  value={formData.contrasena}
-                  onChange={handleChange}
-                  placeholder="Mín. 8 caracteres, mayúscula, minúscula y número"
                 />
               </label>
 

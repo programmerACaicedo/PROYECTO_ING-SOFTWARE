@@ -1,8 +1,8 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import RutaProtegida from "./pages/RutaProtegida";
 import { AuthProvider } from "./services/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 
 // Páginas
 import Main from "./pages/main";
@@ -31,29 +31,31 @@ import styles from "./styles/App.module.css";
 function App() {
   return (
     <AuthProvider>
-    <BrowserRouter>
-      <BackgroundWrapper>
-      <Routes>
-      <Route path="/" element={<Main />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/registro" element={<Registro />} />
-      <Route path="/olvido-contraseña" element={<OlvidoContraseña />} />
+      <SocketProvider>
+        <BrowserRouter>
+          <BackgroundWrapper>
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/registro" element={<Registro />} />
+              <Route path="/olvido-contraseña" element={<OlvidoContraseña />} />
+              <Route path="/mensajes" element={<RutaProtegida><Mensajes /></RutaProtegida>} /> {/* Nueva ruta */}
 
-      {/* Rutas protegidas */}
-      <Route path="/propietario" element={<RutaProtegida><InteriorPropietario /></RutaProtegida>} />
-      <Route path="/interesado" element={<RutaProtegida><InteriorInteresado /></RutaProtegida>} />
-      <Route path="/admin" element={<RutaProtegida><InteriorAdmin /></RutaProtegida>} />
-      <Route path="/nuevo-aviso" element={<RutaProtegida><NuevoAviso /></RutaProtegida>} />
-      <Route path="/perfil" element={<RutaProtegida><Perfil /></RutaProtegida>} />
-      <Route path="/restablecer-contraseña" element={<RestablecerContraseña />} />
-      <Route path="/actualizar-publicacion/:id" element={<RutaProtegida><ActualizarPublicacion /></RutaProtegida>} />
-      <Route path="/publicacion/:id" element={<RutaProtegida><DetallePublicacion /></RutaProtegida>} />
-      <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
-      <Route path="/admin/confirmar-avisos" element={<RutaProtegida><ConfirmarAvisos /></RutaProtegida>} />
-      <Route path="/admin/aviso/:id" element={<RutaProtegida><DetalleAvisoAdmin /></RutaProtegida>} />
-      </Routes>
-      </BackgroundWrapper>
-    </BrowserRouter>
+              {/* Rutas protegidas */}
+              <Route path="/propietario" element={<RutaProtegida><InteriorPropietario /></RutaProtegida>} />
+              <Route path="/interesado" element={<RutaProtegida><InteriorInteresado /></RutaProtegida>} />
+              <Route path="/admin" element={<RutaProtegida><InteriorAdmin /></RutaProtegida>} />
+              <Route path="/nuevo-aviso" element={<RutaProtegida><NuevoAviso /></RutaProtegida>} />
+              <Route path="/perfil" element={<RutaProtegida><Perfil /></RutaProtegida>} />
+              <Route path="/actualizar-publicacion/:id" element={<RutaProtegida><ActualizarPublicacion /></RutaProtegida>} />
+              <Route path="/publicacion/:id" element={<RutaProtegida><DetallePublicacion /></RutaProtegida>} />
+              <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
+              <Route path="/admin/confirmar-avisos" element={<RutaProtegida><ConfirmarAvisos /></RutaProtegida>} />
+              <Route path="/admin/aviso/:id" element={<RutaProtegida><DetalleAvisoAdmin /></RutaProtegida>} />
+            </Routes>
+          </BackgroundWrapper>
+        </BrowserRouter>
+      </SocketProvider>
     </AuthProvider>
   );
 }

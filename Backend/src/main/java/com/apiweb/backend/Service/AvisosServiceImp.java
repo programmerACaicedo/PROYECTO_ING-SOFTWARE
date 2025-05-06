@@ -17,6 +17,7 @@ import com.apiweb.backend.Model.AvisosModel;
 import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.EstadoAviso;
+import com.apiweb.backend.Model.ENUM.EstadoReporte;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -62,9 +63,7 @@ public class AvisosServiceImp implements IAvisosService{
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe.");
         }
-        if (aviso.getEstado() == EstadoAviso.Reportado) {
-            throw new InvalidAvisoConfigurationException("El estado del aviso no puede ser actualizado si se encuentra reportado");
-        }
+
         AvisosModel avisoActualizado = avisoExiste.get();
 
         if (aviso.getNombre() != null) {
@@ -141,26 +140,6 @@ public class AvisosServiceImp implements IAvisosService{
     }
 
 
-    @Override
-    public AvisosModel actualizarEstadoSiendoAdministrador(ObjectId id, AvisosModel aviso){
-        Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
-        if (!avisoExiste.isPresent()) {
-            throw new ResourceNotFoundException("El aviso no existe.");
-        }
-        AvisosModel avisoActualizado = avisoExiste.get();
-        if (aviso.getEstado() == EstadoAviso.Arrendado) {
-            throw new InvalidAvisoConfigurationException("Un administrador solo puede cambiar el estado a Reportar, Disponible o Inactivo");
-        }
-        if (aviso.getEstado() == EstadoAviso.EnProceso) {
-            throw new InvalidAvisoConfigurationException("Un administrador solo puede cambiar el estado a Reportar, Disponible o Inactivo");
-        }
-
-        if (aviso.getEstado() != null) {
-            avisoActualizado.setEstado(aviso.getEstado());
-        }
-        return avisosRepository.save(avisoActualizado);
-        
-    }
 
     @Override
     public AvisosModel crearReporte(ObjectId id, ReporteAviso reporte) {
@@ -172,11 +151,22 @@ public class AvisosServiceImp implements IAvisosService{
         if (!usuarioExiste.isPresent()) {
             throw new ResourceNotFoundException("El usuario no existe.");
         }
+
+        UsuariosModel usuario = usuarioExiste.get();
+        if (usuario.getTipo() == TipoUsuario.administrador) {
+            throw new InvalidUserRoleException("Un admninistrador no tiene que reportar, directamente puede desactivar la publicación. la función de reportar es para los usuarios como arrendatarios o propietarios.");
+        }
         AvisosModel avisoActualizado = avisoExiste.get();
+
+        if (reporte.getMotivo() == null || reporte.getMotivo().isBlank()) {
+            throw new InvalidAvisoConfigurationException("El motivo no puede estar vacío.");
+        }
+
+        
 
         
         reporte.setFecha(Instant.now());
-        avisoActualizado.setEstado(EstadoAviso.Reportado);
+        reporte.setEstadoReporte(EstadoReporte.Reportado);
         avisoActualizado.setReporte(reporte);
         return avisosRepository.save(avisoActualizado);  
     }
@@ -187,12 +177,47 @@ public class AvisosServiceImp implements IAvisosService{
     }
     
     @Override
-    public List<AvisosModel> filtrarAvisos(){
-        return null;
+    public List<AvisosModel> listarAvisosSinReportes() {
+        return avisosRepository.findByReporteIsNullOrReporteEstadoReporte(EstadoReporte.Invalido);
     }
 
     @Override
-    public Optional<AvisosModel> desplegarAviso(ObjectId id){
-        return avisosRepository.findById(id);
+    public AvisosModel actualizarEstadoReporteSiendoAdministrador(ObjectId id, ReporteAviso reporte) {
+        Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
+        if (!avisoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El aviso no existe.");
+        }
+        AvisosModel aviso = avisoExiste.get();
+
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(reporte.getUsuarioReporta());
+        if (!usuarioExiste.isPresent()) {
+            throw new ResourceNotFoundException("El usuario no existe.");
+        }
+        if (usuarioExiste.get().getTipo() != TipoUsuario.administrador) {
+            throw new InvalidUserRoleException("El usuario no es un administrador.");
+        }
+        if (reporte.getEstadoReporte() == null) {
+            throw new InvalidAvisoConfigurationException("El estado del reporte no puede estar vacío.");
+        }
+        if (reporte.getEstadoReporte() == EstadoReporte.Reportado) {
+            throw new InvalidAvisoConfigurationException("El administrador no tiene necesidad de reportar, el toma la desicion de excluir o de dejar el aviso.");
+        } 
+        if (reporte.getMotivo() != null) {
+            throw new InvalidAvisoConfigurationException("El administrador no tiene necesidad de poner un motivo, el toma la desicion de excluir o de dejar el aviso.");
+        }
+        if (reporte.getFecha() != null) {
+            throw new InvalidAvisoConfigurationException("La fecha se actualizara automaticamente al momento de que el administrador actualiza el estado del reporte.");
+        }
+        if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
+            if (reporte.getComentario() == null || reporte.getComentario().isBlank()) {
+                throw new InvalidAvisoConfigurationException("El administrador tiene que poner un comentario justificando porque exluyo el aviso.");
+            }
+        }
+        
+        
+        reporte.setFecha(Instant.now());
+        aviso.setReporte(reporte);
+
+        return avisosRepository.save(aviso);
     }
 }

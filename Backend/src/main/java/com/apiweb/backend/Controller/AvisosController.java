@@ -48,22 +48,28 @@ public class AvisosController {
 
     @GetMapping("/{id}")
     public ResponseEntity<List<AvisosModel>> listarAvisosPropietario(@PathVariable("id") ObjectId propietarioId){
-        return new ResponseEntity<List<AvisosModel>> (avisosService.listarAvisosPropietario(propietarioId), HttpStatus.OK); //testear
+        return new ResponseEntity<List<AvisosModel>> (avisosService.listarAvisosPropietario(propietarioId), HttpStatus.OK);
     }
 
-    @PutMapping("/actualizarEstado/{id}")
-    public ResponseEntity<AvisosModel> actualizarEstadoSiendoAdministrador(@PathVariable("id") ObjectId id,@RequestBody AvisosModel aviso){
-        return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoSiendoAdministrador(id, aviso), HttpStatus.OK); //testear
-    }
 
     @PutMapping("/reportar/{id}")
     public ResponseEntity<AvisosModel> crearReporte(@PathVariable("id") ObjectId id,@RequestBody ReporteAviso reporte){
-        return new ResponseEntity<AvisosModel>(avisosService.crearReporte(id, reporte), HttpStatus.OK); 
+        return new ResponseEntity<AvisosModel>(avisosService.crearReporte(id, reporte), HttpStatus.OK);
     }
 
     @GetMapping("/listarReportes")
     public ResponseEntity<List<AvisosModel>> listarAvisosConReportes(){
-        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosConReportes(), HttpStatus.OK); //testear
+        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosConReportes(), HttpStatus.OK);
+    }
+
+    @GetMapping("/listarSinReportes")
+    public ResponseEntity<List<AvisosModel>> listarAvisosSinReportes() {
+        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosSinReportes(), HttpStatus.OK);
+    }
+
+    @PutMapping("/actualizarEstadoReporteSiendoAdministrador/{id}")
+    public ResponseEntity<AvisosModel> actualizarEstadoReporteSiendoAdministrador(@PathVariable("id") ObjectId id,@RequestBody ReporteAviso reporte){
+        return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoReporteSiendoAdministrador(id, reporte), HttpStatus.OK);
     }
 
 }
