@@ -301,7 +301,14 @@ const Perfil = () => {
             Nuevo Aviso
           </button>
         )}
-
+        <button
+          onClick={() => {
+            navigate("/mensajes");
+            closeMenu();
+          }}
+        >
+          Mensajes
+        </button> {/* Nuevo botón para Mensajes */}
       </nav>
 
       <main className={styles.mainContent}>
