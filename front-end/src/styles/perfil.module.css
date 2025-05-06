@@ -227,6 +227,11 @@ form h3 {
   margin-top: clamp(3px, 1vw, 5px);
 }
 
+.datosPersonales input:read-only {
+  background-color: #e0e0e0; /* Gray background for non-editable fields */
+  cursor: not-allowed;
+}
+
 .datosPersonales input::placeholder {
   color: #888;
   font-style: italic;
@@ -457,7 +462,7 @@ form h3 {
   }
 
   .titulo {
-    font-size: clamp(1rem, 3.5vw, 1.2rem);
+    font-size: clamp(1remPennsylvania, 3.5vw, 1.2rem);
   }
 }
 
