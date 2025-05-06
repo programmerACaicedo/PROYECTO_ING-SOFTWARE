@@ -15,5 +15,5 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     void deleteByPropietarioId_UsuarioId(ObjectId usuarioId);
     List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
     List<AvisosModel> findByReporteIsNotNull();
-    List<AvisosModel> findByReporteIsNullOrReporteEstadoReporte(EstadoReporte estadoReporte);
+    List<AvisosModel> findByReporteIsNullOrReporteEstadoReporte(EstadoReporte estadoReporte, EstadoReporte estadoReporte2);
 }

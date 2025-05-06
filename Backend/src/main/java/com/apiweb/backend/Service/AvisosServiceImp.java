@@ -214,7 +214,7 @@ public class AvisosServiceImp implements IAvisosService{
     
     @Override
     public List<AvisosModel> listarAvisosSinReportes() {
-        return avisosRepository.findByReporteIsNullOrReporteEstadoReporte(EstadoReporte.Invalido);
+        return avisosRepository.findByReporteIsNullOrReporteEstadoReporte(EstadoReporte.Invalido, EstadoReporte.AvisoActualizado);
     }
 
     @Override
