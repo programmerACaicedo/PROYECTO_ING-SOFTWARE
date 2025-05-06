@@ -1,7 +1,8 @@
 package com.apiweb.backend.Model;
 
 
-import java.util.Date;
+import java.time.Instant;
+
 
 import org.bson.types.ObjectId;
 
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Notificaciones {
     private ObjectId remitente;
     private String contenido;
-    private Date fecha;
+    private Instant fecha;
     private TipoNotificacion tipo;
     private Boolean leido;
 }

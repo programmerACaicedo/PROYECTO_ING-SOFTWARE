@@ -14,10 +14,12 @@ import com.apiweb.backend.Exception.InvalidUserRoleException;
 import com.apiweb.backend.Exception.ResourceNotFoundException;
 import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AvisosModel;
+import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.EstadoAviso;
 import com.apiweb.backend.Model.ENUM.EstadoReporte;
+import com.apiweb.backend.Model.ENUM.TipoNotificacion;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IUsuariosRepository;
@@ -55,6 +57,32 @@ public class AvisosServiceImp implements IAvisosService{
             throw new InvalidAvisoConfigurationException("El aviso no puede tener un estado al momento de crearse, ya que al crearse el sistema le asignara el estado disponible por defecto.");
         }
         aviso.setEstado(EstadoAviso.Disponible);
+
+        //Notificacion al propietario
+        Notificaciones notificacionPropietario = new Notificaciones();
+        notificacionPropietario.setRemitente(null);
+        notificacionPropietario.setContenido("Se ha creado un nuevo aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + ".");
+        notificacionPropietario.setFecha(Instant.now());
+        notificacionPropietario.setTipo(TipoNotificacion.Mensaje);
+        notificacionPropietario.setLeido(false);
+        usuario.getNotificaciones().add(notificacionPropietario);
+        usuariosRepository.save(usuario);
+
+        //Notificacion a los administradores
+        List<UsuariosModel> administradores = usuariosRepository.findByTipo(TipoUsuario.administrador);
+        for (UsuariosModel administrador : administradores) {
+            Notificaciones notificacionAdministrador = new Notificaciones();
+            notificacionAdministrador.setRemitente(usuario.getId());
+            notificacionAdministrador.setContenido("El propietario " + usuario.getNombre() + " ha creado un nuevo aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + ".");
+            notificacionAdministrador.setFecha(Instant.now());
+            notificacionAdministrador.setTipo(TipoNotificacion.Mensaje);
+            notificacionAdministrador.setLeido(false);
+            administrador.getNotificaciones().add(notificacionAdministrador);
+            
+        }
+        usuariosRepository.saveAll(administradores);
+
+
         return avisosRepository.save(aviso);
     }
     @Override
@@ -105,6 +133,8 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
+        
+
         return avisosRepository.save(avisoActualizado);
     }
 
@@ -118,6 +148,8 @@ public class AvisosServiceImp implements IAvisosService{
         avisosRepository.deleteById(id);
         return "El aviso " + aviso.getNombre() + "fue eliminado con éxito.";
     }
+
+    
 
     @Override 
     public List<AvisosModel> listarAvisos() {
