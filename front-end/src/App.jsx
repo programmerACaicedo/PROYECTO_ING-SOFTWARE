@@ -19,6 +19,7 @@ import DetallePublicacion from "./pages/detallePublicacion";
 import PublicacionesFiltradas from "./pages/publicacionesFiltradas";
 import ConfirmarAvisos from "./pages/confirmarAvisos";
 import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
+import Mensajes from "./pages/mensajes";
 import RestablecerContraseña from "./pages/RestablecerContrasena";
 
 
