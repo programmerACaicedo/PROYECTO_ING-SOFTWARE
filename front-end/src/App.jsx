@@ -19,6 +19,7 @@ import DetallePublicacion from "./pages/detallePublicacion";
 import PublicacionesFiltradas from "./pages/publicacionesFiltradas";
 import ConfirmarAvisos from "./pages/confirmarAvisos";
 import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
+import RestablecerContraseña from "./pages/RestablecerContrasena";
 
 
 
@@ -44,6 +45,7 @@ function App() {
       <Route path="/admin" element={<RutaProtegida><InteriorAdmin /></RutaProtegida>} />
       <Route path="/nuevo-aviso" element={<RutaProtegida><NuevoAviso /></RutaProtegida>} />
       <Route path="/perfil" element={<RutaProtegida><Perfil /></RutaProtegida>} />
+      <Route path="/restablecer-contraseña" element={<RestablecerContraseña />} />
       <Route path="/actualizar-publicacion/:id" element={<RutaProtegida><ActualizarPublicacion /></RutaProtegida>} />
       <Route path="/publicacion/:id" element={<RutaProtegida><DetallePublicacion /></RutaProtegida>} />
       <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
