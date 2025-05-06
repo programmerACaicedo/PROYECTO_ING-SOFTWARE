@@ -133,6 +133,10 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
+        if (aviso.getReporte().getEstadoReporte() == EstadoReporte.Excluido) {
+            aviso.getReporte().setEstadoReporte(EstadoReporte.AvisoActualizado);
+            aviso.getReporte().setComentario("El aviso fue actualizado por el propietario.");
+        }
         
 
         return avisosRepository.save(avisoActualizado);
@@ -225,7 +229,8 @@ public class AvisosServiceImp implements IAvisosService{
         if (!usuarioExiste.isPresent()) {
             throw new ResourceNotFoundException("El usuario no existe.");
         }
-        if (usuarioExiste.get().getTipo() != TipoUsuario.administrador) {
+        UsuariosModel usuario = usuarioExiste.get();
+        if (usuario.getTipo() != TipoUsuario.administrador) {
             throw new InvalidUserRoleException("El usuario no es un administrador.");
         }
         if (reporte.getEstadoReporte() == null) {
@@ -244,6 +249,20 @@ public class AvisosServiceImp implements IAvisosService{
             if (reporte.getComentario() == null || reporte.getComentario().isBlank()) {
                 throw new InvalidAvisoConfigurationException("El administrador tiene que poner un comentario justificando porque exluyo el aviso.");
             }
+        }
+
+        //Notificacion al propietario si se excluye un aviso
+        Optional<UsuariosModel> usuarioPropietario = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
+        UsuariosModel propietario = usuarioPropietario.get();
+        if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
+            Notificaciones notificacionPropietario = new Notificaciones();
+            notificacionPropietario.setRemitente(usuario.getId());
+            notificacionPropietario.setContenido("El administrador " + usuario.getNombre() + " ha excluido su aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + " por la siguiente razón: "+ reporte.getComentario() +".");
+            notificacionPropietario.setFecha(Instant.now());
+            notificacionPropietario.setTipo(TipoNotificacion.Mensaje);
+            notificacionPropietario.setLeido(false);
+            propietario.getNotificaciones().add(notificacionPropietario);
+            usuariosRepository.save(propietario);
         }
              
         reporte.setFecha(Instant.now());
