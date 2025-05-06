@@ -19,7 +19,12 @@ import DetallePublicacion from "./pages/detallePublicacion";
 import PublicacionesFiltradas from "./pages/publicacionesFiltradas";
 import ConfirmarAvisos from "./pages/confirmarAvisos";
 import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
-import Mensajes from "./pages/mensajes"; // Importa el nuevo componente
+import Mensajes from "./pages/mensajes";
+import RestablecerContraseña from "./pages/RestablecerContrasena";
+
+
+
+
 
 // Ahora importas el módulo
 import styles from "./styles/App.module.css";
@@ -43,6 +48,7 @@ function App() {
               <Route path="/admin" element={<RutaProtegida><InteriorAdmin /></RutaProtegida>} />
               <Route path="/nuevo-aviso" element={<RutaProtegida><NuevoAviso /></RutaProtegida>} />
               <Route path="/perfil" element={<RutaProtegida><Perfil /></RutaProtegida>} />
+              <Route path="/restablecer-contraseña" element={<RestablecerContraseña />} />
               <Route path="/actualizar-publicacion/:id" element={<RutaProtegida><ActualizarPublicacion /></RutaProtegida>} />
               <Route path="/publicacion/:id" element={<RutaProtegida><DetallePublicacion /></RutaProtegida>} />
               <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
@@ -68,5 +74,7 @@ function BackgroundWrapper({ children }) {
     children
   );
 }
+
+
 
 export default App;

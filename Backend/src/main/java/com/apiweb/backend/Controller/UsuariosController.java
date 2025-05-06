@@ -30,6 +30,8 @@ public class UsuariosController {
     @Autowired IUsuariosService usuariosService;
     @Autowired
     JwtTokenService jwtTokenService;
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     @Autowired IUsuariosRepository usuariosRepository;
 
     @PostMapping("/registrar")
@@ -88,6 +90,36 @@ public class UsuariosController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new HashMap<>(), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/restablecer-contraseña")
+    public ResponseEntity<String> restablecerContrasena(@RequestBody Map<String, String> datos) {
+        try {
+            String token = datos.get("token");
+            String nuevaContrasena = datos.get("nuevaContraseña");
+    
+            if (token == null || nuevaContrasena == null) {
+                return new ResponseEntity<>("Token o nueva contraseña faltante.", HttpStatus.BAD_REQUEST);
+            }
+    
+            // Validar el token y obtener el correo asociado
+            String correo = jwtTokenService.validarTokenVerificacion(token);
+    
+            // Buscar el usuario por correo
+            UsuariosModel usuario = usuariosRepository.findByCorreo(correo);
+            if (usuario == null) {
+                return new ResponseEntity<>("Usuario no encontrado.", HttpStatus.NOT_FOUND);
+            }
+    
+            // Actualizar la contraseña
+            usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
+            usuariosRepository.save(usuario);
+            
+            return new ResponseEntity<>("Contraseña actualizada con éxito.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error al restablecer la contraseña: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

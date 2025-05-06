@@ -213,11 +213,44 @@ public class AvisosServiceImp implements IAvisosService{
                 throw new InvalidAvisoConfigurationException("El administrador tiene que poner un comentario justificando porque exluyo el aviso.");
             }
         }
-        
-        
+             
         reporte.setFecha(Instant.now());
         aviso.setReporte(reporte);
 
         return avisosRepository.save(aviso);
+    }
+
+    @Override
+    public List<AvisosModel> filtrarAvisos(String tipo, Integer precioMin, Integer precioMax, String disponibilidad) {
+        // Obtener todos los avisos
+        List<AvisosModel> avisos = avisosRepository.findAll();
+
+        // Filtrar por tipo de espacio si se especifica
+        if (tipo != null && !tipo.isEmpty()) {
+            avisos = avisos.stream()
+                    .filter(aviso -> aviso.getTipo().toString().equalsIgnoreCase(tipo))
+                    .toList();
+        }
+
+        // Filtrar por rango de precio si se especifica
+        if (precioMin != null || precioMax != null) {
+            avisos = avisos.stream()
+                    .filter(aviso -> {
+                        boolean cumpleMin = precioMin == null || aviso.getPrecio_mensual() >= precioMin;
+                        boolean cumpleMax = precioMax == null || aviso.getPrecio_mensual() <= precioMax;
+                        return cumpleMin && cumpleMax;
+                    })
+                    .toList();
+        }
+        
+        // Filtrar por disponibilidad si se especifica
+        if (disponibilidad != null && !disponibilidad.isEmpty()) {
+            avisos = avisos.stream()
+                    .filter(aviso -> aviso.getEstado().toString().equalsIgnoreCase(disponibilidad))
+                    .toList();
+        }
+
+        // Retornar la lista filtrada
+        return avisos;
     }
 }

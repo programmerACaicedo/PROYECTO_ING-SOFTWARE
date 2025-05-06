@@ -32,6 +32,17 @@ api.interceptors.response.use(
   }
 );
 
+api.interceptors.request.use(
+  (config) => {
+      const token = localStorage.getItem("token");
+      if (token && !config.url.includes("/recuperar")) { // No agregar token para /recuperar
+          config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Interceptor de respuesta para manejar errores globales
 api.interceptors.response.use(
   (response) => response,

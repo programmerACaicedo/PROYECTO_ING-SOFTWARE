@@ -18,4 +18,5 @@ public interface IAvisosService {
     public List<AvisosModel> listarAvisosPropietario(ObjectId propietarioId); //Este get es para que los propietarios puedan ver sus publicaciones creadas
     public List<AvisosModel> listarAvisosConReportes(); //Este get es para administradores
     public List<AvisosModel> listarAvisosSinReportes(); //Este get es para mostrar en la pagina principal todos los avisos que no tienen reportes
+    public List<AvisosModel> filtrarAvisos(String tipo, Integer precioMin, Integer precioMax, String disponibilidad);
 }
