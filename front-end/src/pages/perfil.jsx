@@ -301,22 +301,7 @@ const Perfil = () => {
             Nuevo Aviso
           </button>
         )}
-        <button
-          onClick={() => {
-            navigate("/publicacion/1");
-            closeMenu();
-          }}
-        >
-          Ver Publicación 1
-        </button>
-        <button
-          onClick={() => {
-            navigate("/publicacion/2");
-            closeMenu();
-          }}
-        >
-          Ver Publicación 2
-        </button>
+
       </nav>
 
       <main className={styles.mainContent}>
