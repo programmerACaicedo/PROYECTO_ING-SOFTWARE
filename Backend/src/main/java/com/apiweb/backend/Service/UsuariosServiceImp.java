@@ -134,6 +134,11 @@ public class UsuariosServiceImp implements IUsuariosService {
             if (usuarioExistente == null) {
                 throw new LoginFailedException("El correo proporcionado no está registrado.");
             }
+
+            // Verificar si el usuario está verificado
+            if (!usuarioExistente.isVerificado()) {
+                throw new LoginFailedException("El usuario no ha verificado su cuenta. Por favor, verifica tu correo.");
+            }
     
             // Verificar si se proporcionó palabra_seguridad
             String palabraSeguridad = usuario.getPalabra_seguridad();

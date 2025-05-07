@@ -229,8 +229,8 @@ public class AvisosServiceImp implements IAvisosService{
         if (!usuarioExiste.isPresent()) {
             throw new ResourceNotFoundException("El usuario no existe.");
         }
-        UsuariosModel usuario = usuarioExiste.get();
-        if (usuario.getTipo() != TipoUsuario.administrador) {
+        UsuariosModel usuarioAdministrador = usuarioExiste.get();
+        if (usuarioAdministrador.getTipo() != TipoUsuario.administrador) {
             throw new InvalidUserRoleException("El usuario no es un administrador.");
         }
         if (reporte.getEstadoReporte() == null) {
@@ -256,15 +256,26 @@ public class AvisosServiceImp implements IAvisosService{
         UsuariosModel propietario = usuarioPropietario.get();
         if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
             Notificaciones notificacionPropietario = new Notificaciones();
-            notificacionPropietario.setRemitente(usuario.getId());
-            notificacionPropietario.setContenido("El administrador " + usuario.getNombre() + " ha excluido su aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + " por la siguiente razón: "+ reporte.getComentario() +".");
+            notificacionPropietario.setRemitente(usuarioAdministrador.getId());
+            notificacionPropietario.setContenido("El administrador " + usuarioAdministrador.getNombre() + " ha excluido su aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + " por la siguiente razón: "+ reporte.getComentario() +".");
             notificacionPropietario.setFecha(Instant.now());
             notificacionPropietario.setTipo(TipoNotificacion.Mensaje);
             notificacionPropietario.setLeido(false);
             propietario.getNotificaciones().add(notificacionPropietario);
             usuariosRepository.save(propietario);
         }
-             
+
+        //Notificación al usuario que hizo el reporte, sobre la decisión del administrador
+        Optional<UsuariosModel> usuarioReporta = usuariosRepository.findById(reporte.getUsuarioReporta());
+        UsuariosModel usuarioReporto = usuarioReporta.get();
+        Notificaciones notificacionQuienReporto = new Notificaciones();
+        notificacionQuienReporto.setRemitente(usuarioAdministrador.getId());
+        notificacionQuienReporto.setContenido("El administrador " + usuarioAdministrador.getNombre() + " ha tomado la siguiente decisión sobre su reporte del aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + ": " + reporte.getEstadoReporte() + ".");
+        notificacionQuienReporto.setFecha(Instant.now());
+        notificacionQuienReporto.setTipo(TipoNotificacion.Mensaje);
+        notificacionQuienReporto.setLeido(false);
+        usuarioReporto.getNotificaciones().add(notificacionQuienReporto);
+        usuariosRepository.save(usuarioReporto);   
         reporte.setFecha(Instant.now());
         aviso.setReporte(reporte);
 
