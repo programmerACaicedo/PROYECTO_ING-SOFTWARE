@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registrarUsuario } from "../services/conexiones"; // Asegúrate de que esta función exista
+import { registrarUsuario } from "../services/conexiones";
+import  {jwtDecode} from "jwt-decode";
 import styles from "../styles/registro.module.css";
 
 const Registro = () => {
@@ -10,6 +11,7 @@ const Registro = () => {
   const [tipoMensaje, setTipoMensaje] = useState("");
   const [verPassword, setVerPassword] = useState(false);
   const [verConfirmar, setVerConfirmar] = useState(false);
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
   const googleButtonRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -34,25 +36,30 @@ const Registro = () => {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com", // Reemplaza con tu client_id real
-          callback: async (response) => {
+          client_id: "717512334666-mqmflrr0ke6fq8augilkm6u0fg1psmhj.apps.googleusercontent.com",
+          callback: (response) => {
             try {
-              const res = await fetch("http://localhost:8080/api/login/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: response.credential }),
-              });
-              if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem("token", data.token);
-                mostrarMensaje("¡Registro con Google exitoso!", "exito");
-                setTimeout(() => navigate("/login"), 1200);
+              // Decode the Google JWT token client-side
+              const decoded = jwtDecode(response.credential);
+              if (decoded) {
+                const { given_name, family_name, email } = decoded;
+                setFormulario({
+                  nombre: given_name || "",
+                  apellidos: family_name || "",
+                  correo: email || "",
+                  telefono: "",
+                  contraseña: "",
+                  confirmar: "",
+                  seguridad: "",
+                  tipoUsuario: "",
+                });
+                setIsGoogleLogin(true);
+                mostrarMensaje("Datos cargados desde Google. Completa el formulario.", "exito");
               } else {
-                const errorData = await res.json();
-                mostrarMensaje(errorData.message || "Error al registrar con Google", "error");
+                mostrarMensaje("Error al decodificar el token de Google", "error");
               }
             } catch (error) {
-              mostrarMensaje("Error de conexión con el servidor", "error");
+              mostrarMensaje("Error al procesar el token de Google", "error");
             }
           },
           ux_mode: "popup",
@@ -101,7 +108,11 @@ const Registro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (Object.values(formulario).some((campo) => campo === "")) {
+    // Check required fields (exclude contraseña and confirmar for Google login)
+    const requiredFields = isGoogleLogin
+      ? { ...formulario, contraseña: undefined, confirmar: undefined }
+      : formulario;
+    if (Object.values(requiredFields).some((campo) => campo === "")) {
       mostrarMensaje("Por favor, completa todos los campos.", "error");
       return;
     }
@@ -116,17 +127,20 @@ const Registro = () => {
       return;
     }
 
-    if (!validarContraseña(formulario.contraseña)) {
-      mostrarMensaje(
-        "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un carácter especial.",
-        "error"
-      );
-      return;
-    }
+    // Validate password only for non-Google login
+    if (!isGoogleLogin) {
+      if (!validarContraseña(formulario.contraseña)) {
+        mostrarMensaje(
+          "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y un carácter especial.",
+          "error"
+        );
+        return;
+      }
 
-    if (formulario.contraseña !== formulario.confirmar) {
-      mostrarMensaje("Las contraseñas no coinciden.", "error");
-      return;
+      if (formulario.contraseña !== formulario.confirmar) {
+        mostrarMensaje("Las contraseñas no coinciden.", "error");
+        return;
+      }
     }
 
     if (!formulario.seguridad) {
@@ -135,25 +149,28 @@ const Registro = () => {
     }
 
     if (!aceptaTerminos) {
-      console.log("El usuario no aceptó los términos.");
       mostrarMensaje("Debes aceptar el tratamiento de datos personales.", "error");
       return;
     }
 
     try {
-      const respuesta = await registrarUsuario({
+      // Prepare payload, omit contrasena for Google login
+      const payload = {
         nombre: `${formulario.nombre} ${formulario.apellidos}`,
         correo: formulario.correo,
         telefono: formulario.telefono,
-        contrasena: formulario.contraseña,
         palabra_seguridad: formulario.seguridad,
         tipo: formulario.tipoUsuario,
-      });
+      };
+      if (!isGoogleLogin) {
+        payload.contrasena = formulario.contraseña;
+      }
+
+      const respuesta = await registrarUsuario(payload);
       mostrarMensaje("¡Registro exitoso!", "exito");
       setTimeout(() => navigate("/login"), 800);
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        // Manejar el caso de correo ya registrado
         mostrarMensaje("El correo ingresado ya está registrado. Intenta con otro.", "error");
       } else {
         mostrarMensaje(error.message || "Error al registrar usuario", "error");
@@ -224,39 +241,43 @@ const Registro = () => {
               />
             </div>
 
-            <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
-              <input
-                type={verPassword ? "text" : "password"}
-                placeholder="Crear Contraseña"
-                name="contraseña"
-                value={formulario.contraseña}
-                onChange={handleChange}
-                required
-              />
-              <span
-                className={styles["eye-icon"]}
-                onClick={() => setVerPassword(!verPassword)}
-              >
-                {verPassword ? "🙈" : "👁"}
-              </span>
-            </div>
+            {!isGoogleLogin && (
+              <>
+                <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
+                  <input
+                    type={verPassword ? "text" : "password"}
+                    placeholder="Crear Contraseña"
+                    name="contraseña"
+                    value={formulario.contraseña}
+                    onChange={handleChange}
+                    required
+                  />
+                  <span
+                    className={styles["eye-icon"]}
+                    onClick={() => setVerPassword(!verPassword)}
+                  >
+                    {verPassword ? "🙈" : "👁"}
+                  </span>
+                </div>
 
-            <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
-              <input
-                type={verConfirmar ? "text" : "password"}
-                placeholder="Confirmar Contraseña"
-                name="confirmar"
-                value={formulario.confirmar}
-                onChange={handleChange}
-                required
-              />
-              <span
-                className={styles["eye-icon"]}
-                onClick={() => setVerConfirmar(!verConfirmar)}
-              >
-                {verConfirmar ? "🙈" : "👁"}
-              </span>
-            </div>
+                <div className={`${styles["input-container"]} ${styles["password-container"]}`}>
+                  <input
+                    type={verConfirmar ? "text" : "password"}
+                    placeholder="Confirmar Contraseña"
+                    name="confirmar"
+                    value={formulario.confirmar}
+                    onChange={handleChange}
+                    required
+                  />
+                  <span
+                    className={styles["eye-icon"]}
+                    onClick={() => setVerConfirmar(!verConfirmar)}
+                  >
+                    {verConfirmar ? "🙈" : "👁"}
+                  </span>
+                </div>
+              </>
+            )}
 
             <div className={`${styles["input-container"]} ${styles["full-width"]}`}>
               <input
@@ -310,18 +331,20 @@ const Registro = () => {
             </button>
           </div>
 
-          <button
-            type="button"
-            className={styles.googlebtn}
-            ref={googleButtonRef}
-          >
-            <img
-              src="https://img.icons8.com/color/16/000000/google-logo.png"
-              alt="Google Logo"
-              className={styles.googleIcon}
-            />
-            Continuar con Google
-          </button>
+          {!isGoogleLogin && (
+            <button
+              type="button"
+              className={styles.googlebtn}
+              ref={googleButtonRef}
+            >
+              <img
+                src="https://img.icons8.com/color/16/000000/google-logo.png"
+                alt="Google Logo"
+                className={styles.googleIcon}
+              />
+              Continuar con Google
+            </button>
+          )}
         </form>
 
         {mostrarModal && (

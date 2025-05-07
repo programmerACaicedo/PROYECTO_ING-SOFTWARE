@@ -55,7 +55,10 @@ public class UsuariosServiceImp implements IUsuariosService {
             System.out.println("Teléfono: " + usuario.getTelefono());
             System.out.println("Correo: " + usuario.getCorreo());
 
-            String contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
+            String contrasenaEncriptada = null;
+            if (usuario.getContrasena() != null) {
+                contrasenaEncriptada = passwordEncoder.encode(usuario.getContrasena());
+            }
             usuario.setContrasena(contrasenaEncriptada);
             usuariosRepository.save(usuario);
 
