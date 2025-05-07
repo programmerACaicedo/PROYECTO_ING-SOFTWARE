@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/nuevoAviso.module.css";
+import { subirImagenACloudinary } from "../services/conexiones";
 
 const PublicarAviso = () => {
   const navigate = useNavigate();
@@ -22,28 +23,22 @@ const PublicarAviso = () => {
     tipo: "",
     condiciones: "",
     descripcion: "",
-    imagenes: [],
+    imagenes: [], // Ahora almacenará URLs de Cloudinary
   });
-  const [mensajes, setMensajes] = useState([]); // Cola de mensajes
+  const [mensajes, setMensajes] = useState([]);
   const [previewImage, setPreviewImage] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const[isMenuClosed, setIsMenuClosed] = useState(false);
-  // Limpiar URLs de vista previa al desmontar el componente
-  useEffect(() => {
-    return () => {
-      previewImage.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [previewImage]);
+  const [isMenuClosed, setIsMenuClosed] = useState(false);
 
-  // Mostrar mensajes de la cola, cada uno durante 2 segundos
+  // Mostrar mensajes de la cola, cada uno durante 5 segundos
   useEffect(() => {
     if (mensajes.length > 0) {
       const timer = setTimeout(() => {
-        setMensajes((prevMensajes) => prevMensajes.slice(1)); // Eliminar el primer mensaje
-      }, 5000); // 5 segundos
-      return () => clearTimeout(timer); // Limpiar el temporizador
+        setMensajes((prevMensajes) => prevMensajes.slice(1));
+      }, 5000);
+      return () => clearTimeout(timer);
     }
   }, [mensajes]);
 
@@ -58,7 +53,7 @@ const PublicarAviso = () => {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     console.log("Archivos seleccionados:", files);
 
@@ -82,45 +77,34 @@ const PublicarAviso = () => {
       return;
     }
 
-    // Verificar duplicados
-    const newImages = [];
-    const duplicates = [];
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const urlImagen = await subirImagenACloudinary(file);
+        return urlImagen;
+      });
 
-    files.forEach((file) => {
-      const isDuplicate = form.imagenes.some(
-        (existingFile) => existingFile.name === file.name && existingFile.size === file.size
-      );
-      if (isDuplicate) {
-        duplicates.push(file.name);
-      } else {
-        newImages.push(file);
-      }
-    });
+      const uploadedUrls = await Promise.all(uploadPromises);
 
-    if (duplicates.length > 0) {
+      // Agregar las nuevas URLs al estado
+      setForm((prevForm) => ({
+        ...prevForm,
+        imagenes: [...prevForm.imagenes, ...uploadedUrls],
+      }));
+
+      // Generar URLs para la vista previa
+      setPreviewImage((prevPreview) => [...prevPreview, ...uploadedUrls]);
+
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: `Imágenes duplicadas no permitidas: ${duplicates.join(", ")}`, tipo: "error" },
+        { texto: "Imágenes subidas exitosamente", tipo: "success" },
       ]);
-      return;
-    }
-
-    const updatedImages = [...form.imagenes, ...newImages];
-    const totalImages = updatedImages.length;
-
-    if (totalImages > 10) {
+    } catch (error) {
+      console.error("Error al subir las imágenes:", error);
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "No puedes subir más de 10 imágenes.", tipo: "error" },
+        { texto: "Error al subir las imágenes", tipo: "error" },
       ]);
-      return;
     }
-
-    // Generar URLs para la vista previa
-    const newPreviewImages = updatedImages.map((file) => URL.createObjectURL(file));
-    setForm({ ...form, imagenes: updatedImages });
-    setPreviewImage(newPreviewImages);
-    console.log("URLs de vista previa:", newPreviewImages);
 
     // Limpiar el input
     e.target.value = null;
@@ -131,7 +115,6 @@ const PublicarAviso = () => {
     const newPreviewImages = previewImage.filter((_, i) => i !== index);
     setForm({ ...form, imagenes: newImages });
     setPreviewImage(newPreviewImages);
-    URL.revokeObjectURL(previewImage[index]);
   };
 
   const handleImageDoubleClick = (img) => {
@@ -158,7 +141,7 @@ const PublicarAviso = () => {
       errores.push({ texto: "El precio debe ser un número positivo mayor a 0", tipo: "error" });
     }
     if (form.imagenes.length < 3)
-      errores.push({ texto: " de subir al menos 3 imágenes.", tipo: "error" });
+      errores.push({ texto: "Debes subir al menos 3 imágenes.", tipo: "error" });
     if (form.imagenes.length > 10)
       errores.push({ texto: "No puedes subir más de 10 imágenes.", tipo: "error" });
 
@@ -167,19 +150,13 @@ const PublicarAviso = () => {
       return;
     }
 
-    const formData = new FormData();
-    Object.keys(form).forEach((key) => {
-      if (key === "imagenes") {
-        form.imagenes.forEach((file) => formData.append("imagenes", file));
-      } else {
-        formData.append(key, form[key]);
-      }
-    });
-
     try {
       const response = await fetch("/api/avisos", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
       });
       const data = await response.json();
 
@@ -211,20 +188,19 @@ const PublicarAviso = () => {
     setIsMenuClosed(!isMenuClosed);
   };
 
-
   return (
     <div className={styles.publicarAvisoContainer}>
-    <header className={styles.headerPublicar}>
-      <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
-       <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
-    </header>
+      <header className={styles.headerPublicar}>
+        <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
+        <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
+      </header>
 
-    <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen  :  ""} ${styles.menu} ${isMenuClosed ? styles.isMenuClosed : ""}`}>
-       <button onClick={() => { navigate("/propietario"); closeMenu(); }}>Inicio</button>
-       <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
-       <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
+      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""} ${styles.menu} ${isMenuClosed ? styles.isMenuClosed : ""}`}>
+        <button onClick={() => { navigate("/propietario"); closeMenu(); }}>Inicio</button>
+        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
+        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
+      </nav>
 
-    </nav>
       <h2 className={styles.seccionTitulo}>Datos del inmueble</h2>
 
       <div className={styles.contenidoPublicar}>
@@ -264,7 +240,6 @@ const PublicarAviso = () => {
             onChange={handleImageChange}
             style={{ display: "none" }}
           />
-          {/* Mostrar el primer mensaje de la cola */}
           {mensajes.length > 0 && (
             <p
               className={
@@ -369,7 +344,6 @@ const PublicarAviso = () => {
         </form>
       </div>
 
-      {/* Modal para la imagen ampliada */}
       {isModalOpen && (
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
