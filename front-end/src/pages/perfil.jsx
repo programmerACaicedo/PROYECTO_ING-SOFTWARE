@@ -238,31 +238,31 @@ const Perfil = () => {
     setConfirmarEliminar(true);
   };
 
-  const confirmarEliminacion = async () => {
-    try {
-      await eliminarCuenta();
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
-        {
-          texto:
-            "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
-          tipo: "success",
-        },
-      ]);
-      setConfirmarEliminar(false);
-      localStorage.removeItem("token");
-      setTimeout(() => navigate("/"), 2000);
-    } catch (error) {
-      console.error("Error al eliminar cuenta:", error);
-      const errorMessage =
-        error.response?.data?.error || "Error al eliminar la cuenta";
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
-        { texto: errorMessage, tipo: "error" },
-      ]);
-      setConfirmarEliminar(false);
-    }
-  };
+const confirmarEliminacion = async () => {
+  try {
+    await eliminarCuenta(formData.id); // Pasar el ID del usuario al backend
+    setMensajes((prevMensajes) => [
+      ...prevMensajes,
+      {
+        texto:
+          "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
+        tipo: "success",
+      },
+    ]);
+    setConfirmarEliminar(false);
+    localStorage.removeItem("token"); // Eliminar el token del almacenamiento local
+    setTimeout(() => navigate("/"), 2000); // Redirigir al usuario a la página principal
+  } catch (error) {
+    console.error("Error al eliminar cuenta:", error);
+    const errorMessage =
+      error.response?.data?.error || "Error al eliminar la cuenta";
+    setMensajes((prevMensajes) => [
+      ...prevMensajes,
+      { texto: errorMessage, tipo: "error" },
+    ]);
+    setConfirmarEliminar(false);
+  }
+};
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
