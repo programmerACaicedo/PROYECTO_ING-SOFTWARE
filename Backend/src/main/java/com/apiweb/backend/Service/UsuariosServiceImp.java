@@ -42,6 +42,10 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Override
     public String registroUsuario(UsuariosModel usuario) {
         try {
+            // Convertir el correo a minúsculas
+            usuario.setCorreo(usuario.getCorreo().trim().toLowerCase());
+
+
             if (usuariosRepository.findByCorreo(usuario.getCorreo()) != null) {
                 throw new UserRegistrationException("El correo " + usuario.getCorreo() + " ya está registrado.");
             }
@@ -96,7 +100,8 @@ public class UsuariosServiceImp implements IUsuariosService {
     @Override
     public String iniciarSesion(UsuariosModel usuario) {
         try {
-            String correo = usuario.getCorreo();
+            // Convertir el correo a minúsculas
+            String correo = usuario.getCorreo().trim().toLowerCase();
             final int MAX_INTENTOS = 7;
             final long BLOQUEO_DURACION = TimeUnit.HOURS.toMillis(2); // 2 hours lockout
     
@@ -258,12 +263,7 @@ public class UsuariosServiceImp implements IUsuariosService {
             }
             usuario.setTelefono(usuarioActualizado.getTelefono());
         }
-        if (usuarioActualizado.getCorreo() != null && !usuarioActualizado.getCorreo().isBlank()) {
-            usuario.setCorreo(usuarioActualizado.getCorreo());
-        }
-        if (usuarioActualizado.getContrasena() != null && !usuarioActualizado.getContrasena().isBlank()) {
-            usuario.setContrasena(passwordEncoder.encode(usuarioActualizado.getContrasena()));
-        }
+    
         if (usuarioActualizado.getFoto() != null) {
             usuario.setFoto(usuarioActualizado.getFoto());
         }

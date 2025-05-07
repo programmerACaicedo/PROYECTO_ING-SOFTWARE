@@ -129,8 +129,6 @@ public class UsuariosController {
             System.out.println("Datos recibidos para actualizar:");
             System.out.println("Nombre: " + usuarioActualizado.getNombre());
             System.out.println("Teléfono: " + usuarioActualizado.getTelefono());
-            System.out.println("Correo: " + usuarioActualizado.getCorreo());
-            System.out.println("Contraseña: " + usuarioActualizado.getContrasena());
 
             UsuariosModel resultado = usuariosService.actualizarUsuario(new ObjectId(id), usuarioActualizado);
             return new ResponseEntity<>(resultado, HttpStatus.OK);
