@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import styles from "../styles/perfil.module.css";
+import { subirImagenACloudinary } from "../services/conexiones";
 import {
   obtenerUsuario,
   actualizarUsuario,
@@ -18,7 +19,7 @@ const Perfil = () => {
     telefono: "",
     foto: null,
     correo: "",
-    rol: "", // Added rol field
+    rol: "",
   });
   const [initialData, setInitialData] = useState({ ...formData });
   const [mensajes, setMensajes] = useState([]);
@@ -44,7 +45,7 @@ const Perfil = () => {
         correo: decodedToken.correo || "",
         telefono: decodedToken.telefono || "",
         foto: decodedToken.foto || null,
-        rol: decodedToken.tipo || "", // Set rol from tipo
+        rol: decodedToken.tipo || "",
       };
 
       setFormData((prevData) => ({
@@ -78,8 +79,8 @@ const Perfil = () => {
       }));
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: "Error al cargar los datos del usuario", tipo: "error" },
       ]);
     }
@@ -129,7 +130,7 @@ const Perfil = () => {
   useEffect(() => {
     if (mensajes.length > 0) {
       const timer = setTimeout(() => {
-        setMensajes((prevMensajes) => prevMensajes.slice(1));
+        setMensajes((prev) => prev.slice(1));
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -140,39 +141,41 @@ const Perfil = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFotoChange = (e) => {
+  const handleFotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const validFormats = ["image/jpeg", "image/png", "image/jpg"];
     if (!validFormats.includes(file.type)) {
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: "La foto debe ser JPG, PNG o JPEG.", tipo: "error" },
       ]);
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: "La foto no debe superar los 5MB.", tipo: "error" },
       ]);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64String = reader.result;
-      setFormData({ ...formData, foto: base64String });
-    };
-    reader.onerror = () => {
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
-        { texto: "Error al leer la imagen.", tipo: "error" },
+    try {
+      const urlImagen = await subirImagenACloudinary(file);
+      setFormData((prev) => ({ ...prev, foto: urlImagen }));
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "Imagen subida exitosamente", tipo: "success" },
       ]);
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "Error al subir la imagen", tipo: "error" },
+      ]);
+    }
   };
 
   const handleEliminarFoto = () => {
@@ -200,7 +203,7 @@ const Perfil = () => {
     }
 
     if (newErrores.length > 0) {
-      setMensajes((prevMensajes) => [...prevMensajes, ...newErrores]);
+      setMensajes((prev) => [...prev, ...newErrores]);
       return false;
     }
     return true;
@@ -219,16 +222,16 @@ const Perfil = () => {
       const updatedUser = await actualizarUsuario(formData.id, formData);
       console.log("Usuario actualizado:", updatedUser);
 
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: "Perfil actualizado correctamente", tipo: "success" },
       ]);
 
       await fetchUserData();
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: error.message || "Error al actualizar el perfil", tipo: "error" },
       ]);
     }
@@ -241,8 +244,8 @@ const Perfil = () => {
   const confirmarEliminacion = async () => {
     try {
       await eliminarCuenta();
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         {
           texto:
             "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
@@ -256,8 +259,8 @@ const Perfil = () => {
       console.error("Error al eliminar cuenta:", error);
       const errorMessage =
         error.response?.data?.error || "Error al eliminar la cuenta";
-      setMensajes((prevMensajes) => [
-        ...prevMensajes,
+      setMensajes((prev) => [
+        ...prev,
         { texto: errorMessage, tipo: "error" },
       ]);
       setConfirmarEliminar(false);
@@ -308,7 +311,7 @@ const Perfil = () => {
           }}
         >
           Mensajes
-        </button> {/* Nuevo botón para Mensajes */}
+        </button>
       </nav>
 
       <main className={styles.mainContent}>

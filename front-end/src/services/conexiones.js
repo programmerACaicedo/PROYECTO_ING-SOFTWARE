@@ -94,6 +94,24 @@ export const actualizarUsuario = async (id, datosActualizados) => {
   }
 };
 
+export const subirImagenACloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'unsigned_perfil');  // Reemplaza con tu upload preset sin firmar
+
+  try {
+    const response = await axios.post(
+      'https://api.cloudinary.com/v1_1/dygshdqud/image/upload', // Reemplaza con tu cloud_name
+      formData
+    );
+
+    return response.data.secure_url;
+  } catch (error) {
+    console.error('Error al subir imagen a Cloudinary:', error);
+    throw error;
+  }
+};
+
 export const eliminarCuenta = async (id) => {
   try {
     const respuesta = await api.delete(`/usuario/${id}`);
