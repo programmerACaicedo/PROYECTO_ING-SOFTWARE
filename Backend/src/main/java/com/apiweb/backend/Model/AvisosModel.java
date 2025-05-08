@@ -35,5 +35,5 @@ public class AvisosModel {
     private Integer precioMax;
     private EstadoAviso estado;
     private ReporteAviso reporte;
-    private MensajeAviso mensaje_interes;
+    private MensajeriaAviso mensajes;
 }

@@ -72,4 +72,9 @@ public class AvisosController {
         return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoReporteSiendoAdministrador(id, reporte), HttpStatus.OK);
     }
 
+    // @PutMapping("/chat/{id}")
+    // public ResponseEntity<AvisosModel> crearChat(@PathVariable("id") ObjectId id,@RequestBody AvisosModel mensaje){
+    //     return new ResponseEntity<AvisosModel>(avisosService.crearChat(id, mensaje), HttpStatus.OK);
+    // }
+
 }
