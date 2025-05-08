@@ -125,9 +125,10 @@ export const eliminarCuenta = async (id) => {
 
 export const registrarAviso = async (aviso) => {
   try {
+    // Enviar los datos como JSON
     const respuesta = await api.post("/avisos/registrar", aviso, {
       headers: {
-        "Content-Type": "multipart/form-data", // Para manejar imágenes
+        "Content-Type": "application/json", // Asegurarse de que sea JSON
       },
     });
     return respuesta.data;
