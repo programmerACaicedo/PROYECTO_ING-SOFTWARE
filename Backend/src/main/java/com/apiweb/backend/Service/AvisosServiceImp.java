@@ -44,7 +44,7 @@ public class AvisosServiceImp implements IAvisosService{
         if (usuario.getTipo() != TipoUsuario.propietario){
             throw new InvalidUserRoleException("Solamente un propietario puede crear un aviso.");
         }
-        if (aviso.getReporte() != null || aviso.getMensajes() != null) {
+        if (aviso.getReporte() != null || aviso.getMensajeria() != null) {
             throw new InvalidAvisoConfigurationException("El aviso no puede tener un reporte o mensaje de interes al momento de crearse.");
         }
         if (aviso.getCalificacion_prom() != null && aviso.getCalificacion_prom() != 0) {
