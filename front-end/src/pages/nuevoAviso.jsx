@@ -298,10 +298,11 @@ const PublicarAviso = () => {
               <label>Precio: $</label>
               <input
                 name="precio_mensual"
-                type="text"
-                value={form.precio}
+                type="number"
+                value={form.precio_mensual}
                 onChange={handleInputChange}
                 placeholder="Ingrese el precio"
+                min="0"
                 required
               />
             </div>

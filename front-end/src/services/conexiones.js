@@ -148,4 +148,14 @@ export const listarAvisosConReportes = async () => {
   }
 };
 
+export const listarAvisosPropietario = async (propietarioId) => {
+  try {
+    const respuesta = await api.get(`/avisos/${propietarioId}`);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al listar avisos del propietario:", error.response || error.message);
+    throw error;
+  }
+};
+
 export default api;
