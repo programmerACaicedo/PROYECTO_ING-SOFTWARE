@@ -21,6 +21,7 @@ import ConfirmarAvisos from "./pages/confirmarAvisos";
 import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
 import Mensajes from "./pages/mensajes";
 import RestablecerContraseña from "./pages/RestablecerContrasena";
+import MisAvisos from "./pages/MisAvisos";// Asegúrate de que esta ruta sea correcta
 
 
 
@@ -54,6 +55,7 @@ function App() {
               <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
               <Route path="/admin/confirmar-avisos" element={<RutaProtegida><ConfirmarAvisos /></RutaProtegida>} />
               <Route path="/admin/aviso/:id" element={<RutaProtegida><DetalleAvisoAdmin /></RutaProtegida>} />
+              <Route path="/MisAvisos" element={<RutaProtegida><MisAvisos /></RutaProtegida>} /> 
             </Routes>
           </BackgroundWrapper>
         </BrowserRouter>

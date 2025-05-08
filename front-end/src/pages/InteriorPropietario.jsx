@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interior.module.css";
-import { obtenerUsuario, listarAvisosPropietario } from "../services/conexiones"; // Importar funciones necesarias
+import { obtenerUsuario } from "../services/conexiones"; // Importar solo obtenerUsuario
 
 const InteriorPropietario = () => {
   const [isPropietario, setIsPropietario] = useState(false);
@@ -25,22 +25,20 @@ const InteriorPropietario = () => {
     }
   }, [mostrarSplash]);
 
-useEffect(() => {
-  const cargarDatos = async () => {
-    try {
-      const usuario = await obtenerUsuario();
-      setIsPropietario(usuario.tipo === "propietario");
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        const usuario = await obtenerUsuario();
+        setIsPropietario(usuario.tipo === "propietario");
+        // Aquí deberías cargar las publicaciones desde otra fuente, si aplica
+        // Por ahora, dejo publicaciones como un array vacío o puedes pasarlo como prop
+      } catch (error) {
+        console.error("Error al cargar datos del propietario:", error);
+      }
+    };
 
-      const avisos = await listarAvisosPropietario(usuario.id);
-      console.log("Avisos obtenidos:", avisos); // Depuración
-      setPublicaciones(avisos);
-    } catch (error) {
-      console.error("Error al cargar datos del propietario:", error);
-    }
-  };
-
-  cargarDatos();
-}, []);
+    cargarDatos();
+  }, []);
 
   const filterPublications = (tipo) => {
     setMostrarMenu(false);
@@ -53,7 +51,7 @@ useEffect(() => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("sesionActiva");
-    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+    navigate("/login");
   };
 
   return (
@@ -106,15 +104,15 @@ useEffect(() => {
           <section className={styles.publicaciones}>
             <h2>Publicaciones</h2>
             <div className={styles.publicacionesList}>
-                {publicaciones.length > 0 ? (
+              {publicaciones.length > 0 ? (
                 publicaciones.map((pub) => (
                   <div
                     key={pub.id}
                     className={styles.publicacion}
                     onClick={() => handlePublicationClick(pub.id)}
                   >
-                    <h3>{pub.nombre}</h3> {/* Asegúrate de que "nombre" sea la propiedad correcta */}
-                    <p>Precio: {pub.precio_mensual}</p> {/* Verifica "precio_mensual" */}
+                    <h3>{pub.nombre}</h3>
+                    <p>Precio: {pub.precio_mensual}</p>
                     <p>Estado: {pub.estado}</p>
                     <p>Descripción: {pub.descripcion}</p>
                   </div>
