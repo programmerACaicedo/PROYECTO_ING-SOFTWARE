@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react"; // Agregar useEffect
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
 import styles from "../styles/olvidoContraseña.module.css";
 
 const OlvidoContraseña = () => {
+  const navigate = useNavigate(); // Inicializar useNavigate
+
   const [correo, setCorreo] = useState("");
   const [palabra_seguridad, setPalabra_seguridad] = useState("");
   const [codigo, setCodigo] = useState("");
@@ -60,13 +63,15 @@ const OlvidoContraseña = () => {
   
           alert("Se ha enviado un correo con el enlace para restablecer tu contraseña.");
           setMensajeError("");
-      } catch (error) {
+          // Redirigir al inicio de sesión
+          navigate("/login");
+        } catch (error) {
           console.error("Error en la solicitud:", error.message);
           setMensajeError(error.message);
-      } finally {
+        } finally {
           setLoading(false);
-      }
-  };
+        }
+      };
 
   const handleValidarCodigo = async () => {
     if (!codigo) {
