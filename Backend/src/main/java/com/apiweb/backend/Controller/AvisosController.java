@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Model.AvisosModel;
+import com.apiweb.backend.Model.MensajeriaAviso;
+import com.apiweb.backend.Model.Mensajes;
 import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Service.IAvisosService;
 
@@ -72,9 +74,15 @@ public class AvisosController {
         return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoReporteSiendoAdministrador(id, reporte), HttpStatus.OK);
     }
 
-    // @PutMapping("/chat/{id}")
-    // public ResponseEntity<AvisosModel> crearChat(@PathVariable("id") ObjectId id,@RequestBody AvisosModel mensaje){
-    //     return new ResponseEntity<AvisosModel>(avisosService.crearChat(id, mensaje), HttpStatus.OK);
-    // }
+    @PutMapping("/chat/{id}")
+    public ResponseEntity<AvisosModel> crearChat(@PathVariable("id") ObjectId id,@RequestBody MensajeriaAviso mensaje){
+        return new ResponseEntity<AvisosModel>(avisosService.crearChat(id, mensaje), HttpStatus.OK);
+    }
+
+    @PutMapping("/mandarMensajes/{idAviso}/{idInteresado}")
+    public ResponseEntity<AvisosModel> mandarMensajes(@PathVariable("idAviso") ObjectId idAviso,@PathVariable("idInteresado") ObjectId idInteresado,@RequestBody Mensajes mensaje){
+        return new ResponseEntity<AvisosModel>(avisosService.mandarMensajes(idAviso, idInteresado, mensaje), HttpStatus.OK);
+    }
+
 
 }

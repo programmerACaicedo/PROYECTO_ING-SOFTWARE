@@ -385,6 +385,9 @@ public class AvisosServiceImp implements IAvisosService{
                 throw new InvalidUserRoleException("El usuario no es el propietario.");
             }
         }
+        if (redactor.getTipo() == TipoUsuario.administrador) {
+            throw new InvalidUserRoleException("Un administrador no puede enviar mensajes a un aviso.");
+        }
         mensajeExistente.getMensajes().add(mensaje);
         return avisosRepository.save(aviso);   
     }
