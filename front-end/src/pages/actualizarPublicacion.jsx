@@ -1,102 +1,53 @@
-// src/pages/ActualizarPublicacion.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "../styles/actualizarPublicacion.module.css";
+import { listarAvisos, actualizarAviso, subirImagenACloudinary } from "../services/conexiones";
 
 const ActualizarPublicacion = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   // Menú hamburguesa
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(o => !o);
   const closeMenu = () => setIsMenuOpen(false);
 
-  // Publicaciones originales y filtrado
-  const [publicaciones, setPublicaciones] = useState([]);
-  const [filteredPubs, setFilteredPubs] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false);
-  const [imageError, setImageError] = useState("");
-  const [selectedPreview, setSelectedPreview] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openModal = (src) => {
-    setSelectedPreview(src);
-    setIsModalOpen(true);
-  };
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedPreview(null);
-  };
-
-  // Carga simulada de datos
-  useEffect(() => {
-    const dataSimulada = [
-      {
-        id: "1",
-        titulo: "Apartamento en el centro",
-        descripcionEspacio: "Un apartamento amplio y luminoso",
-        precio: "1500000",
-        condiciones: "No se permiten mascotas",
-        estado: "disponible",
-        imagenes: [],
-      },
-      {
-        id: "2",
-        titulo: "Bodega industrial",
-        descripcionEspacio: "Espacio para almacenamiento",
-        precio: "2000000",
-        condiciones: "",
-        estado: "en proceso",
-        imagenes: [],
-      },
-    ];
-    setPublicaciones(dataSimulada);
-    setFilteredPubs(dataSimulada);
-  }, []);
-
-  // Búsqueda tipo autocomplete
-  const handleSearchChange = e => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    setFilteredPubs(
-      publicaciones.filter(pub =>
-        pub.titulo.toLowerCase().includes(term.toLowerCase())
-      )
-    );
-  };
-
-  // Selección de aviso
-  const [selectedId, setSelectedId] = useState("");
   const [formData, setFormData] = useState({
-    titulo: "",
-    descripcionEspacio: "",
-    precio: "",
+    nombre: "",
+    descripcion: "",
+    precio_mensual: "",
     condiciones: "",
-    estado: "disponible",
+    estado: "Disponible",
     imagenes: [],
   });
   const [errores, setErrores] = useState({});
   const [mensajeExito, setMensajeExito] = useState("");
+  const [imageError, setImageError] = useState("");
+  const [selectedPreview, setSelectedPreview] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSelectPub = id => {
-    setSelectedId(id);
-    setErrores({});
-    setMensajeExito("");
-    if (!id) {
-      return setFormData({
-        titulo: "",
-        descripcionEspacio: "",
-        precio: "",
-        condiciones: "",
-        estado: "disponible",
-        imagenes: [],
-      });
-    }
-    const pub = publicaciones.find(p => p.id === id);
-    if (pub) setFormData({ ...pub });
-    setSearchTerm(pub.titulo);
-    setFilteredPubs([]);
-  };
+  // Cargar datos del aviso por id
+  useEffect(() => {
+    const fetchAviso = async () => {
+      try {
+        const avisos = await listarAvisos();
+        const aviso = avisos.find(a => String(a.id) === String(id));
+        if (aviso) {
+          setFormData({
+            nombre: aviso.nombre || "",
+            descripcion: aviso.descripcion || aviso.descripcion || "",
+            precio_mensual: aviso.precio_mensual || "",
+            condiciones: aviso.condiciones || "",
+            estado: aviso.estado || "",
+            imagenes: [], // No cargamos imágenes existentes aquí, solo nuevas
+          });
+        }
+      } catch (error) {
+        setMensajeExito("No se pudo cargar el aviso.");
+      }
+    };
+    fetchAviso();
+  }, [id]);
 
   // Inputs genéricos
   const handleInputChange = e => {
@@ -105,59 +56,66 @@ const ActualizarPublicacion = () => {
     setMensajeExito("");
   };
 
-     const handleImagenesChange = e => {
-       const files = Array.from(e.target.files);
-       let validFiles = [];
-       let errorMsg = "";
-    
-       files.forEach(file => {
-         const ext = file.name.split(".").pop().toLowerCase();
-         if (!["png", "jpg", "jpeg"].includes(ext)) {
-           errorMsg = "Solo se permiten imágenes PNG o JPG.";
-         } else if (file.size > 5 * 1024 * 1024) {
-           errorMsg = "Cada imagen no puede superar los 5 MB.";
-         } else {
-           validFiles.push(file);
-         }
-       });
-    
-       if (errorMsg) {
-         setImageError(errorMsg);
-         // No actualizamos las imágenes inválidas
-       } else {
-         setImageError("");
-         setFormData(f => ({
-             ...f,
-             imagenes: [...f.imagenes, ...validFiles].slice(0, 10)
-           }));       }
-       setMensajeExito("");
-     };
-    
+  const handleImagenesChange = e => {
+    const files = Array.from(e.target.files);
+    let validFiles = [];
+    let errorMsg = "";
+
+    // Suma total de imágenes seleccionadas + nuevas
+    const totalImagenes = formData.imagenes.length + files.length;
+    if (totalImagenes > 5) {
+      setImageError("Solo puedes subir un máximo de 5 imágenes.");
+      return;
+    }
+
+    files.forEach(file => {
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (!["png", "jpg", "jpeg"].includes(ext)) {
+        errorMsg = "Solo se permiten imágenes PNG o JPG.";
+      } else if (file.size > 5 * 1024 * 1024) {
+        errorMsg = "Cada imagen no puede superar los 5 MB.";
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (errorMsg) {
+      setImageError(errorMsg);
+    } else {
+      setImageError("");
+      setFormData(f => ({
+        ...f,
+        imagenes: [...f.imagenes, ...validFiles]
+      }));
+    }
+    setMensajeExito("");
+  };
+
+  const handleEliminarImagen = (index) => {
+  setFormData(f => ({
+    ...f,
+    imagenes: f.imagenes.filter((_, i) => i !== index)
+  }));
+  setImageError("");
+  };
 
   // Validaciones
   const validarFormulario = () => {
     const newErr = {};
-    // Título
-    if (!formData.titulo) newErr.titulo = "El título es obligatorio";
-    else if (formData.titulo.length > 100)
-      newErr.titulo = "Máx. 100 caracteres";
-    // Precio
-    if (!/^\d+$/.test(formData.precio))
-      newErr.precio = "El precio debe contener solo dígitos";
-    // Descripción del espacio
-    if (!formData.descripcionEspacio)
-      newErr.descripcionEspacio = "La descripción es obligatoria";
-    else if (formData.descripcionEspacio.length > 500)
-      newErr.descripcionEspacio =
-        "Máx. 500 caracteres";
-    // Imágenes
+    if (!formData.nombre) newErr.nombre = "El título es obligatorio";
+    else if (formData.nombre.length > 100)
+      newErr.nombre = "Máx. 100 caracteres";
+    if (!/^\d+$/.test(formData.precio_mensual))
+      newErr.precio_mensual = "El precio debe contener solo dígitos";
+    if (!formData.descripcion)
+      newErr.descripcion = "La descripción es obligatoria";
+    else if (formData.descripcion.length > 500)
+      newErr.descripcion = "Máx. 500 caracteres";
     if (formData.imagenes.length < 3) {
       newErr.imagenes = "Debes subir al menos 3 imágenes.";
     } else if (formData.imagenes.length > 10) {
       newErr.imagenes = "No puedes subir más de 10 imágenes.";
     }
-  
-    // Validación de formato y tamaño de cada imagen
     formData.imagenes.forEach((img, i) => {
       const ext = img.name.split(".").pop().toLowerCase();
       if (!["png", "jpg", "jpeg"].includes(ext)) {
@@ -167,28 +125,46 @@ const ActualizarPublicacion = () => {
         newErr[`imagen-${i}`] = `Máx. 5MB: ${img.name}`;
       }
     });
-  
-
     setErrores(newErr);
     return Object.keys(newErr).length === 0;
   };
 
   // Submit
-  const handleSubmit = e => {
+    const handleSubmit = async e => {
     e.preventDefault();
+    console.log("handleSubmit ejecutado"); // Verifica si se ejecuta
     setMensajeExito("");
-    if (!selectedId) {
-      setErrores({ select: "Selecciona un aviso" });
+    if (!validarFormulario()) {
+      console.log("Validación fallida:", errores); // Verifica si la validación falla
       return;
     }
-    if (!validarFormulario()) return;
-    // Simular actualización
-    setPublicaciones(list =>
-      list.map(p =>
-        p.id === selectedId ? { ...formData, id: p.id } : p
-      )
-    );
-    setMensajeExito("¡Cambios guardados con éxito!");
+  
+    try {
+      // Subir imágenes a Cloudinary y obtener URLs
+      const imagenesUrls = [];
+      for (const file of formData.imagenes) {
+        const url = await subirImagenACloudinary(file);
+        imagenesUrls.push(url);
+      }
+  
+      // Preparar datos para actualizar
+      const datosActualizados = {
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        precio_mensual: formData.precio_mensual,
+        condiciones: formData.condiciones,
+        estado: formData.estado,
+        imagenes: imagenesUrls, // Enviar URLs de Cloudinary
+      };
+  
+      console.log("Datos enviados al backend:", datosActualizados); // Verifica los datos enviados
+      const respuesta = await actualizarAviso(id, datosActualizados);
+      console.log("Respuesta del backend:", respuesta); // Verifica la respuesta del backend
+      setMensajeExito("¡Cambios guardados con éxito!");
+    } catch (error) {
+      console.error("Error al actualizar el aviso:", error); // Muestra el error en la consola
+      setMensajeExito("Error al actualizar el aviso.");
+    }
   };
 
   // Preview de imágenes
@@ -211,51 +187,32 @@ const ActualizarPublicacion = () => {
 
       <h2 className={styles.seccionTitulo}>Actualizar Publicación</h2>
 
-      
-      <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Buscar aviso por título..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          onFocus={() => setIsSearchActive(true)}
-          onBlur={() => setTimeout(() => setIsSearchActive(false), 150)}
-          className={styles.searchInput}
-        />
-        {isSearchActive && filteredPubs.length > 0 && (
-          <ul className={styles.suggestionsList}>
-            {filteredPubs.map(pub => (
-             <li
-             key={pub.id}
-             onClick={() => {
-               handleSelectPub(pub.id);
-               setIsSearchActive(false);
-             }}
-             className={styles.suggestionItem}
-           >
-             {pub.titulo}
-           </li>
-           
-            ))}
-          </ul>
-        )}
-        {errores.select && <p className={styles.error}>{errores.select}</p>}
-      </div>
-
       <div className={styles.contenidoActualizar}>
         <div className={styles.imagenPreview}>
           {previewUrls.length > 0 ? (
-            <div className={styles.imageGallery}>
-{previewUrls.map((src, i) => (
-  <img
-    key={i}
-    src={src}
-    alt={`Vista previa ${i + 1}`}
-    className={styles.modalImage}
-    onClick={() => openModal(src)}
-  />
-))}
-            </div>
+          <div className={styles.imageGallery}>
+            {previewUrls.map((src, i) => (
+              <div key={i} className={styles.imageContainer}>
+                <img
+                  src={src}
+                  alt={`Vista previa ${i + 1}`}
+                  className={styles.modalImage}
+                  onClick={() => {
+                    setSelectedPreview(src);
+                    setIsModalOpen(true);
+                  }}
+                />
+                <button
+                  type="button"
+                  className={styles.btnEliminarImagen}
+                  onClick={() => handleEliminarImagen(i)}
+                  title="Eliminar imagen"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
           ) : (
             <div className={styles.imagenVacia}>
               <p>No hay imagen seleccionada</p>
@@ -273,7 +230,7 @@ const ActualizarPublicacion = () => {
             style={{ display: "none" }}
           />
           {errores.imagenes && (
-           <p className={styles.error}>{errores.imagenes}</p>
+            <p className={styles.error}>{errores.imagenes}</p>
           )}
           {Object.keys(errores)
             .filter(key => key.startsWith("imagen-"))
@@ -282,7 +239,6 @@ const ActualizarPublicacion = () => {
                 {errores[key]}
               </p>
             ))}
-
         </div>
 
         <form className={styles.formActualizar} onSubmit={handleSubmit}>
@@ -290,30 +246,30 @@ const ActualizarPublicacion = () => {
             <div className={styles.campoForm}>
               <label>Título del aviso:</label>
               <input
-                name="titulo"
+                name="nombre"
                 type="text"
-                value={formData.titulo}
+                value={formData.nombre}
                 onChange={handleInputChange}
                 maxLength={100}
                 placeholder="Ingrese el título"
                 required
               />
-              {errores.titulo && (
-                <p className={styles.error}>{errores.titulo}</p>
+              {errores.nombre && (
+                <p className={styles.error}>{errores.nombre}</p>
               )}
             </div>
             <div className={styles.campoForm}>
               <label>Precio (mensual): $</label>
               <input
-                name="precio"
+                name="precio_mensual"
                 type="text"
-                value={formData.precio}
+                value={formData.precio_mensual}
                 onChange={handleInputChange}
                 placeholder="Ingrese el precio"
                 required
               />
-              {errores.precio && (
-                <p className={styles.error}>{errores.precio}</p>
+              {errores.precio_mensual && (
+                <p className={styles.error}>{errores.precio_mensual}</p>
               )}
             </div>
           </div>
@@ -321,15 +277,15 @@ const ActualizarPublicacion = () => {
           <div className={styles.campoForm}>
             <label>Descripción del espacio:</label>
             <textarea
-              name="descripcionEspacio"
-              value={formData.descripcionEspacio}
+              name="descripcion"
+              value={formData.descripcion}
               onChange={handleInputChange}
               maxLength={500}
               placeholder="Describe tu espacio (máx. 500 caract.)"
               required
             />
-            {errores.descripcionEspacio && (
-              <p className={styles.error}>{errores.descripcionEspacio}</p>
+            {errores.descripcion && (
+              <p className={styles.error}>{errores.descripcion}</p>
             )}
           </div>
 
@@ -341,10 +297,10 @@ const ActualizarPublicacion = () => {
               onChange={handleInputChange}
               required
             >
-              <option value="disponible">Disponible</option>
-              <option value="en proceso">En proceso de arrendamiento</option>
-              <option value="arrendado">Arrendado</option>
-              <option value="inactivo">Inactivo</option>
+              <option value="Disponible">Disponible</option>
+              <option value="EnProceso">En proceso de arrendamiento</option>
+              <option value="Arrendado">Arrendado</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
 
@@ -352,11 +308,10 @@ const ActualizarPublicacion = () => {
             <label>Condiciones adicionales:</label>
             <input
               name="condiciones"
-                type="text"
-                value={formData.condiciones}
-              
-                onChange={handleInputChange}
-                placeholder="Ingrese condiciones adicionales"
+              type="text"
+              value={formData.condiciones}
+              onChange={handleInputChange}
+              placeholder="Ingrese condiciones adicionales"
             />
           </div>
 
@@ -370,14 +325,13 @@ const ActualizarPublicacion = () => {
         <p className={styles.mensajeExito}>{mensajeExito}</p>
       )}
       {isModalOpen && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
+        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <img src={selectedPreview} alt="Ampliada" className={styles.modalImageLarge} />
-            <button className={styles.modalCloseButton} onClick={closeModal}>×</button>
+            <button className={styles.modalCloseButton} onClick={() => setIsModalOpen(false)}>×</button>
           </div>
-  </div>
-)}
-
+        </div>
+      )}
     </div>
   );
 };

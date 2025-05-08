@@ -290,14 +290,17 @@ const confirmarEliminacion = async () => {
         >
           Perfil
         </button>
+        {tipoUsuario === "propietario" && (
         <button
         onClick={() => {
         navigate("/misAvisos");
         closeMenu();
         }}
+    
         >
         Mis avisos
       </button>
+)}
       {tipoUsuario === "propietario" && (
       <button
       onClick={() => {

@@ -83,6 +83,25 @@ body {
   padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  color:white;
+}
+.clearButton{
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  cursor: pointer;
+  padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
+  text-align: center;
+  margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
+  border-radius: 5px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.clearButton:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-4px);
+
 }
 
 .menu {
@@ -166,6 +185,8 @@ body {
   background-color: #f8f9fa;
   border-right: 1px solid #e0e0e0;
   overflow-y: auto;
+  padding: clamp(0rem, 2vw, 1.5rem);
+  
 }
 
 .conversaciones h2 {
@@ -194,14 +215,15 @@ body {
 }
 
 .selected {
-  background-color: #e0e0e0;
+  background-color: #7c1515;
 }
 
 .chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #efeae2; /* Fondo típico de WhatsApp */
+  background-color: #e3efe2; /* Fondo típico de WhatsApp */
+  width: 100%;
 }
 
 .chatHeader {

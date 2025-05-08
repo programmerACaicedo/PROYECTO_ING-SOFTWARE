@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
+import { listarAvisos } from "../services/conexiones"; // Importa la función
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const [publicaciones] = useState([
-    {
-      id: "1",
-      titulo: "Alquiler de Apartamento - 15 piso unidad A",
-      descripcion: "...",
-      imagen: "/assets/img/apartamento.jpg",
-      propietarioId: "propietario1",
-    },
-    {
-      id: "2",
-      titulo: "Bodega en zona industrial",
-      descripcion: "...",
-      imagen: "/assets/img/apartamento.jpg",
-      propietarioId: "propietario2",
-    },
-  ]);
 
   const [publicacion, setPublicacion] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -33,15 +17,25 @@ const DetallePublicacion = () => {
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
 
   useEffect(() => {
-    const encontrada = publicaciones.find((p) => p.id === id);
-    setPublicacion(encontrada || null);
+    // Traer los avisos y buscar el que corresponde al id
+    const fetchPublicacion = async () => {
+      try {
+        const avisos = await listarAvisos();
+        const encontrada = avisos.find((p) => String(p.id) === String(id));
+        setPublicacion(encontrada || null);
+      } catch (error) {
+        setPublicacion(null);
+      }
+    };
 
-    const token = localStorage.getItem('token');
+    fetchPublicacion();
+
+    const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = require('jwt-decode').jwtDecode(token);
+      const decodedToken = require("jwt-decode").jwtDecode(token);
       setTipoUsuario(decodedToken.tipo || "");
     }
-  }, [id, publicaciones]);
+  }, [id]);
 
   const handleEnviarReporte = (e) => {
     e.preventDefault();
@@ -55,12 +49,14 @@ const DetallePublicacion = () => {
   };
 
   const handleNotificar = (e) => {
-    e.preventDefault(); // Prevenir comportamiento por defecto
+    e.preventDefault();
     if (!publicacion) return;
     setMensajeNotificacion("Enviando mensaje al propietario...");
     setTimeout(() => {
       setMensajeNotificacion("");
-      navigate('/mensajes', { state: { iniciarChat: true, propietarioId: publicacion.propietarioId } });
+      navigate("/mensajes", {
+        state: { iniciarChat: true, propietarioId: publicacion.propietarioId },
+      });
     }, 1500);
   };
 
@@ -69,7 +65,11 @@ const DetallePublicacion = () => {
   };
 
   if (!publicacion) {
-    return <div className={styles.detallePublicacionContainer}>Publicación no encontrada.</div>;
+    return (
+      <div className={styles.detallePublicacionContainer}>
+        Publicación no encontrada.
+      </div>
+    );
   }
 
   const toggleMenu = () => {
@@ -83,35 +83,74 @@ const DetallePublicacion = () => {
   return (
     <div className={styles.detallePublicacionContainer}>
       <header className={styles.headerDetalle}>
-        <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
+        <span className={styles.iconMenu} onClick={toggleMenu}>
+          ☰
+        </span>
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
       <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={() => { navigate("/interior"); closeMenu(); }}>Inicio</button>
-        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
-        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
-        <button onClick={() => { navigate("/publicacion/1"); closeMenu(); }}>Ver Publicación 1</button>
-        <button onClick={() => { navigate("/publicacion/2"); closeMenu(); }}>Ver Publicación 2</button>
+        <button
+          onClick={() => {
+            navigate("/propietario");
+            closeMenu();
+          }}
+        >
+          Inicio
+        </button>
+        <button
+          onClick={() => {
+            navigate("/perfil");
+            closeMenu();
+          }}
+        >
+          Perfil
+        </button>
+        <button
+          onClick={() => {
+            navigate("/nuevo-aviso");
+            closeMenu();
+          }}
+        >
+          Nuevo Aviso
+        </button>
       </nav>
 
       <div className={styles.contenidoDetalle}>
-        <img src={publicacion.imagen} alt={publicacion.titulo} />
+        <div className={styles.imagenes}>
+          {publicacion.imagenes?.length > 0 ? (
+            publicacion.imagenes.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`Imagen ${index + 1}`}
+                className={styles.imagen}
+              />
+            ))
+          ) : (
+            <p>No hay imágenes disponibles.</p>
+          )}
+        </div>
         <div className={styles.textoDetalle}>
-          <h2>{publicacion.titulo}</h2>
-          <p>{publicacion.descripcion}</p>
+          <h2>{publicacion.nombre}</h2>
+          <p><strong>Descripción:</strong> {publicacion.descripcion}</p>
+          <p><strong>Precio mensual:</strong> ${publicacion.precio_mensual}</p>
+          <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
+          <p><strong>Estado:</strong> {publicacion.estado}</p>
           <div className={styles.botonesAccion}>
-            {tipoUsuario === 'interesado' && (
+            {tipoUsuario === "interesado" && (
               <button onClick={handleNotificar}>Notificar arrendatario</button>
             )}
-            {tipoUsuario === 'propietario' && (
+            {tipoUsuario === "propietario" && (
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
             <button onClick={() => setMostrarModal(true)}>Reportar</button>
           </div>
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
-              <p className={styles.mensajeNotificacion}>{mensajeNotificacion}</p>
+              <p className={styles.mensajeNotificacion}>
+                {mensajeNotificacion}
+              </p>
             </div>
           )}
         </div>
@@ -123,7 +162,11 @@ const DetallePublicacion = () => {
             <form onSubmit={handleEnviarReporte}>
               <label>
                 Motivo:
-                <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required>
+                <select
+                  value={motivo}
+                  onChange={(e) => setMotivo(e.target.value)}
+                  required
+                >
                   <option value="">Selecciona un motivo</option>
                   <option value="inapropiado">Contenido Inapropiado</option>
                   <option value="spam">Spam</option>
