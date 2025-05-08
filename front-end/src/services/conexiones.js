@@ -138,6 +138,16 @@ export const registrarAviso = async (aviso) => {
   }
 };
 
+export const actualizarAviso = async (id, datosActualizados) => {
+  try {
+    const respuesta = await api.put(`/avisos/${id}`, datosActualizados);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al actualizar aviso:", error.response || error.message);
+    throw error;
+  }
+};
+
 export const listarAvisosConReportes = async () => {
   try {
     const respuesta = await api.get("/avisos/listarReportes");

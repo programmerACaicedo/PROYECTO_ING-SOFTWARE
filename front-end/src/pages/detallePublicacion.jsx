@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
+import { listarAvisos } from "../services/conexiones"; // Importa la función
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const [publicaciones] = useState([
-    {
-      id: "1",
-      titulo: "Alquiler de Apartamento - 15 piso unidad A",
-      descripcion: "...",
-      imagen: "/assets/img/apartamento.jpg",
-      propietarioId: "propietario1",
-    },
-    {
-      id: "2",
-      titulo: "Bodega en zona industrial",
-      descripcion: "...",
-      imagen: "/assets/img/apartamento.jpg",
-      propietarioId: "propietario2",
-    },
-  ]);
 
   const [publicacion, setPublicacion] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -33,15 +17,25 @@ const DetallePublicacion = () => {
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
 
   useEffect(() => {
-    const encontrada = publicaciones.find((p) => p.id === id);
-    setPublicacion(encontrada || null);
+    // Traer los avisos y buscar el que corresponde al id
+    const fetchPublicacion = async () => {
+      try {
+        const avisos = await listarAvisos();
+        const encontrada = avisos.find((p) => String(p.id) === String(id));
+        setPublicacion(encontrada || null);
+      } catch (error) {
+        setPublicacion(null);
+      }
+    };
+
+    fetchPublicacion();
 
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = require('jwt-decode').jwtDecode(token);
       setTipoUsuario(decodedToken.tipo || "");
     }
-  }, [id, publicaciones]);
+  }, [id]);
 
   const handleEnviarReporte = (e) => {
     e.preventDefault();
@@ -55,7 +49,7 @@ const DetallePublicacion = () => {
   };
 
   const handleNotificar = (e) => {
-    e.preventDefault(); // Prevenir comportamiento por defecto
+    e.preventDefault();
     if (!publicacion) return;
     setMensajeNotificacion("Enviando mensaje al propietario...");
     setTimeout(() => {

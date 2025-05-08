@@ -133,9 +133,11 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
-        if (aviso.getReporte().getEstadoReporte() == EstadoReporte.Excluido) {
-            aviso.getReporte().setEstadoReporte(EstadoReporte.AvisoActualizado);
-            aviso.getReporte().setComentario("El aviso fue actualizado por el propietario.");
+        if (aviso.getReporte() != null) {
+            if (aviso.getReporte().getEstadoReporte() == EstadoReporte.Excluido) {
+                aviso.getReporte().setEstadoReporte(EstadoReporte.AvisoActualizado);
+                aviso.getReporte().setComentario("El aviso fue actualizado por el propietario.");
+            }
         }
         
 
