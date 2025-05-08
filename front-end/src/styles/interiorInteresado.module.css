@@ -121,6 +121,7 @@ body {
     gap: 1rem;
     position: relative;
     justify-content: center;
+    color:black;
   }
 
   .alquileresBtn,
