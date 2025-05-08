@@ -64,8 +64,8 @@ public class UsuariosServiceImp implements IUsuariosService {
 
             // Generar token de verificación válido por 24 horas
             String token = jwtTokenService.generarTokenVerificacion(usuario.getCorreo(), 24 * 60 * 60);
-            //"https://fkzklx7z-3000.use2.devtunnels.ms/restablecer-contraseña?token=" URL para el funcionamiento del tunel
-            String enlaceVerificacion = "http://localhost:8080/api/usuario/verificar?token=" + token;
+            // URL para el funcionamiento del tunel
+            String enlaceVerificacion = "https://fkzklx7z-8080.use2.devtunnels.ms/restablecer-contraseña?token=" + token;
 
             // Enviar correo de verificación
             emailService.sendEmail(
