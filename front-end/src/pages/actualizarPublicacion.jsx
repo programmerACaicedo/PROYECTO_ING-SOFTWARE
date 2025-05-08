@@ -14,7 +14,7 @@ const ActualizarPublicacion = () => {
 
   const [formData, setFormData] = useState({
     nombre: "",
-    descripcionEspacio: "",
+    descripcion: "",
     precio_mensual: "",
     condiciones: "",
     estado: "Disponible",
@@ -35,7 +35,7 @@ const ActualizarPublicacion = () => {
         if (aviso) {
           setFormData({
             nombre: aviso.nombre || "",
-            descripcionEspacio: aviso.descripcionEspacio || aviso.descripcion || "",
+            descripcion: aviso.descripcion || aviso.descripcion || "",
             precio_mensual: aviso.precio_mensual || "",
             condiciones: aviso.condiciones || "",
             estado: aviso.estado || "",
@@ -102,15 +102,15 @@ const ActualizarPublicacion = () => {
   // Validaciones
   const validarFormulario = () => {
     const newErr = {};
-    if (!formData.titulo) newErr.titulo = "El título es obligatorio";
-    else if (formData.titulo.length > 100)
-      newErr.titulo = "Máx. 100 caracteres";
-    if (!/^\d+$/.test(formData.precio))
-      newErr.precio = "El precio debe contener solo dígitos";
-    if (!formData.descripcionEspacio)
-      newErr.descripcionEspacio = "La descripción es obligatoria";
-    else if (formData.descripcionEspacio.length > 500)
-      newErr.descripcionEspacio = "Máx. 500 caracteres";
+    if (!formData.nombre) newErr.nombre = "El título es obligatorio";
+    else if (formData.nombre.length > 100)
+      newErr.nombre = "Máx. 100 caracteres";
+    if (!/^\d+$/.test(formData.precio_mensual))
+      newErr.precio_mensual = "El precio debe contener solo dígitos";
+    if (!formData.descripcion)
+      newErr.descripcion = "La descripción es obligatoria";
+    else if (formData.descripcion.length > 500)
+      newErr.descripcion = "Máx. 500 caracteres";
     if (formData.imagenes.length < 3) {
       newErr.imagenes = "Debes subir al menos 3 imágenes.";
     } else if (formData.imagenes.length > 10) {
@@ -130,11 +130,15 @@ const ActualizarPublicacion = () => {
   };
 
   // Submit
-  const handleSubmit = async e => {
+    const handleSubmit = async e => {
     e.preventDefault();
+    console.log("handleSubmit ejecutado"); // Verifica si se ejecuta
     setMensajeExito("");
-    if (!validarFormulario()) return;
-
+    if (!validarFormulario()) {
+      console.log("Validación fallida:", errores); // Verifica si la validación falla
+      return;
+    }
+  
     try {
       // Subir imágenes a Cloudinary y obtener URLs
       const imagenesUrls = [];
@@ -142,20 +146,23 @@ const ActualizarPublicacion = () => {
         const url = await subirImagenACloudinary(file);
         imagenesUrls.push(url);
       }
-
+  
       // Preparar datos para actualizar
       const datosActualizados = {
-        titulo: formData.titulo,
-        descripcionEspacio: formData.descripcionEspacio,
-        precio: formData.precio,
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        precio_mensual: formData.precio_mensual,
         condiciones: formData.condiciones,
         estado: formData.estado,
         imagenes: imagenesUrls, // Enviar URLs de Cloudinary
       };
-
-      await actualizarAviso(id, datosActualizados);
+  
+      console.log("Datos enviados al backend:", datosActualizados); // Verifica los datos enviados
+      const respuesta = await actualizarAviso(id, datosActualizados);
+      console.log("Respuesta del backend:", respuesta); // Verifica la respuesta del backend
       setMensajeExito("¡Cambios guardados con éxito!");
     } catch (error) {
+      console.error("Error al actualizar el aviso:", error); // Muestra el error en la consola
       setMensajeExito("Error al actualizar el aviso.");
     }
   };
@@ -270,15 +277,15 @@ const ActualizarPublicacion = () => {
           <div className={styles.campoForm}>
             <label>Descripción del espacio:</label>
             <textarea
-              name="descripcionEspacio"
-              value={formData.descripcionEspacio}
+              name="descripcion"
+              value={formData.descripcion}
               onChange={handleInputChange}
               maxLength={500}
               placeholder="Describe tu espacio (máx. 500 caract.)"
               required
             />
-            {errores.descripcionEspacio && (
-              <p className={styles.error}>{errores.descripcionEspacio}</p>
+            {errores.descripcion && (
+              <p className={styles.error}>{errores.descripcion}</p>
             )}
           </div>
 
