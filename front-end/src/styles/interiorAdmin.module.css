@@ -232,21 +232,42 @@
   }
 }
 
+
 .splashScreen {
+  width: 99vw;
+  height: 99vh;
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #ffffff, #3c5ccd90);
+  background:
+    repeating-radial-gradient(
+      circle at 30% 30%,
+      #ffffff,
+      #dbe4ff 2%,
+      #3c5ccd 4%
+    );
+  background-size: 200% 700%;
+  animation: moveBackground 12s infinite linear;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
+@keyframes moveBackground {
+  0% { background-position: 0 0; }
+  100% { background-position: 100% 100%; }
+}
+
 .splashScreen h1 {
-  font-size: 3.5rem;
+  font-size: 5.5rem;
+  text-align: center;
+  justify-content: center;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+  color: #000000;
+  text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
   opacity: 0;
   animation: fadeIn 0.5s ease-in forwards;
   font-family: "Poppins", "Segoe UI", sans-serif;
@@ -254,7 +275,5 @@
 }
 
 @keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }

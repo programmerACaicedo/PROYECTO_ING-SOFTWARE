@@ -6,8 +6,11 @@
 }
 
 .header {
+  margin-top: 14.9rem;
+  position: static;
+  position: sticky;
   align-items: left;
-  width: 100vw;
+  width: 99vw;
   background-color: #0284c7;
   padding: 2rem;
   box-shadow: 0 6px 8px rgb(0, 0, 0);

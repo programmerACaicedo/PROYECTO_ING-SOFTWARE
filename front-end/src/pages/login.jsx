@@ -46,17 +46,21 @@ const Login = () => {
           localStorage.setItem("sesionActiva", "true");
 
           // Redirect based on tipoUsuario
-          if (data.tipoUsuario) {
-            if (data.tipoUsuario === "propietario") {
+
+              if (data.tipoUsuario) {
+           if (data.tipoUsuario === "propietario") {
               navigate("/propietario");
-            } else if (data.tipoUsuario === "interesado") {
-              navigate("/interesado");
-            } else {
-              navigate("/interior");
-            }
-          } else {
-            setErrorMessage("Tipo de usuario no definido.");
+             } else if (data.tipoUsuario === "interesado") {
+               navigate("/interesado");
+            } else if (data.tipoUsuario === "administrador") {
+                 navigate("/admin");
+              } else {
+                setErrorMessage("Tipo de usuario no reconocido.");
           }
+    } else {
+        setErrorMessage("Tipo de usuario no definido.");
+   }
+
         } catch (error) {
           if (error.response) {
             const mensajeError = error.response.data;
@@ -151,14 +155,15 @@ const Login = () => {
       localStorage.setItem("reciénIniciado", "true");
 
       const usuario = jwtDecode(data.token);
+
       if (usuario.tipo === "propietario") {
         navigate("/propietario");
       } else if (usuario.tipo === "interesado") {
         navigate("/interesado");
-      } else {
-        navigate("/interior");
+      } else if (usuario.tipo === "administrador") {
+        navigate("/admin");
       }
-
+      
       if (rememberMe && !mostrarPalabraSeguridad) {
         localStorage.setItem("savedEmail", email);
         localStorage.setItem("savedPassword", password);
@@ -168,6 +173,7 @@ const Login = () => {
         localStorage.removeItem("savedPassword");
         localStorage.removeItem("rememberMe");
       }
+      
     } catch (error) {
       console.error("Error completo:", error);
       if (error.response) {
