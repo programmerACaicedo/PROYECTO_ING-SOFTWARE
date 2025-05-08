@@ -361,7 +361,7 @@ const PublicarAviso = () => {
                 <option value="Apartamento">Apartamento</option>
                 <option value="Casa">Casa</option>
                 <option value="Habitacion">Habitación</option>
-                <option value="Parqueo">Parqueo</option>
+                <option value="Parqueadero">Parqueadero</option>
                 <option value="Bodega">Bodega</option>
               </select>
             </div>
