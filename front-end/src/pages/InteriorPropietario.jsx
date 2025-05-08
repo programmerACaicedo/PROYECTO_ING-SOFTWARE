@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interior.module.css";
+import { obtenerUsuario, listarAvisosPropietario } from "../services/conexiones"; // Importar funciones necesarias
 
 const InteriorPropietario = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
-
   const [mostrarSplash, setMostrarSplash] = useState(() => {
     const fueRecienIniciado = localStorage.getItem("reciénIniciado") === "true";
     if (fueRecienIniciado) {
@@ -25,14 +25,22 @@ const InteriorPropietario = () => {
     }
   }, [mostrarSplash]);
 
-  useEffect(() => {
-    setIsPropietario(true);
-    const dataSimulada = [
-      { id: 1, titulo: "Alquiler de Apartamento - 15 piso unidad A", precio: "1.500.000", estado: "Disponible", habitaciones: 3, banos: 2, tipo: "apartamento" },
-      { id: 2, titulo: "Bodega en zona industrial", precio: "2.000.000", estado: "Disponible", habitaciones: 0, banos: 0, tipo: "bodega" },
-    ];
-    setPublicaciones(dataSimulada);
-  }, []);
+useEffect(() => {
+  const cargarDatos = async () => {
+    try {
+      const usuario = await obtenerUsuario();
+      setIsPropietario(usuario.tipo === "propietario");
+
+      const avisos = await listarAvisosPropietario(usuario.id);
+      console.log("Avisos obtenidos:", avisos); // Depuración
+      setPublicaciones(avisos);
+    } catch (error) {
+      console.error("Error al cargar datos del propietario:", error);
+    }
+  };
+
+  cargarDatos();
+}, []);
 
   const filterPublications = (tipo) => {
     setMostrarMenu(false);
@@ -72,10 +80,10 @@ const InteriorPropietario = () => {
                 </button>
                 {mostrarMenu && (
                   <div className={styles.dropdownContent}>
-                    <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
-                    <button onClick={() => filterPublications("bodega")}>Bodegas</button>
-                    <button onClick={() => filterPublications("garajes")}>Garajes</button>
-                    <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
+                    <button onClick={() => filterPublications("Apartamento")}>Apartamentos</button>
+                    <button onClick={() => filterPublications("Bodega")}>Bodegas</button>
+                    <button onClick={() => filterPublications("Garaje")}>Garajes</button>
+                    <button onClick={() => filterPublications("Parqueadero")}>Parqueaderos</button>
                   </div>
                 )}
               </div>
@@ -98,19 +106,22 @@ const InteriorPropietario = () => {
           <section className={styles.publicaciones}>
             <h2>Publicaciones</h2>
             <div className={styles.publicacionesList}>
-              {publicaciones.map((pub) => (
-                <div
-                  key={pub.id}
-                  className={styles.publicacion}
-                  onClick={() => handlePublicationClick(pub.id)}
-                >
-                  <h3>{pub.titulo}</h3>
-                  <p>Precio: {pub.precio}</p>
-                  <p>Estado: {pub.estado}</p>
-                  <p>Habitaciones: {pub.habitaciones}</p>
-                  <p>Baños: {pub.banos}</p>
-                </div>
-              ))}
+                {publicaciones.length > 0 ? (
+                publicaciones.map((pub) => (
+                  <div
+                    key={pub.id}
+                    className={styles.publicacion}
+                    onClick={() => handlePublicationClick(pub.id)}
+                  >
+                    <h3>{pub.nombre}</h3> {/* Asegúrate de que "nombre" sea la propiedad correcta */}
+                    <p>Precio: {pub.precio_mensual}</p> {/* Verifica "precio_mensual" */}
+                    <p>Estado: {pub.estado}</p>
+                    <p>Descripción: {pub.descripcion}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No tienes publicaciones disponibles.</p>
+              )}
             </div>
           </section>
         </div>
