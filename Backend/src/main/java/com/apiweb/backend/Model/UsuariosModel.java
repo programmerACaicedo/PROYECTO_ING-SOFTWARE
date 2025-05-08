@@ -28,4 +28,5 @@ public class UsuariosModel {
     private ArrayList<Calificaciones> calificaciones = new ArrayList<Calificaciones>();
     private ArrayList<Notificaciones> notificaciones = new ArrayList<Notificaciones>();
     private String foto;
+    private Boolean google;
 }

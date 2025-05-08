@@ -134,59 +134,66 @@ public class UsuariosServiceImp implements IUsuariosService {
             if (usuarioExistente == null) {
                 throw new LoginFailedException("El correo proporcionado no está registrado.");
             }
-
+    
             // Verificar si el usuario está verificado
             if (!usuarioExistente.isVerificado()) {
                 throw new LoginFailedException("El usuario no ha verificado su cuenta. Por favor, verifica tu correo.");
             }
     
-            // Verificar si se proporcionó palabra_seguridad
-            String palabraSeguridad = usuario.getPalabra_seguridad();
-            if (palabraSeguridad != null && !palabraSeguridad.trim().isEmpty()) {
-                // Validar palabra_seguridad
-                if (!palabraSeguridad.equals(usuarioExistente.getPalabra_seguridad())) {
-                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
-                    if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
-                        tiempoBloqueo.put(correo, System.currentTimeMillis());
-                        throw new LoginFailedException(
-                            "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
-                        );
-                    }
-                    throw new LoginFailedException(
-                        String.format("Palabra de seguridad incorrecta. Te quedan %d intentos.", intentosRestantes)
-                    );
-                }
+            // Check if login is via Google
+            Boolean isGoogleLogin = usuario.getGoogle() != null && usuario.getGoogle();
+            if (isGoogleLogin) {
+                // Skip password and palabra_seguridad validation for Google login
+                // Login successful, proceed to generate token
             } else {
-                // Validar contraseña si no se proporcionó palabra_seguridad
-                String contrasena = usuario.getContrasena();
-                if (contrasena == null || contrasena.trim().isEmpty()) {
-                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
-                    if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
-                        tiempoBloqueo.put(correo, System.currentTimeMillis());
+                // Verificar si se proporcionó palabra_seguridad
+                String palabraSeguridad = usuario.getPalabra_seguridad();
+                if (palabraSeguridad != null && !palabraSeguridad.trim().isEmpty()) {
+                    // Validar palabra_seguridad
+                    if (!palabraSeguridad.equals(usuarioExistente.getPalabra_seguridad())) {
+                        intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                        int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+                        if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
+                            tiempoBloqueo.put(correo, System.currentTimeMillis());
+                            throw new LoginFailedException(
+                                "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
+                            );
+                        }
                         throw new LoginFailedException(
-                            "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
+                            String.format("Palabra de seguridad incorrecta. Te quedan %d intentos.", intentosRestantes)
                         );
                     }
-                    throw new LoginFailedException(
-                        String.format("La contraseña es obligatoria cuando no se proporciona palabra de seguridad. Te quedan %d intentos.", intentosRestantes)
-                    );
-                }
-    
-                if (!passwordEncoder.matches(contrasena, usuarioExistente.getContrasena())) {
-                    intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
-                    int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
-    
-                    if (intentosFallidos.get(correo) >= 5) {
+                } else {
+                    // Validar contraseña si no se proporcionó palabra_seguridad
+                    String contrasena = usuario.getContrasena();
+                    if (contrasena == null || contrasena.trim().isEmpty()) {
+                        intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                        int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+                        if (intentosFallidos.get(correo) >= MAX_INTENTOS) {
+                            tiempoBloqueo.put(correo, System.currentTimeMillis());
+                            throw new LoginFailedException(
+                                "Has alcanzado el límite de intentos fallidos. La cuenta está bloqueada por 2 horas."
+                            );
+                        }
                         throw new LoginFailedException(
-                            String.format("Debes ingresar la palabra de seguridad para continuar. Te quedan %d intentos.", intentosRestantes)
+                            String.format("La contraseña es obligatoria cuando no se proporciona palabra de seguridad. Te quedan %d intentos.", intentosRestantes)
                         );
                     }
     
-                    throw new LoginFailedException(
-                        String.format("Credenciales incorrectas. Te quedan %d intentos.", intentosRestantes)
-                    );
+                    if (!passwordEncoder.matches(contrasena, usuarioExistente.getContrasena())) {
+                        intentosFallidos.put(correo, intentosFallidos.getOrDefault(correo, 0) + 1);
+                        int intentosRestantes = MAX_INTENTOS - intentosFallidos.get(correo);
+    
+                        if (intentosFallidos.get(correo) >= 5) {
+                            throw new LoginFailedException(
+                                String.format("Debes ingresar la palabra de seguridad para continuar. Te quedan %d intentos.", intentosRestantes)
+                            );
+                        }
+    
+                        throw new LoginFailedException(
+                            String.format("Credenciales incorrectas. Te quedan %d intentos.", intentosRestantes)
+                        );
+                    }
                 }
             }
     

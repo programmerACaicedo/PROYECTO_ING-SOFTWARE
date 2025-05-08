@@ -52,8 +52,15 @@ public class UsuariosController {
     public ResponseEntity<?> login(@RequestBody UsuariosModel usuario) {
         try {
             String token = usuariosService.iniciarSesion(usuario);
-            Map<String, String> response = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
             response.put("token", token);
+            // Fetch tipoUsuario from the database
+            UsuariosModel usuarioExistente = usuariosRepository.findByCorreo(usuario.getCorreo());
+            if (usuarioExistente != null) {
+                response.put("tipoUsuario", usuarioExistente.getTipo());
+            } else {
+                throw new LoginFailedException("Usuario no encontrado.");
+            }
             return ResponseEntity.ok(response);
         } catch (LoginFailedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
