@@ -120,11 +120,11 @@ const InteriorInteresado = () => {
                 )}
               </div>
 
-              {isPropietario && (
+              
                 <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
                   Mi Perfil
                 </button>
-              )}
+              
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Cerrar Sesión
               </button>

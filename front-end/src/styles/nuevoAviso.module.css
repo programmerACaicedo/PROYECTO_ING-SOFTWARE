@@ -21,9 +21,9 @@ html, body {
 
 /* Header */
 .headerPublicar {
-  margin-top: 10.5rem;
+  margin-top: 0.4rem;
   background-color: #0284c7;
-  padding: 1.7rem;
+  padding: 2rem;
   box-shadow: 0 6px 8px rgb(0, 0, 0);
   width: 100vw;
   display: flex;
@@ -60,7 +60,7 @@ html, body {
   top: 0;
   left: 0;
   width: clamp(150px, 30vw, 245px);
-  height: 83.6vh;
+  height: 87.6vh;
   flex-direction: column;
   background-color: #1c1c1cc6;
   padding: clamp(0.5rem, 2vw, 1rem);
@@ -323,8 +323,9 @@ html, body {
 }
 
 .error {
+  margin-top: 20px;
   color: red;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 
 .mensajeExito {
