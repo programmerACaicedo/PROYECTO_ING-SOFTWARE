@@ -353,11 +353,12 @@ public class AvisosServiceImp implements IAvisosService{
 
         mensaje.setFecha(Instant.now());
         mensaje.setLeido(false);
-        aviso.setMensajes(mensaje);
+        aviso.setMensajeria(mensaje);
         return avisosRepository.save(aviso);
 
     }
 
+    //En proceso
     @Override
     public AvisosModel mandarMensajes(ObjectId idAviso, ObjectId idInteresado, Mensajes mensaje) {
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
@@ -389,6 +390,8 @@ public class AvisosServiceImp implements IAvisosService{
             throw new InvalidUserRoleException("Un administrador no puede enviar mensajes a un aviso.");
         }
         mensajeExistente.getMensajes().add(mensaje);
+        //aviso.getMensajeria().setMensajes(mensajeExistente);
+
         return avisosRepository.save(aviso);   
     }
 
