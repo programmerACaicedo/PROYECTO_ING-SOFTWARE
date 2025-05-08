@@ -35,6 +35,16 @@ const PublicarAviso = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosed, setIsMenuClosed] = useState(false);
 
+  // Mostrar mensajes de la cola, cada uno durante 5 segundos
+  useEffect(() => {
+    if (mensajes.length > 0) {
+      const timer = setTimeout(() => {
+        setMensajes((prevMensajes) => prevMensajes.slice(1));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensajes]);
+
   useEffect(() => {
     const cargarUsuario = async () => {
       try {
@@ -50,7 +60,7 @@ const PublicarAviso = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "precio_mensual") {
-      if (value === "" || (/^[0-9]*$/.test(value) && parseInt(value, 10) >= 0)) {
+      if (value === "" || /^[0-9]*$/.test(value)) {
         setForm({ ...form, [name]: value });
       }
     } else if (name === "edificio" || name === "piso") {
@@ -64,70 +74,65 @@ const PublicarAviso = () => {
   };
 
   const handleImageChange = async (e) => {
-    const file = e.target.files[0]; // Solo permite seleccionar una imagen a la vez
-    console.log("Archivo seleccionado:", file);
+    const files = Array.from(e.target.files);
+    console.log("Archivos seleccionados:", files);
 
-    if (!file) {
+    if (files.length === 0) {
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "No se seleccionó ninguna imagen.", tipo: "error" },
+        { texto: "No se seleccionaron imágenes.", tipo: "error" },
       ]);
       return;
     }
 
-    if (!["image/jpeg", "image/png"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+    const validFormat = files.every(
+      (file) => ["image/jpeg", "image/png"].includes(file.type) && file.size <= 5 * 1024 * 1024
+    );
+
+    if (!validFormat) {
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "La imagen debe ser JPG/PNG y no superar los 5MB.", tipo: "error" },
+        { texto: "Las imágenes deben ser JPG/PNG y no superar los 5MB.", tipo: "error" },
       ]);
       return;
     }
 
-    if (form.imagenes.length >= 5) {
+    if (form.imagenes.length + files.length > 10) {
       setMensajes((prevMensajes) => [
         ...prevMensajes,
-        { texto: "Solo puedes subir un máximo de 5 imágenes.", tipo: "error" },
+        { texto: "No puedes subir más de 10 imágenes.", tipo: "error" },
       ]);
       return;
     }
 
-    // Validar si la imagen ya fue subida
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      if (form.imagenes.includes(base64Image)) {
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Esta imagen ya fue subida.", tipo: "error" },
-        ]);
-        return;
-      }
-
-      try {
+    try {
+      const uploadPromises = files.map(async (file) => {
         const urlImagen = await subirImagenACloudinary(file);
+        return urlImagen;
+      });
 
-        // Agregar la nueva URL al estado
-        setForm((prevForm) => ({
-          ...prevForm,
-          imagenes: [...prevForm.imagenes, urlImagen],
-        }));
+      const uploadedUrls = await Promise.all(uploadPromises);
 
-        // Generar URL para la vista previa
-        setPreviewImage((prevPreview) => [...prevPreview, urlImagen]);
+      // Agregar las nuevas URLs al estado
+      setForm((prevForm) => ({
+        ...prevForm,
+        imagenes: [...prevForm.imagenes, ...uploadedUrls],
+      }));
 
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Imagen subida exitosamente", tipo: "success" },
-        ]);
-      } catch (error) {
-        console.error("Error al subir la imagen:", error);
-        setMensajes((prevMensajes) => [
-          ...prevMensajes,
-          { texto: "Error al subir la imagen", tipo: "error" },
-        ]);
-      }
-    };
-    reader.readAsDataURL(file);
+      // Generar URLs para la vista previa
+      setPreviewImage((prevPreview) => [...prevPreview, ...uploadedUrls]);
+
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Imágenes subidas exitosamente", tipo: "success" },
+      ]);
+    } catch (error) {
+      console.error("Error al subir las imágenes:", error);
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: "Error al subir las imágenes", tipo: "error" },
+      ]);
+    }
 
     // Limpiar el input
     e.target.value = null;
@@ -150,64 +155,79 @@ const PublicarAviso = () => {
     setSelectedImage(null);
   };
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    const errores = [];
+
     if (!usuarioSesion) {
-      setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: "No se pudo obtener la información del usuario.", tipo: "error" },
-      ]);
+      errores.push({ texto: "No se pudo obtener la información del usuario.", tipo: "error" });
+    }
+    if (form.nombre.length > 100) {
+      errores.push({ texto: "El título no puede exceder 100 caracteres", tipo: "error" });
+    }
+    if (!form.descripcion) {
+      errores.push({ texto: "La descripción es obligatoria", tipo: "error" });
+    }
+    if (form.descripcion.length > 500) {
+      errores.push({ texto: "La descripción no puede exceder 500 caracteres", tipo: "error" });
+    }
+    if (!form.precio_mensual || isNaN(form.precio_mensual) || Number(form.precio_mensual) <= 0) {
+      errores.push({ texto: "El precio debe ser un número positivo mayor a 0", tipo: "error" });
+    }
+    if (form.imagenes.length < 3) {
+      errores.push({ texto: "Debes subir al menos 3 imágenes.", tipo: "error" });
+    }
+    if (form.imagenes.length > 10) {
+      errores.push({ texto: "No puedes subir más de 10 imágenes.", tipo: "error" });
+    }
+    if (!form.ubicacion.edificio) {
+      errores.push({ texto: "El nombre del edificio es obligatorio", tipo: "error" });
+    }
+    if (!form.ubicacion.piso) {
+      errores.push({ texto: "El piso es obligatorio", tipo: "error" });
+    }
+    if (!form.tipo) {
+      errores.push({ texto: "El tipo de inmueble es obligatorio", tipo: "error" });
+    }
+
+    if (errores.length > 0) {
+      setMensajes((prevMensajes) => [...prevMensajes, ...errores]);
       return;
     }
 
-    if (parseInt(form.precio_mensual, 10) < 0) {
-      setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: "El precio mensual debe ser un valor positivo.", tipo: "error" },
-      ]);
-      return;
-    }
-    
     const aviso = {
       nombre: form.nombre,
       propietarioId: {
-      usuarioId: usuarioSesion.id,
-      nombre: usuarioSesion.nombre,
+        usuarioId: usuarioSesion.id,
+        nombre: usuarioSesion.nombre,
       },
       tipo: form.tipo,
       descripcion: form.descripcion,
       condiciones: form.condiciones,
       imagenes: form.imagenes,
       ubicacion: {
-      edificio: form.ubicacion.edificio,
-      piso: form.ubicacion.piso,
+        edificio: form.ubicacion.edificio,
+        piso: form.ubicacion.piso,
       },
-      precio_mensual: parseInt(form.precio_mensual, 10), // Asegúrate de que sea un número
+      precio_mensual: parseInt(form.precio_mensual, 10),
     };
-    
+
     try {
       const respuesta = await registrarAviso(aviso);
       setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: "¡Aviso creado exitosamente!", tipo: "success" },
+        ...prevMensajes,
+        { texto: "¡Aviso creado exitosamente!", tipo: "success" },
       ]);
-      setTimeout(() => navigate("/propietario"), 2000);
+      setTimeout(() => navigate("/misAvisos"), 2000);
     } catch (error) {
       console.error("Error al crear el aviso:", error);
       setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: "Error al crear el aviso.", tipo: "error" },
+        ...prevMensajes,
+        { texto: "Ya existe un aviso en esa ubicacion.", tipo: "error" },
       ]);
     }
-
-    if (form.imagenes.length > 0) { 
-      setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: "Imágenes subidas exitosamente", tipo: "success" },
-      ]);
-    }
-    };
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -224,7 +244,7 @@ const PublicarAviso = () => {
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
-      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""} ${styles.menu} ${isMenuClosed ? styles.isMenuClosed : ""}`}>
+      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""} ${isMenuClosed ? styles.isMenuClosed : ""}`}>
         <button onClick={() => { navigate("/propietario"); closeMenu(); }}>Inicio</button>
         <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
         <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
@@ -298,39 +318,38 @@ const PublicarAviso = () => {
               <label>Precio: $</label>
               <input
                 name="precio_mensual"
-                type="number"
+                type="text"
                 value={form.precio_mensual}
                 onChange={handleInputChange}
                 placeholder="Ingrese el precio"
-                min="0"
                 required
               />
             </div>
           </div>
 
           <div className={styles.campoForm}>
-          <label>Edificio:</label>
-          <input
-            name="edificio"
-            type="text"
-            value={form.ubicacion.edificio}
-            onChange={handleInputChange}
-            placeholder="Ingrese el nombre del edificio"
-            required
-          />
-        </div>
-        <div className={styles.campoForm}>
-          <label>Piso:</label>
-          <input
-            name="piso"
-            type="text"
-            value={form.ubicacion.piso}
-            onChange={handleInputChange}
-            placeholder="Ingrese el piso"
-            required
-          />
-        </div>
-        <div className={styles.campoForm}>
+            <label>Edificio:</label>
+            <input
+              name="edificio"
+              type="text"
+              value={form.ubicacion.edificio}
+              onChange={handleInputChange}
+              placeholder="Ingrese el nombre del edificio"
+              required
+            />
+          </div>
+          <div className={styles.campoForm}>
+            <label>Piso:</label>
+            <input
+              name="piso"
+              type="text"
+              value={form.ubicacion.piso}
+              onChange={handleInputChange}
+              placeholder="Ingrese el piso"
+              required
+            />
+          </div>
+          <div className={styles.campoForm}>
             <label>Descripción:</label>
             <textarea
               name="descripcion"
