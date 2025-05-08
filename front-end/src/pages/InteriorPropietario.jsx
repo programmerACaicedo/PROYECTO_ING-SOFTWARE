@@ -34,8 +34,8 @@ const InteriorPropietario = () => {
       } catch (error) {
         console.error("Error al cargar datos:", {
           message: error.message,
-          response: error.response ? error.response.data : null,
-          status: error.response ? error.response.status : null,
+          response: error.response?.data,
+          status: error.response?.status,
         });
       }
     };
@@ -48,9 +48,7 @@ const InteriorPropietario = () => {
   };
 
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
-
   const handleNuevoAviso = () => navigate("/nuevo-aviso");
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("sesionActiva");
@@ -116,6 +114,7 @@ const InteriorPropietario = () => {
               </button>
             </div>
           </header>
+
           <section className={styles.publicaciones}>
             <h2>Publicaciones</h2>
             <div className={styles.publicacionesList}>
@@ -127,9 +126,22 @@ const InteriorPropietario = () => {
                     onClick={() => handlePublicationClick(pub.id)}
                   >
                     <h3>{pub.nombre || "Sin título"}</h3>
-                    <p>Precio: {pub.precio_mensual || "No especificado"}</p>
-                    <p>Estado: {pub.estado || "No especificado"}</p>
-                    <p>Descripción: {pub.descripcion || "Sin descripción"}</p>
+
+                    {/* Solo mostrar imagen de portada */}
+{pub.imagenes?.length > 0 && (
+  <div className={styles.portadaWrapper}>
+    <img
+      src={pub.imagenes[0]}
+      alt={`Portada de ${pub.nombre}`}
+      className={styles.imagenPortada}
+      onError={(e) => console.log("Image load error:", e)}
+    />
+  </div>
+)}
+
+                    <p>Precio: {pub.precio_mensual ?? "No especificado"}</p>
+                    <p>Estado: {pub.estado ?? "No especificado"}</p>
+                    <p>Descripción: {pub.descripción ?? "Sin descripción"}</p>
                   </div>
                 ))
               ) : (

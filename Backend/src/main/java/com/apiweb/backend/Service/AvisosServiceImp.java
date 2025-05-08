@@ -155,9 +155,13 @@ public class AvisosServiceImp implements IAvisosService{
 
     
 
-    @Override 
+    @Override
     public List<AvisosModel> listarAvisos() {
-        return avisosRepository.findAll();
+        List<AvisosModel> avisos = avisosRepository.findAll();
+        for (AvisosModel aviso : avisos) {
+            System.out.println("URLs de imágenes: " + aviso.getImagenes());
+        }
+        return avisos;
     }
 
 

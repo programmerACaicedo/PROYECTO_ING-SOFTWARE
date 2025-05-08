@@ -181,6 +181,19 @@ const InteriorInteresado = () => {
                     className={styles.publicacion}
                     onClick={() => handlePublicationClick(pub.id)}
                   >
+                                        <h3>{pub.nombre || "Sin título"}</h3>
+                    
+{/* Solo mostrar imagen de portada */}
+{pub.imagenes?.length > 0 && (
+  <div className={styles.portadaWrapper}>
+    <img
+      src={pub.imagenes[0]}
+      alt={`Portada de ${pub.nombre}`}
+      className={styles.imagenPortada}
+      onError={(e) => console.log("Image load error:", e)}
+    />
+  </div>
+)}
                     <h3>{pub.nombre || "Sin título"}</h3>
                     <p>Precio: {pub.precio_mensual || "No especificado"}</p>
                     <p>Estado: {pub.estado || "No especificado"}</p>
