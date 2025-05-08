@@ -158,4 +158,19 @@ export const listarAvisosPropietario = async (propietarioId) => {
   }
 };
 
+// Función para listar los avisos
+export const listarAvisos = async () => {
+  try {
+    const response = await api.get('/avisos/listarAvisos');
+    return response.data;
+  } catch (error) {
+    console.error('Error al listar avisos:', {
+      message: error.message,
+      response: error.response ? error.response.data : null,
+      status: error.response ? error.response.status : null,
+    });
+    throw error;
+  }
+};
+
 export default api;

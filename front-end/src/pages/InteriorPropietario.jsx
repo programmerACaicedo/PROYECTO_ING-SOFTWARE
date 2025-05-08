@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interior.module.css";
-import { obtenerUsuario } from "../services/conexiones"; // Importar solo obtenerUsuario
+import { obtenerUsuario, listarAvisos } from "../services/conexiones";
 
 const InteriorPropietario = () => {
   const [isPropietario, setIsPropietario] = useState(false);
@@ -15,7 +15,6 @@ const InteriorPropietario = () => {
     }
     return false;
   });
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,13 +29,16 @@ const InteriorPropietario = () => {
       try {
         const usuario = await obtenerUsuario();
         setIsPropietario(usuario.tipo === "propietario");
-        // Aquí deberías cargar las publicaciones desde otra fuente, si aplica
-        // Por ahora, dejo publicaciones como un array vacío o puedes pasarlo como prop
+        const avisos = await listarAvisos();
+        setPublicaciones(avisos);
       } catch (error) {
-        console.error("Error al cargar datos del propietario:", error);
+        console.error("Error al cargar datos:", {
+          message: error.message,
+          response: error.response ? error.response.data : null,
+          status: error.response ? error.response.status : null,
+        });
       }
     };
-
     cargarDatos();
   }, []);
 
@@ -46,6 +48,7 @@ const InteriorPropietario = () => {
   };
 
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
+
   const handleNuevoAviso = () => navigate("/nuevo-aviso");
 
   const handleLogout = () => {
@@ -61,7 +64,6 @@ const InteriorPropietario = () => {
           <h1>🏘️ Bienvenido a Servicios de Arrendamientos 🏠🔑</h1>
         </div>
       )}
-
       {!mostrarSplash && (
         <div className={styles.interiorPage}>
           <header className={styles.header1}>
@@ -78,19 +80,33 @@ const InteriorPropietario = () => {
                 </button>
                 {mostrarMenu && (
                   <div className={styles.dropdownContent}>
-                    <button onClick={() => filterPublications("Apartamento")}>Apartamentos</button>
-                    <button onClick={() => filterPublications("Bodega")}>Bodegas</button>
-                    <button onClick={() => filterPublications("Garaje")}>Garajes</button>
-                    <button onClick={() => filterPublications("Parqueadero")}>Parqueaderos</button>
+                    <button onClick={() => filterPublications("Apartamento")}>
+                      Apartamentos
+                    </button>
+                    <button onClick={() => filterPublications("Bodega")}>
+                      Bodegas
+                    </button>
+                    <button onClick={() => filterPublications("Garaje")}>
+                      Garajes
+                    </button>
+                    <button onClick={() => filterPublications("Parqueadero")}>
+                      Parqueaderos
+                    </button>
                   </div>
                 )}
               </div>
               {isPropietario && (
                 <>
-                  <button className={styles.nuevoAvisoBtn} onClick={handleNuevoAviso}>
+                  <button
+                    className={styles.nuevoAvisoBtn}
+                    onClick={handleNuevoAviso}
+                  >
                     Nuevo Aviso
                   </button>
-                  <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
+                  <button
+                    className={styles.perfilBtn}
+                    onClick={() => navigate("/perfil")}
+                  >
                     Mi Perfil
                   </button>
                 </>
@@ -100,7 +116,6 @@ const InteriorPropietario = () => {
               </button>
             </div>
           </header>
-
           <section className={styles.publicaciones}>
             <h2>Publicaciones</h2>
             <div className={styles.publicacionesList}>
@@ -111,10 +126,10 @@ const InteriorPropietario = () => {
                     className={styles.publicacion}
                     onClick={() => handlePublicationClick(pub.id)}
                   >
-                    <h3>{pub.nombre}</h3>
-                    <p>Precio: {pub.precio_mensual}</p>
-                    <p>Estado: {pub.estado}</p>
-                    <p>Descripción: {pub.descripcion}</p>
+                    <h3>{pub.nombre || "Sin título"}</h3>
+                    <p>Precio: {pub.precio_mensual || "No especificado"}</p>
+                    <p>Estado: {pub.estado || "No especificado"}</p>
+                    <p>Descripción: {pub.descripcion || "Sin descripción"}</p>
                   </div>
                 ))
               ) : (
