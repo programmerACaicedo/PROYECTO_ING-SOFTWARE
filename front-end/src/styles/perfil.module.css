@@ -181,25 +181,6 @@ form h3 {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
 }
 
-.btnEliminarFoto {
-  background-color: #dc3545;
-  color: white;
-  padding: clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 16px);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btnEliminarFoto:hover {
-  background-color: #c82333;
-}
-
-.btnEliminarFoto:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
-}
-
 .datosPersonales {
   flex: 1;
 }
