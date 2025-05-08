@@ -6,7 +6,7 @@
 }
 
 .header {
-  margin-top: 14.9rem;
+  margin-top: 0.4rem;
   position: static;
   position: sticky;
   align-items: left;
@@ -44,6 +44,7 @@
 }
 
 .title h1 {
+  align-items: center;
   color: #ffffff;
   font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;

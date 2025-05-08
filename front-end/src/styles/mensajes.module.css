@@ -186,7 +186,6 @@ body {
   border-right: 1px solid #e0e0e0;
   overflow-y: auto;
   padding: clamp(0rem, 2vw, 1.5rem);
-  display: flex;
   
 }
 
@@ -224,6 +223,7 @@ body {
   display: flex;
   flex-direction: column;
   background-color: #e3efe2; /* Fondo típico de WhatsApp */
+  width: 100%;
 }
 
 .chatHeader {
