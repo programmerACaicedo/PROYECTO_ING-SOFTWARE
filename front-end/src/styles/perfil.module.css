@@ -21,13 +21,15 @@ body {
   min-height: 100vh;
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
+  overflow-y: auto; 
 }
 
 .header {
+  margin-top: 6.5rem;
   background-color: #0284c7;
   padding: 1.7rem;
   box-shadow: 0 6px 8px rgb(0, 0, 0);
-  width: 100vw;
+  width: 99vw;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -125,7 +127,7 @@ form h3 {
 }
 
 .perfilForm {
-  height: 73vh;
+  height: 90vh;
   display: flex;
   gap: clamp(1rem, 3vw, 2rem);
   max-width: clamp(600px, 80vw, 800px);
@@ -402,6 +404,11 @@ form h3 {
     height: 100vh;
     padding: clamp(0.5rem, 1.5vw, 0.8rem);
   }
+
+  .confirmarEliminacion {
+    width: 90%;
+    max-width: 400px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -430,6 +437,16 @@ form h3 {
 
   .menu {
     width: clamp(160px, 45vw, 200px);
+  }
+
+  .confirmarEliminacion {
+    width: 95%;
+    padding: clamp(0.8rem, 2vw, 1.5rem);
+  }
+
+  .confirmarEliminacion button {
+    padding: clamp(5px, 1.2vw, 6px) clamp(10px, 2vw, 12px);
+    font-size: clamp(0.75rem, 2.5vw, 0.85rem);
   }
 }
 
@@ -462,7 +479,7 @@ form h3 {
   }
 
   .titulo {
-    font-size: clamp(1remPennsylvania, 3.5vw, 1.2rem);
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
   }
 }
 
