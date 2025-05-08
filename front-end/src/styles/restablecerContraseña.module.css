@@ -1,49 +1,229 @@
-.container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
+html {
+  font-size: clamp(14px, 1.5vw, 16px); /* Escala con el zoom */
+  scroll-behavior: smooth;
 }
 
-.formSection {
+body {
+  margin: 0;
+  padding: clamp(0.5rem, 2vw, 1rem); /* Espacio alrededor del contenedor */
+  height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f3f3;
+  font-family: Arial, sans-serif;
+  overflow: auto; /* Permite desplazamiento con zoom extremo */
 }
 
-.input {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.button {
-  padding: 10px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+/* Evitar zoom automático en inputs en móviles */
+input,
+button {
+  -webkit-appearance: none; /* Elimina estilos predeterminados en iOS */
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px; /* Mínimo para evitar zoom automático en móviles */
 }
 
 .errorMessage {
-  color: red;
-  font-size: 14px;
+  color: #d32f2f;
+  font-weight: 500;
+  margin-top: clamp(0.5rem, 1.5vw, 0.625rem);
+  text-align: center;
+  font-size: 1.2rem;
 }
 
 .successMessage {
-  color: green;
-  font-size: 14px;
+  color: #28a745; /* Verde para el mensaje de éxito */
+  font-weight: 500;
+  margin-top: clamp(0.5rem, 1.5vw, 0.625rem);
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.container {
+  background-color: #ffffff;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem);
+  border-radius: clamp(0.5rem, 2vw, 0.9375rem);
+  color: #000000;
+  font-weight: 900;
+  width: 90%;
+  max-width: clamp(300px, 80vw, 700px);
+  margin: 0 auto; /* Centrado horizontal como respaldo */
+  box-shadow: 0px 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.container h2 {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+}
+
+.input {
+  width: 100%;
+  padding: clamp(0.5rem, 2vw, 0.6875rem);
+  margin-bottom: clamp(0.75rem, 2.5vw, 0.9375rem);
+  border: 2px solid #ccc;
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
+  outline: none;
+  font-size: clamp(16px, 2.5vw, 1.125rem); /* Mínimo 16px para evitar zoom automático */
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+.button {
+  width: clamp(200px, 40vw, 300px);
+  margin-bottom: clamp(1rem, 3vw, 1.25rem);
+  padding: clamp(0.6rem, 2vw, 0.75rem);
+  font-size: clamp(16px, 2.5vw, 1.125rem); /* Mínimo 16px para evitar zoom automático */
+  font-weight: bold;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+#verification-section {
+  margin-top: clamp(1rem, 3vw, 1.25rem);
+}
+
+#verification-section input,
+#verification-section button {
+  width: 100%;
+  padding: clamp(0.5rem, 2vw, 0.6875rem);
+  margin-bottom: clamp(0.5rem, 1.5vw, 0.625rem);
+  border-radius: clamp(0.3rem, 1vw, 0.5rem);
+  font-size: clamp(16px, 2.5vw, 1.125rem); /* Mínimo 16px para evitar zoom automático */
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  outline: none;
+}
+
+#verification-section input:focus {
+  border-color: #008945;
+}
+
+#verification-section button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.4s ease;
+}
+
+#verification-section button:hover {
+  background-color: #008945;
+}
+
+/* Media Queries para pantallas y zoom */
+@media (max-width: 768px) {
+  body {
+    padding: clamp(0.3rem, 1.5vw, 0.75rem); /* Espacio reducido en móviles */
+  }
+
+  .container {
+    padding: clamp(1rem, 4vw, 2rem) clamp(0.75rem, 3vw, 1.5rem);
+    width: 90%; /* Reducido para dejar espacio a los lados */
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .input,
+  .button,
+  #verification-section input,
+  #verification-section button {
+    font-size: clamp(16px, 2.5vw, 1.0625rem); /* Mínimo 16px para evitar zoom */
+  }
+
+  .container h2 {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: clamp(0.2rem, 1vw, 0.5rem);
+  }
+
+  .container {
+    padding: clamp(0.8rem, 3vw, 1.5rem) clamp(0.5rem, 2vw, 1rem);
+    width: 85%; /* Más espacio a los lados */
+    max-width: 85%;
+  }
+
+  .input,
+  .button,
+  #verification-section input,
+  #verification-section button {
+    font-size: clamp(16px, 2.5vw, 1rem); /* Mínimo 16px para evitar zoom */
+    padding: clamp(0.4rem, 1.5vw, 0.625rem);
+  }
+
+  .button {
+    width: clamp(120px, 50vw, 200px);
+  }
+
+  .errorMessage {
+    font-size: clamp(0.7rem, 2vw, 0.8125rem);
+  }
+}
+
+@media (max-width: 320px) {
+  body {
+    padding: clamp(0.1rem, 0.5vw, 0.3rem);
+  }
+
+  .container {
+    padding: clamp(0.5rem, 2vw, 1rem) clamp(0.3rem, 1.5vw, 0.8rem);
+    width: 80%; /* Más espacio a los lados */
+    max-width: 80%;
+  }
+
+  .input,
+  .button,
+  #verification-section input,
+  #verification-section button {
+    font-size: clamp(16px, 2.5vw, 0.9375rem); /* Mínimo 16px para evitar zoom */
+    padding: clamp(0.3rem, 1.5vw, 0.5rem);
+  }
+
+  .button {
+    width: clamp(100px, 60vw, 180px);
+  }
+
+  .container h2 {
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  html {
+    font-size: clamp(16px, 1.8vw, 18px);
+  }
+
+  .container {
+    max-width: clamp(600px, 50vw, 700px);
+  }
 }

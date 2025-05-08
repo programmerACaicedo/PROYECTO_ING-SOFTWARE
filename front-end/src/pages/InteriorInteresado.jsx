@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interiorInteresado.module.css";
+import { obtenerUsuario, listarAvisos } from "../services/conexiones";
 
 const InteriorInteresado = () => {
   const [isPropietario, setIsPropietario] = useState(false);
   const [publicaciones, setPublicaciones] = useState([]);
-  const [filteredPubs, setFilteredPubs] = useState([]);  // ← aquí
-
+  const [filteredPubs, setFilteredPubs] = useState([]);
   const [mostrarMenu, setMostrarMenu] = useState(false);
-
   const [mostrarSplash, setMostrarSplash] = useState(() => {
     const fueRecienIniciado = localStorage.getItem("reciénIniciado") === "true";
     if (fueRecienIniciado) {
@@ -34,30 +33,42 @@ const InteriorInteresado = () => {
   }, [mostrarSplash]);
 
   useEffect(() => {
-    // Datos simulados
-    const dataSimulada = [
-      { id: 1, tipo: "apartamento", titulo: "Alquiler de Apartamento - 15 piso unidad A", precio: "1.500.000", estado: "Disponible", habitaciones: 3, banos: 2 },
-      { id: 2, tipo: "bodega",        titulo: "Bodega en zona industrial",           precio: "2.000.000", estado: "Disponible", habitaciones: 0, banos: 0 },
-    ];
-    setPublicaciones(dataSimulada);
-    setFilteredPubs(dataSimulada);
+    const cargarDatos = async () => {
+      try {
+        const usuario = await obtenerUsuario();
+        setIsPropietario(usuario.tipo === "propietario");
+        const avisos = await listarAvisos();
+        setPublicaciones(avisos);
+        setFilteredPubs(avisos);
+      } catch (error) {
+        console.error("Error al cargar datos:", {
+          message: error.message,
+          response: error.response ? error.response.data : null,
+          status: error.response ? error.response.status : null,
+        });
+      }
+    };
+    cargarDatos();
   }, []);
-  
+
   useEffect(() => {
     let res = publicaciones;
 
-    // filtro tipo
+    // Filtro por tipo
     if (filtros.tipo) {
       res = res.filter(p => p.tipo === filtros.tipo);
     }
-    // filtro precio
+
+    // Filtro por precio
     const min = parseInt(filtros.precioMin.replace(/\D/g, "")) || 0;
     const max = parseInt(filtros.precioMax.replace(/\D/g, "")) || Infinity;
     res = res.filter(p => {
-      const precioNum = parseInt(p.precio.replace(/\D/g, ""));
+      const precioStr = typeof p.precio === "string" ? p.precio : "0";
+      const precioNum = parseInt(precioStr.replace(/\D/g, ""));
       return precioNum >= min && precioNum <= max;
     });
-    // filtro disponibilidad
+
+    // Filtro por disponibilidad
     if (filtros.disponibilidad) {
       res = res.filter(p => p.estado === filtros.disponibilidad);
     }
@@ -65,36 +76,18 @@ const InteriorInteresado = () => {
     setFilteredPubs(res);
   }, [publicaciones, filtros]);
 
-  useEffect(() => {
-    setIsPropietario(true);
-    const dataSimulada = [
-      { id: 1, titulo: "Alquiler de Apartamento - 15 piso unidad A", precio: "1.500.000", estado: "Disponible", habitaciones: 3, banos: 2, tipo: "apartamento" },
-      { id: 2, titulo: "Bodega en zona industrial", precio: "2.000.000", estado: "Disponible", habitaciones: 0, banos: 0, tipo: "bodega" },
-    ];
-    setPublicaciones(dataSimulada);
-  }, []);
-
-
   const filterPublications = tipo => {
     setMostrarMenu(false);
     navigate(`/publicaciones/${tipo}`);
   };
+
   const handlePublicationClick = pubId => navigate(`/publicacion/${pubId}`);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
-  /*  const filterPublications = (tipo) => {
-    setMostrarMenu(false);
-    navigate(`/publicaciones/${tipo}`);
-  };
-  const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("sesionActiva");
-    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
-  };*/
   return (
     <>
       {mostrarSplash && (
@@ -127,51 +120,51 @@ const InteriorInteresado = () => {
                 )}
               </div>
 
-              {isPropietario && (
+              
                 <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
                   Mi Perfil
                 </button>
-              )}
+              
               <button className={styles.logoutBtn} onClick={handleLogout}>
-               Cerrar Sesión
-            </button>
+                Cerrar Sesión
+              </button>
             </div>
           </header>
 
           <div className={styles.filters}>
-                <select
-                  value={filtros.tipo}
-                  onChange={e => setFiltros(f => ({ ...f, tipo: e.target.value }))}
-                >
-                  <option value="">Tipo</option>
-                  <option value="apartamento">Apartamento</option>
-                  <option value="bodega">Bodega</option>
-                  <option value="garaje">Garaje</option>
-                </select>
+            <select
+              value={filtros.tipo}
+              onChange={e => setFiltros(f => ({ ...f, tipo: e.target.value }))}
+            >
+              <option value="">Tipo</option>
+              <option value="apartamento">Apartamento</option>
+              <option value="bodega">Bodega</option>
+              <option value="garaje">Garaje</option>
+            </select>
 
-                <input
-                  type="text"
-                  placeholder="Precio min"
-                  value={filtros.precioMin}
-                  onChange={e => setFiltros(f => ({ ...f, precioMin: e.target.value }))}
-                />
-                <input
-                  type="text"
-                  placeholder="Precio max"
-                  value={filtros.precioMax}
-                  onChange={e => setFiltros(f => ({ ...f, precioMax: e.target.value }))}
-                />
+            <input
+              type="text"
+              placeholder="Precio min"
+              value={filtros.precioMin}
+              onChange={e => setFiltros(f => ({ ...f, precioMin: e.target.value }))}
+            />
+            <input
+              type="text"
+              placeholder="Precio max"
+              value={filtros.precioMax}
+              onChange={e => setFiltros(f => ({ ...f, precioMax: e.target.value }))}
+            />
 
-                <select
-                  value={filtros.disponibilidad}
-                  onChange={e => setFiltros(f => ({ ...f, disponibilidad: e.target.value }))}
-                >
-                  <option value="">Disponibilidad</option>
-                  <option value="Disponible">Inmediata</option>
-                  <option value="En proceso">Próximamente</option>
-                  <option value="Arrendado">Arrendado</option>
-                </select>
-              </div>
+            <select
+              value={filtros.disponibilidad}
+              onChange={e => setFiltros(f => ({ ...f, disponibilidad: e.target.value }))}
+            >
+              <option value="">Disponibilidad</option>
+              <option value="Disponible">Inmediata</option>
+              <option value="En proceso">Próximamente</option>
+              <option value="Arrendado">Arrendado</option>
+            </select>
+          </div>
 
           <section className={styles.publicaciones}>
             <h2>Publicaciones</h2>
@@ -180,20 +173,36 @@ const InteriorInteresado = () => {
                 No se encontraron avisos. Ajusta tus filtros.
               </p>
             ) : (
-              <div className={styles.publicacionesList}>
-                {filteredPubs.map(pub => (
+            <div className={styles.publicacionesList}>
+              {publicaciones.length > 0 ? (
+                publicaciones.map((pub) => (
                   <div
                     key={pub.id}
                     className={styles.publicacion}
                     onClick={() => handlePublicationClick(pub.id)}
                   >
-                    <h3>{pub.titulo}</h3>
-                    <p>Precio: {pub.precio}</p>
-                    <p>Estado: {pub.estado}</p>
-                    <p>Habitaciones: {pub.habitaciones}</p>
-                    <p>Baños: {pub.banos}</p>
+                                        <h3>{pub.nombre || "Sin título"}</h3>
+                    
+{/* Solo mostrar imagen de portada */}
+{pub.imagenes?.length > 0 && (
+  <div className={styles.portadaWrapper}>
+    <img
+      src={pub.imagenes[0]}
+      alt={`Portada de ${pub.nombre}`}
+      className={styles.imagenPortada}
+      onError={(e) => console.log("Image load error:", e)}
+    />
+  </div>
+)}
+                    <h3>{pub.nombre || "Sin título"}</h3>
+                    <p>Precio: {pub.precio_mensual || "No especificado"}</p>
+                    <p>Estado: {pub.estado || "No especificado"}</p>
+                    <p>Descripción: {pub.descripcion || "Sin descripción"}</p>
                   </div>
-                ))}
+                ))
+              ) : (
+                <p>No tienes publicaciones disponibles.</p>
+              )}
               </div>
             )}
           </section>

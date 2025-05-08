@@ -178,15 +178,11 @@ const Perfil = () => {
     }
   };
 
-  const handleEliminarFoto = () => {
-    setFormData({ ...formData, foto: null });
-  };
-
   const validateForm = () => {
     const newErrores = [];
     if (!formData.nombre) {
       newErrores.push({ texto: "El nombre es obligatorio", tipo: "error" });
-    } else if (!/^[A-Za-z\s]+$/.test(formData.nombre)) {
+    } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(formData.nombre)) {
       newErrores.push({
         texto: "El nombre solo puede contener letras y espacios",
         tipo: "error",
@@ -294,16 +290,24 @@ const confirmarEliminacion = async () => {
         >
           Perfil
         </button>
-        {tipoUsuario === "propietario" && (
-          <button
-            onClick={() => {
-              navigate("/nuevo-aviso");
-              closeMenu();
-            }}
-          >
-            Nuevo Aviso
-          </button>
-        )}
+        <button
+        onClick={() => {
+        navigate("/misAvisos");
+        closeMenu();
+        }}
+        >
+        Mis avisos
+      </button>
+      {tipoUsuario === "propietario" && (
+      <button
+      onClick={() => {
+      navigate("/nuevo-aviso");
+      closeMenu();
+    }}
+  >
+    Nuevo Aviso
+  </button>
+)}
         <button
           onClick={() => {
             navigate("/mensajes");
@@ -331,15 +335,6 @@ const confirmarEliminacion = async () => {
               >
                 Seleccionar Archivo
               </label>
-              {formData.foto && (
-                <button
-                  type="button"
-                  onClick={handleEliminarFoto}
-                  className={styles.btnEliminarFoto}
-                >
-                  Eliminar Foto
-                </button>
-              )}
             </div>
             <input
               id="foto-upload"

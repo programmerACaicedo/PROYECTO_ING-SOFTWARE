@@ -15,6 +15,7 @@ body {
 
 /* Estilos para el header y su contenido */
 .interiorPage header {
+  margin-top: 14.5rem;
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
   background-size: cover;
@@ -23,10 +24,10 @@ body {
   align-items: center;
   justify-content: center;
   height: 50vh; /* Ajustado para mejor proporción */
-  width: 100vw;
+  width: 99vw;
   padding: 0;
   box-sizing: border-box;
-  margin: 0;
+
 }
 
 .header1 {
@@ -53,6 +54,41 @@ body {
   pointer-events: none;
 }
 
+/* Wrapper posicionado para solapado de imágenes */
+.portadaWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Ajusta según el tamaño deseado */
+  aspect-ratio: 4/3; /* Mantiene la proporción */
+  margin: 0 auto;
+}
+
+/* Estilo de la portada (primera imagen) */
+.imagenPortada {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Conserva la proporción y recorta si es necesario */
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Imágenes “detrás” apiladas */
+/*
+.imagenDetras {
+  position: absolute;
+  top: calc(10px * var(--offset));
+  left: calc(10px * var(--offset));
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: calc(10 - var(--offset));
+  opacity: 0.7;
+  filter: blur(1px);
+}
+*/
 /* Barra rectangular para título, alquileres y perfil en computadoras */
 @media (min-width: 768px) {
   .barraRectangular {
@@ -69,7 +105,6 @@ body {
     margin: 0 auto 10vh auto;
     height: 100px;
     margin-bottom: 18%;
-
   }
 
   .interior {
@@ -86,6 +121,7 @@ body {
     gap: 1rem;
     position: relative;
     justify-content: center;
+    color:black;
   }
 
   .alquileresBtn,
@@ -108,7 +144,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-
   .perfilBtn {
     background-color: transparent;
     color: rgb(0, 0, 0);
@@ -120,7 +155,6 @@ body {
     font-weight: bold;
     flex: 1;
     text-align: center;
-
   }
 
   .logoutBtn {
@@ -135,7 +169,6 @@ body {
   .logoutBtn:hover {
     background-color: #ff1a1a;
   }
-
 
   .alquileresBtn {
     margin-left: 8px; 
@@ -201,7 +234,7 @@ body {
   .publicacion {
     background-color: rgba(255,255,255,0.85);
     color: #333;
-    padding:2.6rem;
+    padding: 2.6rem;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
@@ -212,15 +245,14 @@ body {
     height: 99vh;
     position: fixed;
     inset: 0;
-  
     background:
       repeating-radial-gradient(
         circle at 30% 30%,
         #ffffff,
-        #dbe4ff 2%, /* Muy pequeños */
+        #dbe4ff 2%,
         #3c5ccd 4%
       );
-    background-size: 200% 700%; /* Más grande para más repeticiones */
+    background-size: 200% 700%;
     animation: moveBackground 12s infinite linear;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -252,8 +284,6 @@ body {
   @keyframes fadeIn {
     to { opacity: 1; }
   }
-  
-  
 }
 
 /* Estilos para pantallas pequeñas (móviles) */
@@ -295,21 +325,18 @@ body {
   .menuContainer {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Esto ya lo tienes, perfecto */
-    justify-content: center; /* AGREGA ESTO para centrar en vertical */
-    width: 300px; /* O ajústalo según necesites */
+    align-items: center;
+    justify-content: center;
+    width: 300px;
   }
-  
   
   .menuContainer button {
     border-radius: 10px;
-    justify-items: center;
     margin: 2px;
     width: 360px;
-
   }
-  .alquileresBtn,
 
+  .alquileresBtn,
   .perfilBtn {
     width: 100%;
     padding: 0.5rem;
@@ -362,15 +389,14 @@ body {
     height: 99vh;
     position: fixed;
     inset: 0;
-  
     background:
       repeating-radial-gradient(
         circle at 30% 30%,
         #ffffff,
-        #dbe4ff 2%, /* Muy pequeños */
+        #dbe4ff 2%,
         #3c5ccd 4%
       );
-    background-size: 200% 700%; /* Más grande para más repeticiones */
+    background-size: 200% 700%;
     animation: moveBackground 12s infinite linear;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -402,7 +428,6 @@ body {
   @keyframes fadeIn {
     to { opacity: 1; }
   }
-  
 }
 
 /* Animación */
@@ -411,8 +436,8 @@ body {
     opacity: 1;
   }
 }
-/* …tus estilos existentes… */
 
+/* Filtros */
 .filters {
   gap: 0.75rem;
   align-items: center;

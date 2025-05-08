@@ -125,9 +125,10 @@ export const eliminarCuenta = async (id) => {
 
 export const registrarAviso = async (aviso) => {
   try {
+    // Enviar los datos como JSON
     const respuesta = await api.post("/avisos/registrar", aviso, {
       headers: {
-        "Content-Type": "multipart/form-data", // Para manejar imágenes
+        "Content-Type": "application/json", // Asegurarse de que sea JSON
       },
     });
     return respuesta.data;
@@ -143,6 +144,31 @@ export const listarAvisosConReportes = async () => {
     return respuesta.data;
   } catch (error) {
     console.error("Error al listar avisos con reportes:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const listarAvisosPropietario = async (propietarioId) => {
+  try {
+    const respuesta = await api.get(`/avisos/${propietarioId}`);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al listar avisos del propietario:", error.response || error.message);
+    throw error;
+  }
+};
+
+// Función para listar los avisos
+export const listarAvisos = async () => {
+  try {
+    const response = await api.get('/avisos/listarAvisos');
+    return response.data;
+  } catch (error) {
+    console.error('Error al listar avisos:', {
+      message: error.message,
+      response: error.response ? error.response.data : null,
+      status: error.response ? error.response.status : null,
+    });
     throw error;
   }
 };

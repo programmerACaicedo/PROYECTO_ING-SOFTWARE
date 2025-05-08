@@ -3,11 +3,11 @@ import styles from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { iniciarSesion } from "../services/conexiones";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode} from "jwt-decode";
 import { AuthContext } from "../services/AuthContext";
 
 const Login = () => {
-  const { login } = useContext(AuthContext); // Obtener la función login del contexto
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
@@ -25,33 +25,51 @@ const Login = () => {
     script.onload = () => {
       const handleCredentialResponse = async (response) => {
         try {
-          const res = await fetch("http://localhost:8080/api/login/google", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: response.credential }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            login(data.token); // Usar la función login del contexto
-            localStorage.setItem("reciénIniciado", "true");
-
-            if (data.tipoUsuario) {
-              localStorage.setItem("sesionActiva", "true");
-              if (data.tipoUsuario === "propietario") {
-                navigate("/propietario");
-              } else if (data.tipoUsuario === "interesado") {
-                navigate("/interesado");
-              } else {
-                navigate("/interior");
-              }
-            } else {
-              setErrorMessage("Tipo de usuario no definido.");
-            }
-          } else {
-            setErrorMessage("Error al iniciar sesión con Google");
+          // Decode the Google token client-side
+          const decoded = jwtDecode(response.credential);
+          if (!decoded.email) {
+            setErrorMessage("No se pudo obtener el correo del token de Google.");
+            return;
           }
+
+          // Validate user existence with iniciarSesion
+          const credenciales = { correo: decoded.email, google: true };
+          const data = await iniciarSesion(credenciales);
+
+          if (!data.token) {
+            setErrorMessage("El servidor no devolvió un token.");
+            return;
+          }
+
+          login(data.token);
+          localStorage.setItem("reciénIniciado", "true");
+          localStorage.setItem("sesionActiva", "true");
+
+          // Redirect based on tipoUsuario
+
+              if (data.tipoUsuario) {
+           if (data.tipoUsuario === "propietario") {
+              navigate("/propietario");
+             } else if (data.tipoUsuario === "interesado") {
+               navigate("/interesado");
+            } else if (data.tipoUsuario === "administrador") {
+                 navigate("/admin");
+              } else {
+                setErrorMessage("Tipo de usuario no reconocido.");
+          }
+    } else {
+        setErrorMessage("Tipo de usuario no definido.");
+   }
+
         } catch (error) {
-          setErrorMessage("Error de conexión con el servidor");
+          if (error.response) {
+            const mensajeError = error.response.data;
+            setErrorMessage(
+              mensajeError || "Usuario no encontrado. Regístrate primero."
+            );
+          } else {
+            setErrorMessage("Error de conexión con el servidor.");
+          }
         }
       };
 
@@ -91,7 +109,7 @@ const Login = () => {
         });
       }
     };
-  }, []);
+  }, [navigate, login]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -133,18 +151,19 @@ const Login = () => {
         return;
       }
 
-      login(data.token); // Usar la función login del contexto
+      login(data.token);
       localStorage.setItem("reciénIniciado", "true");
 
       const usuario = jwtDecode(data.token);
+
       if (usuario.tipo === "propietario") {
         navigate("/propietario");
       } else if (usuario.tipo === "interesado") {
         navigate("/interesado");
-      } else {
-        navigate("/interior");
+      } else if (usuario.tipo === "administrador") {
+        navigate("/admin");
       }
-
+      
       if (rememberMe && !mostrarPalabraSeguridad) {
         localStorage.setItem("savedEmail", email);
         localStorage.setItem("savedPassword", password);
@@ -154,6 +173,7 @@ const Login = () => {
         localStorage.removeItem("savedPassword");
         localStorage.removeItem("rememberMe");
       }
+      
     } catch (error) {
       console.error("Error completo:", error);
       if (error.response) {

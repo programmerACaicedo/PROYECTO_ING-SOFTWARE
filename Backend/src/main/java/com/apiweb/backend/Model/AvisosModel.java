@@ -1,6 +1,7 @@
 package com.apiweb.backend.Model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -36,4 +37,8 @@ public class AvisosModel {
     private EstadoAviso estado;
     private ReporteAviso reporte;
     private MensajeriaAviso mensajes;
-}
+    private MensajeAviso mensaje_interes;
+    public void setImagenes(List<String> imagenes) {
+        this.imagenes = (ArrayList<String>) imagenes;
+    }
+}   
