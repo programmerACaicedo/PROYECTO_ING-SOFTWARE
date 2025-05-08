@@ -148,7 +148,7 @@ html, body {
 .imagenPreview {
   width: 100%;
   max-width: 500px;
-  height: auto;
+  height: 500px;
   padding: 1rem;
   background-color: #fff;
   border: 2px dashed #007bff;
