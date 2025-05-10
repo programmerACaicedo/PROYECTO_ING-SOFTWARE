@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   //"https://fkzklx7z-8080.use2.devtunnels.ms/api"  URL para funcionamiento con tunel
-  baseURL: "https://fkzklx7z-8080.use2.devtunnels.ms/api", // Base URL de la API
+  baseURL: "http://localhost:8080/api", // Base URL de la API
   headers: {
     "Content-Type": "application/json",
   },

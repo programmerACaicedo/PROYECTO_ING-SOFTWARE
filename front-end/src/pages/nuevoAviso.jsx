@@ -328,24 +328,24 @@ const PublicarAviso = () => {
           </div>
 
           <div className={styles.campoForm}>
-            <label>Edificio:</label>
+            <label>Bloque:</label>
             <input
               name="edificio"
               type="text"
               value={form.ubicacion.edificio}
               onChange={handleInputChange}
-              placeholder="Ingrese el nombre del edificio"
+              placeholder="Ingrese el nombre del bloque"
               required
             />
           </div>
           <div className={styles.campoForm}>
-            <label>Piso:</label>
+            <label>Numero:</label>
             <input
               name="piso"
               type="text"
               value={form.ubicacion.piso}
               onChange={handleInputChange}
-              placeholder="Ingrese el piso"
+              placeholder="Ingrese el numero"
               required
             />
           </div>

@@ -135,6 +135,9 @@ const DetallePublicacion = () => {
           <h2>{publicacion.nombre}</h2>
           <p><strong>Descripción:</strong> {publicacion.descripcion}</p>
           <p><strong>Precio mensual:</strong> ${publicacion.precio_mensual}</p>
+          <p><strong>Ubicacion:</strong></p>
+          <p><strong>Bloque:</strong> {publicacion.ubicacion?.edificio || "No especificado"}</p>
+          <p><strong>Número:</strong> {publicacion.ubicacion?.piso || "No especificado"}</p>
           <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
           <p><strong>Estado:</strong> {publicacion.estado}</p>
           <div className={styles.botonesAccion}>
