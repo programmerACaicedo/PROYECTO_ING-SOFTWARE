@@ -345,7 +345,7 @@ public class AvisosServiceImp implements IAvisosService{
 
         }
 
-        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajesIdInteresado(mensaje.getIdInteresado());
+        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(mensaje.getIdInteresado());
         if (mensajeAviso.isPresent()) {
             throw new InvalidAvisoConfigurationException("El usuario ya tiene un chat en este aviso.");
         }
@@ -367,7 +367,7 @@ public class AvisosServiceImp implements IAvisosService{
         }
         AvisosModel aviso = avisoExiste.get();
 
-        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajesIdInteresado(idInteresado);
+        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(idInteresado);
         if (!mensajeAviso.isPresent()) {
             throw new ResourceNotFoundException("El mensaje no existe.");
         }
