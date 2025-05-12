@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apiweb.backend.Exception.InvalidAvisoConfigurationException;
 import com.apiweb.backend.Exception.InvalidUserRoleException;
@@ -35,6 +36,7 @@ public class AvisosServiceImp implements IAvisosService{
     IUsuariosRepository usuariosRepository;
 
     @Override
+    @Transactional
     public AvisosModel crearAviso(AvisosModel aviso) {
         Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
         if (!usuarioExiste.isPresent()) {
@@ -228,6 +230,7 @@ public class AvisosServiceImp implements IAvisosService{
     }
 
     @Override
+    @Transactional
     public AvisosModel actualizarEstadoReporteSiendoAdministrador(ObjectId id, ReporteAviso reporte) {
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
