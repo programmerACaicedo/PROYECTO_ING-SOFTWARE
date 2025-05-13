@@ -63,13 +63,13 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }
 
 
-        Optional<UsuariosModel> arrendatarioExiste = usuariosRepository.findById(acuerdo.getArrendatario().getUsuario_id());
+        Optional<UsuariosModel> arrendatarioExiste = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId());
         if (!arrendatarioExiste.isPresent()) {
-            throw new UserNotFoundException("El id: " + acuerdo.getArrendatario().getUsuario_id() + " no corresponde a un usuario.");
+            throw new UserNotFoundException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " no corresponde a un usuario.");
         }
         UsuariosModel arrendatario = arrendatarioExiste.get();
         if (arrendatario.getTipo() != TipoUsuario.interesado) {
-            throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuario_id() + " ingresado en 'usuario_id' de arrendatario no corresponde ad de un interesado.");
+            throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " ingresado en 'usuario_id' de arrendatario no corresponde ad de un interesado.");
         }
         if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
             throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación.");

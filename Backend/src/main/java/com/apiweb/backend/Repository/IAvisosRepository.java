@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.apiweb.backend.Model.AvisosModel;
-import com.apiweb.backend.Model.Mensajeria;
 import com.apiweb.backend.Model.UbicacionAviso;
 import com.apiweb.backend.Model.ENUM.EstadoReporte;
 
@@ -17,5 +16,4 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
     List<AvisosModel> findByReporteIsNotNull();
     List<AvisosModel> findByReporteIsNullOrReporteEstadoReporte(EstadoReporte estadoReporte, EstadoReporte estadoReporte2);
-    Optional<Mensajeria>findByMensajeriaIdInteresado(ObjectId idInteresado);
 }
