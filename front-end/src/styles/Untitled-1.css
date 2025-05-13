@@ -1,0 +1,483 @@
+/* Asegurar compatibilidad general */
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  box-sizing: border-box;
+  scrollbar-width: thin; /* Para Firefox: hacer la barra más delgada */
+  scrollbar-color: #888 #f1f1f1; /* Color del pulgar y de la pista en Firefox */
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Personalizar la barra deslizadora para WebKit (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px; /* Ancho de la barra vertical */
+  height: 12px; /* Altura de la barra horizontal, si aplica */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del fondo de la pista */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color del pulgar (la parte móvil) */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del pulgar al pasar el mouse */
+}
+
+/* Estilos para el header y su contenido */
+.interiorPage header {
+  position:static;
+  position: relative;
+  background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
+  background-size: cover;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 50vh; /* Ajustado para mejor proporción */
+  width: 99vw;
+  padding: 0;
+  box-sizing: border-box;
+  margin-top: 7rem;
+}
+
+.header1 {
+  position: relative;
+  background-color: #0284c7;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 20vmin; /* Altura proporcional */
+}
+
+.interiorPage header::after {
+  
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2vmin;
+  background: linear-gradient(to bottom, transparent, rgb(21, 39, 204));
+  pointer-events: none;
+}
+
+/* Contenedor general, solo para estructura */
+.imagenesContainer {
+  margin-top: 10px;
+}
+
+/* Wrapper posicionado para solapado */
+.portadaWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* ancho máximo deseado para la portada */
+  aspect-ratio: 4/3; /* para mantener proporción (ajusta si quieres otro ratio) */
+  margin: 0 auto;
+}
+
+/* Estilo de la portada (primera imagen) */
+.imagenPortada {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* conserva proporción y recorta bordes si hace falta */
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Imágenes “detrás” apiladas */
+.imagenDetras {
+  position: absolute;
+  top: calc(10px * var(--offset));
+  left: calc(10px * var(--offset));
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: calc(10 - var(--offset));
+  opacity: 0.7;
+  filter: blur(1px);
+}
+
+/* Barra rectangular para título, alquileres, nuevo aviso y perfil en computadoras */
+@media (min-width: 768px) {
+  .barraRectangular {
+    position:static;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgb(21, 39, 204));
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100vw; /* Ancho relativo */
+    max-width: 100vw; /* Límite máximo */
+    margin-top: -0.5rem;
+
+    height: 100px;
+    margin-bottom: 18%;
+  }
+
+  .interior {
+    color: #000000;
+    text-align: center;
+    font-size: 1rem;
+    margin: 0.3rem 0;
+    text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
+    flex: 1;
+  }
+
+  .menuContainer {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+    justify-content: center;
+  }
+
+  .alquileresBtn,
+  .nuevoAvisoBtn,
+  .perfilBtn {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .alquileresBtn:hover,
+  .nuevoAvisoBtn:hover,
+  .perfilBtn:hover {
+    background-color: rgba(255, 255, 255, 0.304);
+  }
+
+  .nuevoAvisoBtn {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 8px 16px; /* Reducido para 100% zoom */
+    font-size: 1.5rem; /* Reducido para 100% zoom */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
+  }
+
+  .nuevoAvisoBtn:hover {
+    background-color: rgba(255, 255, 255, 0.304);
+  }
+
+  .perfilBtn {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 8px 16px; /* Reducido para 100% zoom */
+    font-size: 1.5rem; /* Reducido para 100% zoom */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
+  }
+
+  .logoutBtn {
+    background-color: #b7b7b7d5;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .logoutBtn:hover {
+    background-color: #ff1a1a;
+  }
+
+  .alquileresBtn {
+    margin-left: 8px;
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 8px 16px; /* Reducido para 100% zoom */
+    font-size: 1.5rem; /* Reducido para 100% zoom */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .alquileresBtn:hover {
+    background-color: rgba(255, 255, 255, 0.304);
+  }
+
+  .dropdownContent {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: transparent;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    z-index: 1;
+  }
+
+  .dropdownContent button {
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .dropdownContent button:hover {
+    background: rgba(0, 68, 255, 0.304);
+  }
+
+  .dropdownContent.show {
+    opacity: 1;
+    transform: scaleY(1);
+    pointer-events: auto;
+  }
+
+  .publicaciones {
+    text-align: center;
+    padding: 1rem;
+    color: #000000;
+  }
+
+  .publicacionesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .publicacion {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #333;
+    padding: 2.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .splashScreen {
+    width: 99vw;
+    height: 99vh;
+    position: fixed;
+    inset: 0;
+    background: repeating-radial-gradient(circle at 30% 30%, #ffffff, #dbe4ff 2%, rgb(21, 39, 204) 4%);
+    background-size: 200% 700%;
+    animation: moveBackground 12s infinite linear;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  @keyframes moveBackground {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+
+  .splashScreen h1 {
+    font-size: 5.5rem;
+    text-align: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #000000;
+    text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+    letter-spacing: 1px;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Estilos para pantallas pequeñas (móviles) */
+@media (max-width: 767px) {
+  .interiorPage header {
+    height: 60vh;
+    flex-direction: column;
+    padding: 1rem;
+    background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .interiorPage header::after {
+    height: 3vmin;
+  }
+
+  .header1 {
+    height: 15vmin;
+  }
+
+  .barraRectangular {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #3c5ccd90;
+    padding: 0.5rem;
+    border-radius: 8px;
+    width: 90vw;
+    margin: 0 auto;
+  }
+
+  .interior {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+  }
+
+  .menuContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+  }
+
+  .menuContainer button {
+    border-radius: 10px;
+    margin: 2px;
+    width: 360px;
+  }
+
+  .alquileresBtn,
+  .nuevoAvisoBtn,
+  .perfilBtn {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    margin: 0.3rem 0;
+  }
+
+  .perfilBtn {
+    margin-bottom: 1rem;
+  }
+
+  .dropdownContent {
+    position: static;
+    width: 100%;
+    background-color: transparent;
+    padding: 0.5rem;
+  }
+
+  .dropdownContent button {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .publicaciones {
+    text-align: center;
+    padding: 0.5rem;
+    color: #000000;
+  }
+
+  .publicacionesList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .publicacion {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #333;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .splashScreen {
+    width: 99vw;
+    height: 99vh;
+    position: fixed;
+    inset: 0;
+    background: repeating-radial-gradient(circle at 30% 30%, #ffffff, #dbe4ff 2%, #3c5ccd 4%);
+    background-size: 200% 700%;
+    animation: moveBackground 12s infinite linear;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  @keyframes moveBackground {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+
+  .splashScreen h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #000000;
+    text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+    letter-spacing: 1px;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+}
