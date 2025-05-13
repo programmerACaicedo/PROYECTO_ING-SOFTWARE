@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Mensajeria {
+public class MensajeriaModel {
     @Id
     private ObjectId id;
     @JsonSerialize(using = ToStringSerializer.class)
