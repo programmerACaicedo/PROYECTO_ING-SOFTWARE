@@ -31,4 +31,5 @@ public class AcuerdosModel {
     private String archivo_contrato;
     private ArrayList<CalificacionesServicios> calificacion_servicio = new ArrayList<CalificacionesServicios>();
     private ArrendatarioAcuerdo arrendatario;
+    private ArrayList<ExtensionAcuerdo> extensiones = new ArrayList<ExtensionAcuerdo>();
 } 

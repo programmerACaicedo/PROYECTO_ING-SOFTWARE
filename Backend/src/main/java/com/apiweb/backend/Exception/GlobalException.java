@@ -98,4 +98,9 @@ public class GlobalException {
     public ResponseEntity<String> handleInvalidAvisoConfigurationException(InvalidAvisoConfigurationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
     }
+
+    @ExceptionHandler(InvalidAcuerdoConfigurationException.class)
+    public ResponseEntity<String> handleInvalidAcuerdoConfigurationException(InvalidAcuerdoConfigurationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
+    }
 }

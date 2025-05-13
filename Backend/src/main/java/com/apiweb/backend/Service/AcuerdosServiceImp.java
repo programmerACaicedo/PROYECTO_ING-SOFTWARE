@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apiweb.backend.Exception.InvalidAcuerdoConfigurationException;
 import com.apiweb.backend.Exception.InvalidUserRoleException;
 import com.apiweb.backend.Exception.ResourceNotFoundException;
 import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AcuerdosModel;
 import com.apiweb.backend.Model.AvisosModel;
+import com.apiweb.backend.Model.ExtensionAcuerdo;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.EstadoAcuerdo;
 import com.apiweb.backend.Model.ENUM.EstadoAviso;
@@ -69,9 +71,31 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (arrendatario.getTipo() != TipoUsuario.interesado) {
             throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuario_id() + " ingresado en 'usuario_id' de arrendatario no corresponde ad de un interesado.");
         }
+        if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
+            throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación.");
+        }
 
         aviso.setEstado(EstadoAviso.Arrendado);
         acuerdo.setEstado(EstadoAcuerdo.Activo);
         return acuerdosRepository.save(acuerdo);
+    }
+
+    @Override
+    public AcuerdosModel modificarAcuerdo(ObjectId idAcuerdo, ExtensionAcuerdo extension) {
+        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoExiste.isPresent()){
+            throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
+        }
+        AcuerdosModel acuerdoActualizar = acuerdoExiste.get();
+        if (acuerdoActualizar.getEstado() == EstadoAcuerdo.Cancelado) {
+            throw new InvalidUserRoleException("El acuerdo ya ha sido cancelado.");
+        } else if (acuerdoActualizar.getEstado() == EstadoAcuerdo.Finalizado) {
+            throw new InvalidUserRoleException("El acuerdo ya ha sido finalizado.");
+        }//Validacion del acuerdo anterior
+
+
+        return acuerdosRepository.save(acuerdoActualizar);
+
+
     }
 }
