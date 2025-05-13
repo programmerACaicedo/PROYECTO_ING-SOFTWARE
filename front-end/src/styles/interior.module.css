@@ -37,9 +37,15 @@ body {
   background: #555; /* Color del pulgar al pasar el mouse */
 }
 
+/* Estilos para el contenedor principal */
+.interiorPage {
+  overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+}
+
 /* Estilos para el header y su contenido */
 .interiorPage header {
-  position:static;
+
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
   background-size: cover;
@@ -51,24 +57,10 @@ body {
   width: 99vw;
   padding: 0;
   box-sizing: border-box;
-  margin-top: 7rem;
-}
 
-.header1 {
-  position: relative;
-  background-color: #0284c7;
-  padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  height: 20vmin; /* Altura proporcional */
 }
 
 .interiorPage header::after {
-  
   content: "";
   position: absolute;
   bottom: 0;
@@ -79,326 +71,247 @@ body {
   pointer-events: none;
 }
 
-/* Contenedor general, solo para estructura */
-.imagenesContainer {
-  margin-top: 10px;
+/* Estilos para la barra rectangular dentro del encabezado */
+.barraRectangular {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgb(21, 39, 204));
+  padding: 0.5rem;
+  border-radius: 8px;
+  width: 100vw;
+  max-width: 1620px; /* Límite máximo opcional */
+  height: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 18%;
 }
 
-/* Wrapper posicionado para solapado */
+/* Estilos para el título dentro de la barra rectangular */
+.interior {
+  color: #000000;
+  text-align: center;
+  font-size: 2rem;
+  margin: 0.3rem 0;
+  text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
+  flex: 1;
+}
+
+/* Estilos para el contenedor del menú */
+.menuContainer {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  justify-content: center;
+}
+
+/* Estilos para los botones en la barra rectangular */
+.nuevoAvisoBtn,
+.perfilBtn,
+.logoutBtn {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    padding: 0.5rem 1rem;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+.nuevoAvisoBtn {
+  background-color: #b7b7b7d5;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.perfilBtn {
+  background-color: #b7b7b7d5;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+
+
+.nuevoAvisoBtn:hover,
+.perfilBtn:hover,
+.logoutBtn:hover {
+  background-color: rgb(7, 38, 233);
+}
+
+/* Estilos específicos para el botón de logout */
+.logoutBtn {
+  background-color: #b7b7b7d5;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.logoutBtn:hover {
+  background-color: #ff1a1a;
+}
+
+/* Estilos para el dropdown del menú */
+.dropdownContent {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: transparent;
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.dropdownContent button {
+  background: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.dropdownContent button:hover {
+  background: rgba(0, 68, 255, 0.304);
+}
+
+/* Estilos para la sección de publicaciones */
+.publicaciones {
+  text-align: center;
+  padding: 1rem;
+  color: #000000;
+}
+
+
+/* Estilos para la lista de publicaciones */
+.publicacionesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  max-height: 80vh; /* Limita la altura máxima para permitir desplazamiento */
+  
+}
+
+.publicacion {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Estilos para la portada de las publicaciones */
 .portadaWrapper {
   position: relative;
   width: 100%;
-  max-width: 300px; /* ancho máximo deseado para la portada */
-  aspect-ratio: 4/3; /* para mantener proporción (ajusta si quieres otro ratio) */
+  max-width: 300px;
+  aspect-ratio: 4/3;
   margin: 0 auto;
 }
 
-/* Estilo de la portada (primera imagen) */
 .imagenPortada {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* conserva proporción y recorta bordes si hace falta */
-  border-radius: 8px;
-  z-index: 10;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Imágenes “detrás” apiladas */
-.imagenDetras {
-  position: absolute;
-  top: calc(10px * var(--offset));
-  left: calc(10px * var(--offset));
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  z-index: calc(10 - var(--offset));
-  opacity: 0.7;
-  filter: blur(1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Barra rectangular para título, alquileres, nuevo aviso y perfil en computadoras */
-@media (min-width: 768px) {
-  .barraRectangular {
-    position:static;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgb(21, 39, 204));
-    padding: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100vw; /* Ancho relativo */
-    max-width: 100vw; /* Límite máximo */
-    margin-top: -0.5rem;
+/* Estilos para la pantalla de bienvenida (splash screen) */
+.splashScreen {
+  width: 99vw;
+  height: 99vh;
+  position: fixed;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 30% 30%, #ffffff, #dbe4ff 2%, rgb(21, 39, 204) 4%);
+  background-size: 200% 700%;
+  animation: moveBackground 12s infinite linear;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
-    height: 100px;
-    margin-bottom: 18%;
+@keyframes moveBackground {
+  0% {
+    background-position: 0 0;
   }
-
-  .interior {
-    color: #000000;
-    text-align: center;
-    font-size: 1rem;
-    margin: 0.3rem 0;
-    text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
-    flex: 1;
+  100% {
+    background-position: 100% 100%;
   }
+}
 
-  .menuContainer {
-    display: flex;
-    gap: 1rem;
-    position: relative;
-    justify-content: center;
-  }
+.splashScreen h1 {
+  font-size: 5.5rem;
+  text-align: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000000;
+  text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in forwards;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  letter-spacing: 1px;
+}
 
-  .alquileresBtn,
-  .nuevoAvisoBtn,
-  .perfilBtn {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 0.5rem 1rem;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  .alquileresBtn:hover,
-  .nuevoAvisoBtn:hover,
-  .perfilBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
-  }
-
-  .nuevoAvisoBtn {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    flex: 1;
-    text-align: center;
-  }
-
-  .nuevoAvisoBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
-  }
-
-  .perfilBtn {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    flex: 1;
-    text-align: center;
-  }
-
-  .logoutBtn {
-    background-color: #b7b7b7d5;
-    color: rgb(0, 0, 0);
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-left: 10px;
-    cursor: pointer;
-  }
-
-  .logoutBtn:hover {
-    background-color: #ff1a1a;
-  }
-
-  .alquileresBtn {
-    margin-left: 8px;
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .alquileresBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
-  }
-
-  .dropdownContent {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: transparent;
-    padding: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
-    z-index: 1;
-  }
-
-  .dropdownContent button {
-    background: #ffffff;
-    color: rgb(0, 0, 0);
-    padding: 0.4rem 0.8rem;
-    border: none;
-    border-radius: 8px;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 0.4rem;
-    font-size: 0.9rem;
-  }
-
-  .dropdownContent button:hover {
-    background: rgba(0, 68, 255, 0.304);
-  }
-
-  .dropdownContent.show {
+@keyframes fadeIn {
+  to {
     opacity: 1;
-    transform: scaleY(1);
-    pointer-events: auto;
-  }
-
-  .publicaciones {
-    text-align: center;
-    padding: 1rem;
-    color: #000000;
-  }
-
-  .publicacionesList {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .publicacion {
-    background-color: rgba(255, 255, 255, 0.85);
-    color: #333;
-    padding: 2.6rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .splashScreen {
-    width: 99vw;
-    height: 99vh;
-    position: fixed;
-    inset: 0;
-    background: repeating-radial-gradient(circle at 30% 30%, #ffffff, #dbe4ff 2%, rgb(21, 39, 204) 4%);
-    background-size: 200% 700%;
-    animation: moveBackground 12s infinite linear;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  @keyframes moveBackground {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 100% 100%;
-    }
-  }
-
-  .splashScreen h1 {
-    font-size: 5.5rem;
-    text-align: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #000000;
-    text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
-    opacity: 0;
-    animation: fadeIn 0.5s ease-in forwards;
-    font-family: "Poppins", "Segoe UI", sans-serif;
-    letter-spacing: 1px;
-  }
-
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-    }
   }
 }
 
-/* Estilos para pantallas pequeñas (móviles) */
+/* Media queries para pantallas pequeñas (móviles) */
 @media (max-width: 767px) {
-  .interiorPage header {
-    height: 60vh;
-    flex-direction: column;
-    padding: 1rem;
-    background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
-    background-size: cover;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .interiorPage header::after {
-    height: 3vmin;
-  }
-
   .header1 {
-    height: 15vmin;
+    height: 100px; /* Ajustar altura para móviles */
   }
+
+
 
   .barraRectangular {
-    display: flex;
     flex-direction: column;
-    align-items: center;
-    background-color: #3c5ccd90;
-    padding: 0.5rem;
-    border-radius: 8px;
     width: 90vw;
-    margin: 0 auto;
-  }
-
-  .interior {
-    font-size: 1.2rem;
-    margin: 0.5rem 0;
+    padding: 0.5rem;
   }
 
   .menuContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 300px;
-  }
-
-  .menuContainer button {
-    border-radius: 10px;
-    margin: 2px;
-    width: 360px;
+    width: 100%;
   }
 
   .alquileresBtn,
   .nuevoAvisoBtn,
-  .perfilBtn {
+  .perfilBtn,
+  .logoutBtn {
     width: 100%;
     padding: 0.5rem;
     font-size: 1.2rem;
-    border-radius: 10px;
     margin: 0.3rem 0;
-  }
-
-  .perfilBtn {
-    margin-bottom: 1rem;
   }
 
   .dropdownContent {
@@ -408,76 +321,32 @@ body {
     padding: 0.5rem;
   }
 
-  .dropdownContent button {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-  }
-
-  .publicaciones {
-    text-align: center;
-    padding: 0.5rem;
-    color: #000000;
-  }
-
   .publicacionesList {
-    display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .publicacion {
-    background-color: rgba(255, 255, 255, 0.85);
-    color: #333;
-    padding: 0.75rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .splashScreen {
-    width: 99vw;
-    height: 99vh;
-    position: fixed;
-    inset: 0;
-    background: repeating-radial-gradient(circle at 30% 30%, #ffffff, #dbe4ff 2%, #3c5ccd 4%);
-    background-size: 200% 700%;
-    animation: moveBackground 12s infinite linear;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  @keyframes moveBackground {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 100% 100%;
-    }
+    max-height: 70vh; /* Ajustar altura máxima para móviles */
   }
 
   .splashScreen h1 {
     font-size: 2.5rem;
-    text-align: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #000000;
-    text-shadow: 0 0 16px rgba(37, 102, 255, 0.536);
-    opacity: 0;
-    animation: fadeIn 0.5s ease-in forwards;
-    font-family: "Poppins", "Segoe UI", sans-serif;
-    letter-spacing: 1px;
+  }
+}
+
+/* Media queries para pantallas medianas (tabletas) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .header1 {
+    height: 90px;
   }
 
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-    }
+  .interiorPage {
+    margin-top: 90px;
+  }
+
+  .barraRectangular {
+    width: 95vw;
+  }
+
+  .publicacionesList {
+    max-height: 75vh; /* Ajustar altura máxima para tabletas */
   }
 }
