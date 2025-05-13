@@ -1,8 +1,10 @@
 package com.apiweb.backend.Controller;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +19,9 @@ public class AcuerdosController {
     @Autowired
     IAcuerdosService acuerdosService;
 
-    @PostMapping("/registar")
-    public ResponseEntity<AcuerdosModel> crearAcuerdo (@RequestBody AcuerdosModel acuerdo) {
-        return new ResponseEntity<AcuerdosModel>(acuerdosService.guardarAcuerdo(acuerdo),HttpStatus.CREATED);
+    @PostMapping("/registar/{idPropietario}")
+    public ResponseEntity<AcuerdosModel> crearAcuerdo (@PathVariable("idPropietario") ObjectId idPropietario,@RequestBody AcuerdosModel acuerdo) {
+        return new ResponseEntity<AcuerdosModel>(acuerdosService.crearAcuerdo(idPropietario,acuerdo),HttpStatus.CREATED);
     }
     
 }

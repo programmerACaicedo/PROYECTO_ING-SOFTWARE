@@ -1,5 +1,7 @@
 package com.apiweb.backend.Model;
 
+import java.time.Instant;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MensajeAviso {
-    private String descripcion;
-    private String fecha;
+public class ExtensionAcuerdo {
+    private Instant fecha_fin;
+    private String archivo_contrato;
 }

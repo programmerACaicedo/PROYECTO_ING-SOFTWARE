@@ -36,7 +36,6 @@ public class AvisosModel {
     private Integer precioMax;
     private EstadoAviso estado;
     private ReporteAviso reporte;
-    private MensajeriaAviso mensajeria;
     public void setImagenes(List<String> imagenes) {
         this.imagenes = (ArrayList<String>) imagenes;
     }

@@ -8,14 +8,13 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apiweb.backend.Exception.InvalidAvisoConfigurationException;
 import com.apiweb.backend.Exception.InvalidUserRoleException;
 import com.apiweb.backend.Exception.ResourceNotFoundException;
 import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AvisosModel;
-import com.apiweb.backend.Model.MensajeriaAviso;
-import com.apiweb.backend.Model.Mensajes;
 import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Model.UsuariosModel;
@@ -35,6 +34,7 @@ public class AvisosServiceImp implements IAvisosService{
     IUsuariosRepository usuariosRepository;
 
     @Override
+    @Transactional
     public AvisosModel crearAviso(AvisosModel aviso) {
         Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
         if (!usuarioExiste.isPresent()) {
@@ -44,8 +44,8 @@ public class AvisosServiceImp implements IAvisosService{
         if (usuario.getTipo() != TipoUsuario.propietario){
             throw new InvalidUserRoleException("Solamente un propietario puede crear un aviso.");
         }
-        if (aviso.getReporte() != null || aviso.getMensajeria() != null) {
-            throw new InvalidAvisoConfigurationException("El aviso no puede tener un reporte o mensaje de interes al momento de crearse.");
+        if (aviso.getReporte() != null) {
+            throw new InvalidAvisoConfigurationException("El aviso no puede tener un reporte al momento de crearse.");
         }
         if (aviso.getCalificacion_prom() != null && aviso.getCalificacion_prom() != 0) {
             throw new InvalidAvisoConfigurationException("El aviso no puede tener una calificacion promedio al momento de crearse.");
@@ -228,6 +228,7 @@ public class AvisosServiceImp implements IAvisosService{
     }
 
     @Override
+    @Transactional
     public AvisosModel actualizarEstadoReporteSiendoAdministrador(ObjectId id, ReporteAviso reporte) {
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
@@ -327,72 +328,71 @@ public class AvisosServiceImp implements IAvisosService{
     }
 
     //Metodos de la epica 3 mensajeria
-    @Override
-    public AvisosModel crearChat (ObjectId idAviso, MensajeriaAviso mensaje) {
-        Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
-        if (!avisoExiste.isPresent()) {
-            throw new ResourceNotFoundException("El aviso no existe.");
-        }
-        AvisosModel aviso = avisoExiste.get();
-        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(mensaje.getIdInteresado());
-        if (!usuarioExiste.isPresent()) {
-            throw new ResourceNotFoundException("El usuario interesado no existe.");
-        }
+    // @Override
+    // public AvisosModel crearChat (ObjectId idAviso, Mensajeria mensaje) {
+    //     Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
+    //     if (!avisoExiste.isPresent()) {
+    //         throw new ResourceNotFoundException("El aviso no existe.");
+    //     }
+    //     AvisosModel aviso = avisoExiste.get();
+    //     Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(mensaje.getIdInteresado());
+    //     if (!usuarioExiste.isPresent()) {
+    //         throw new ResourceNotFoundException("El usuario interesado no existe.");
+    //     }
 
-        UsuariosModel interesado = usuarioExiste.get();
-        if (interesado.getTipo() != TipoUsuario.interesado) {
-            throw new InvalidUserRoleException("Solo un usuario interesado puede crear un chat con el propietario");
+    //     UsuariosModel interesado = usuarioExiste.get();
+    //     if (interesado.getTipo() != TipoUsuario.interesado) {
+    //         throw new InvalidUserRoleException("Solo un usuario interesado puede crear un chat con el propietario");
 
-        }
+    //     }
 
-        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(mensaje.getIdInteresado());
-        if (mensajeAviso.isPresent()) {
-            throw new InvalidAvisoConfigurationException("El usuario ya tiene un chat en este aviso.");
-        }
+    //     Optional<Mensajeria> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(mensaje.getIdInteresado());
+    //     if (mensajeAviso.isPresent()) {
+    //         throw new InvalidAvisoConfigurationException("El usuario ya tiene un chat en este aviso.");
+    //     }
 
 
-        mensaje.setFecha(Instant.now());
-        mensaje.setLeido(false);
-        aviso.setMensajeria(mensaje);
-        return avisosRepository.save(aviso);
+    //     mensaje.setFecha(Instant.now());
+    //     mensaje.setLeido(false);
+    //     return avisosRepository.save(aviso);
 
-    }
+    // }// Faltan cambios implementados en el backend
 
-    //En proceso
-    @Override
-    public AvisosModel mandarMensajes(ObjectId idAviso, ObjectId idInteresado, Mensajes mensaje) {
-        Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
-        if (!avisoExiste.isPresent()) {
-            throw new ResourceNotFoundException("El aviso no existe.");
-        }
-        AvisosModel aviso = avisoExiste.get();
+    // //En proceso
+    // @Override
+    // public AvisosModel mandarMensajes(ObjectId idAviso, ObjectId idInteresado, MensajesMensajeria mensaje) {
+    //     Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
+    //     if (!avisoExiste.isPresent()) {
+    //         throw new ResourceNotFoundException("El aviso no existe.");
+    //     }
+    //     AvisosModel aviso = avisoExiste.get();
 
-        Optional<MensajeriaAviso> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(idInteresado);
-        if (!mensajeAviso.isPresent()) {
-            throw new ResourceNotFoundException("El mensaje no existe.");
-        }
-        MensajeriaAviso mensajeExistente = mensajeAviso.get();
+    //     Optional<Mensajeria> mensajeAviso = avisosRepository.findByMensajeriaIdInteresado(idInteresado);
+    //     if (!mensajeAviso.isPresent()) {
+    //         throw new ResourceNotFoundException("El mensaje no existe.");
+    //     }
+    //     Mensajeria mensajeExistente = mensajeAviso.get();
 
         
-        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(mensajeExistente.getIdInteresado());
-        UsuariosModel redactor = usuarioExiste.get();
-        if (redactor.getTipo() == TipoUsuario.interesado) {
-            if (redactor.getId() != idInteresado) {
-                throw new InvalidUserRoleException("El usuario no es el interesado.");
-            }
-        }
-        if (redactor.getTipo() == TipoUsuario.propietario) {
-            if (redactor.getId() != aviso.getPropietarioId().getUsuarioId()) {
-                throw new InvalidUserRoleException("El usuario no es el propietario.");
-            }
-        }
-        if (redactor.getTipo() == TipoUsuario.administrador) {
-            throw new InvalidUserRoleException("Un administrador no puede enviar mensajes a un aviso.");
-        }
-        mensajeExistente.getMensajes().add(mensaje);
-        //aviso.getMensajeria().setMensajes(mensajeExistente);
+    //     Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(mensajeExistente.getIdInteresado());
+    //     UsuariosModel redactor = usuarioExiste.get();
+    //     if (redactor.getTipo() == TipoUsuario.interesado) {
+    //         if (redactor.getId() != idInteresado) {
+    //             throw new InvalidUserRoleException("El usuario no es el interesado.");
+    //         }
+    //     }
+    //     if (redactor.getTipo() == TipoUsuario.propietario) {
+    //         if (redactor.getId() != aviso.getPropietarioId().getUsuarioId()) {
+    //             throw new InvalidUserRoleException("El usuario no es el propietario.");
+    //         }
+    //     }
+    //     if (redactor.getTipo() == TipoUsuario.administrador) {
+    //         throw new InvalidUserRoleException("Un administrador no puede enviar mensajes a un aviso.");
+    //     }
+    //     mensajeExistente.getMensajes().add(mensaje);
+    //     //aviso.getMensajeria().setMensajes(mensajeExistente);
 
-        return avisosRepository.save(aviso);   
-    }
+    //     return avisosRepository.save(aviso);   
+    // }//Faltan cambios implementados en el backend
 
 }
