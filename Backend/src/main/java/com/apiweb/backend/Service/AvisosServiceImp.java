@@ -188,6 +188,7 @@ public class AvisosServiceImp implements IAvisosService{
 
 
     @Override
+    @Transactional
     public AvisosModel crearReporte(ObjectId id, ReporteAviso reporte) {
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
@@ -214,6 +215,9 @@ public class AvisosServiceImp implements IAvisosService{
         reporte.setFecha(Instant.now());
         reporte.setEstadoReporte(EstadoReporte.Reportado);
         avisoActualizado.setReporte(reporte);
+
+        //Notificacion al propietario
+        
         return avisosRepository.save(avisoActualizado);  
     }
 

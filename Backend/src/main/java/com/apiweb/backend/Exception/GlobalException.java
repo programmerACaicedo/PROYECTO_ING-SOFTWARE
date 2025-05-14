@@ -99,6 +99,11 @@ public class GlobalException {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
     }
 
+    @ExceptionHandler(InvalidMensajeriaConfigurationException.class)
+    public ResponseEntity<String> handleInvalidMensajeriaConfigurationException(InvalidMensajeriaConfigurationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
+    }
+
     @ExceptionHandler(InvalidAcuerdoConfigurationException.class)
     public ResponseEntity<String> handleInvalidAcuerdoConfigurationException(InvalidAcuerdoConfigurationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 Bad Request
