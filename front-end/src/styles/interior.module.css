@@ -19,7 +19,7 @@ body {
 
 /* Personalizar la barra deslizadora para WebKit (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 12px; /* Ancho de la barra vertical */
+  width: 18px; /* Ancho de la barra vertical */
   height: 12px; /* Altura de la barra horizontal, si aplica */
 }
 
@@ -39,6 +39,7 @@ body {
 
 /* Estilos para el contenedor principal */
 .interiorPage {
+  margin-right: 20px;
   overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
   height: 100vh; /* Ocupa toda la altura de la ventana */
 } 
@@ -53,7 +54,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 50vh; /* Ajustado para mejor proporción */
-  width: 99vw;
+  width: 100vw;
   padding: 0;
   box-sizing: border-box;
 }
