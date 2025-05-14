@@ -102,25 +102,7 @@ const InteriorInteresado = () => {
             <div className={styles.barraRectangular}>
               <div className={styles.interior}>
                 <h1>Servicio de Arrendamientos🏘️</h1>
-              </div>
-              <div className={styles.menuContainer}>
-                <button
-                  className={styles.alquileresBtn}
-                  onClick={() => setMostrarMenu(!mostrarMenu)}
-                >
-                  Alquileres
-                </button>
-                {mostrarMenu && (
-                  <div className={styles.dropdownContent}>
-                    <button onClick={() => filterPublications("apartamento")}>Apartamentos</button>
-                    <button onClick={() => filterPublications("bodega")}>Bodegas</button>
-                    <button onClick={() => filterPublications("garajes")}>Garajes</button>
-                    <button onClick={() => filterPublications("parqueadero")}>Parqueaderos</button>
-                  </div>
-                )}
-              </div>
-
-              
+              </div>              
                 <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
                   Mi Perfil
                 </button>

@@ -2,20 +2,48 @@
 html {
   font-size: 100%;
   overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
   box-sizing: border-box;
+  scrollbar-width: thin; /* Para Firefox: hacer la barra más delgada */
+  scrollbar-color: #888 #f1f1f1; /* Color del pulgar y de la pista en Firefox */
 }
 
 body {
   min-width: 320px;
   overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Personalizar la barra deslizadora para WebKit (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px; /* Ancho de la barra vertical */
+  height: 12px; /* Altura de la barra horizontal, si aplica */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del fondo de la pista */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color del pulgar (la parte móvil) */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del pulgar al pasar el mouse */
+}
+
+/* Estilos para el contenedor principal */
+.interiorPage {
+  overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+}
 /* Estilos para el header y su contenido */
 .interiorPage header {
-  margin-top: 14.5rem;
   position: relative;
   background: url(../assets/img/Panoramic_Cali_Col.jpg) no-repeat center/cover;
   background-size: cover;
@@ -102,7 +130,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100vw; /* Ancho relativo */
     max-width: 100vw; /* Límite máximo */
-    margin-top: -1.2rem;
+
     height: 100px;
     margin-bottom: 18%;
   }
@@ -110,7 +138,7 @@ body {
   .interior {
     color: #000000;
     text-align: center;
-    font-size: 1rem;
+    font-size: 2rem;
     margin: 0.3rem 0;
     text-shadow: 2px 2px 4px rgba(28, 105, 35, 0.6);
     flex: 1;
@@ -124,52 +152,47 @@ body {
     color:black;
   }
 
-  .alquileresBtn,
-  .perfilBtn {
+.perfilBtn,
+.logoutBtn {
     background-color: transparent;
     color: rgb(0, 0, 0);
     padding: 0.5rem 1rem;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
     text-align: center;
-  }
+}
+.perfilBtn:hover {
+  background-color: rgb(7, 38, 233);
+}
 
-  .alquileresBtn:hover,
-  .perfilBtn:hover {
-    background-color: rgba(255, 255, 255, 0.304);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
+.perfilBtn {
+  background-color: #b7b7b7d5;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  text-align: center;
+}
 
-  .perfilBtn {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    padding: 8px 16px; /* Reducido para 100% zoom */
-    font-size: 1.5rem; /* Reducido para 100% zoom */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    flex: 1;
-    text-align: center;
-  }
+/* Estilos específicos para el botón de logout */
+.logoutBtn {
+  background-color: #b7b7b7d5;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
 
-  .logoutBtn {
-    background-color: #b7b7b7d5;
-    color: rgb(0, 0, 0);
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-left: 10px;
-    cursor: pointer;
-  } 
-  .logoutBtn:hover {
-    background-color: #ff1a1a;
-  }
-
+.logoutBtn:hover {
+  background-color: #ff1a1a;
+}
   .alquileresBtn {
     margin-left: 8px; 
     background-color: transparent;
