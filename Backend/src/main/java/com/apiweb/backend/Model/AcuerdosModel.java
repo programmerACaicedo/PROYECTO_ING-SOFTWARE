@@ -23,13 +23,13 @@ public class AcuerdosModel {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
-    private ObjectId avisos_id;
-    private Instant fecha_inicio;
-    private Instant fecha_fin;
-    private String razon_cancelacion;
+    private ObjectId avisosId;
+    private Instant fechaInicio;
+    private Instant fechaFin;
+    private String razonCancelacion;
     private EstadoAcuerdo estado;
-    private String archivo_contrato;
-    private ArrayList<CalificacionesServicios> calificacion_servicio = new ArrayList<CalificacionesServicios>();
+    private String archivoContrato;
+    private ArrayList<CalificacionesServicios> calificacionServicio = new ArrayList<CalificacionesServicios>();
     private ArrendatarioAcuerdo arrendatario;
     private ArrayList<ExtensionAcuerdo> extensiones = new ArrayList<ExtensionAcuerdo>();
 } 
