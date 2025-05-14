@@ -119,6 +119,7 @@ const InteriorInteresado = () => {
               onChange={e => setFiltros(f => ({ ...f, tipo: e.target.value }))}
             >
               <option value="">Tipo</option>
+              <option value="casa">Casa</option>
               <option value="apartamento">Apartamento</option>
               <option value="bodega">Bodega</option>
               <option value="garaje">Garaje</option>
