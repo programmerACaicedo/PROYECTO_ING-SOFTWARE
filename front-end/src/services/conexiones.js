@@ -158,6 +158,26 @@ export const listarAvisosConReportes = async () => {
   }
 };
 
+export const actualizarEstadoReporte = async (avisoId, reporteActualizado) => {
+  try {
+    const respuesta = await api.put(`/avisos/actualizarEstadoReporteSiendoAdministrador/${avisoId}`, reporteActualizado);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al actualizar estado del reporte:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const reportarAviso = async (avisoId, reporte) => {
+  try {
+    const respuesta = await api.put(`/avisos/reportar/${avisoId}`, reporte);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al reportar aviso:", error.response || error.message);
+    throw error;
+  }
+};
+
 export const listarAvisosPropietario = async (propietarioId) => {
   try {
     const respuesta = await api.get(`/avisos/${propietarioId}`);

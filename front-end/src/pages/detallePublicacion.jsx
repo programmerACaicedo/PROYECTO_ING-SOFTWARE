@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
 import { listarAvisos } from "../services/conexiones";
+import { reportarAviso } from "../services/conexiones";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
@@ -39,8 +40,28 @@ const DetallePublicacion = () => {
     }
   }, [id]);
 
-  const handleEnviarReporte = (e) => {
-    e.preventDefault();
+const handleEnviarReporte = async (e) => {
+  e.preventDefault();
+  setMensajeReporte("");
+
+  try {
+    const token = localStorage.getItem("token");
+    const decoded = require("jwt-decode").jwtDecode(token);
+    const usuarioId = decoded.id?._id || decoded.id;
+
+    if (!motivo) {
+      setMensajeReporte("Debes seleccionar un motivo.");
+      return;
+    }
+
+    const reporte = {
+      usuarioReporta: usuarioId,
+      motivo,
+      comentario: comentarios,
+    };
+
+   await reportarAviso(publicacion.id, reporte);
+
     setMensajeReporte("Reporte enviado con éxito.");
     setTimeout(() => {
       setMostrarModal(false);
@@ -48,7 +69,10 @@ const DetallePublicacion = () => {
       setComentarios("");
       setMensajeReporte("");
     }, 2000);
-  };
+  } catch (error) {
+    setMensajeReporte("Error al enviar el reporte.");
+  }
+};
 
   const handleNotificar = (e) => {
     e.preventDefault();
