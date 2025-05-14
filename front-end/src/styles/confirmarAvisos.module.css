@@ -1,3 +1,44 @@
+/* Asegurar compatibilidad general */
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  box-sizing: border-box;
+  scrollbar-width: thin; /* Para Firefox: hacer la barra más delgada */
+  scrollbar-color: #888 #f1f1f1; /* Color del pulgar y de la pista en Firefox */
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Personalizar la barra deslizadora para WebKit (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 18px; /* Ancho de la barra vertical */
+  height: 12px; /* Altura de la barra horizontal, si aplica */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del fondo de la pista */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color del pulgar (la parte móvil) */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del pulgar al pasar el mouse */
+}
+
+
+
 .container {
     margin: 0;
     padding: 0;
@@ -8,6 +49,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-right: 20px;
+    overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
+    height: 100vh; /* Ocupa toda la altura de la ventana */
   }
   
   .header {

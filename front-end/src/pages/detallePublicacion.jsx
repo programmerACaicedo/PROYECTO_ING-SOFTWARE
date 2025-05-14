@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
-import { listarAvisos } from "../services/conexiones"; // Importa la función
+import { listarAvisos } from "../services/conexiones";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const carruselRef = useRef(null);
 
   const [publicacion, setPublicacion] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -15,9 +16,10 @@ const DetallePublicacion = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [tipoUsuario, setTipoUsuario] = useState("");
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal de imagen
+  const [selectedImage, setSelectedImage] = useState(""); // Imagen seleccionada
 
   useEffect(() => {
-    // Traer los avisos y buscar el que corresponde al id
     const fetchPublicacion = async () => {
       try {
         const avisos = await listarAvisos();
@@ -64,14 +66,6 @@ const DetallePublicacion = () => {
     navigate(`/actualizar-publicacion/${publicacion.id}`);
   };
 
-  if (!publicacion) {
-    return (
-      <div className={styles.detallePublicacionContainer}>
-        Publicación no encontrada.
-      </div>
-    );
-  }
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -79,6 +73,40 @@ const DetallePublicacion = () => {
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
+
+  const handlePrev = () => {
+    if (carruselRef.current) {
+      const imageWidth = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
+      carruselRef.current.scrollBy({ left: -imageWidth, behavior: "smooth" });
+    }
+  };
+
+  const handleNext = () => {
+    if (carruselRef.current) {
+      const imageWidth = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
+      carruselRef.current.scrollBy({ left: imageWidth, behavior: "smooth" });
+    }
+  };
+
+  // Abrir el modal con la imagen seleccionada
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  // Cerrar el modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage("");
+  };
+
+  if (!publicacion) {
+    return (
+      <div className={styles.detallePublicacionContainer}>
+        Publicación no encontrada.
+      </div>
+    );
+  }
 
   return (
     <div className={styles.detallePublicacionContainer}>
@@ -117,16 +145,27 @@ const DetallePublicacion = () => {
       </nav>
 
       <div className={styles.contenidoDetalle}>
-        <div className={styles.imagenes}>
+        <div className={styles.carruselContainer}>
           {publicacion.imagenes?.length > 0 ? (
-            publicacion.imagenes.map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt={`Imagen ${index + 1}`}
-                className={styles.imagen}
-              />
-            ))
+            <>
+              <div className={styles.carrusel} ref={carruselRef}>
+                {publicacion.imagenes.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`Imagen ${index + 1}`}
+                    className={styles.imagen}
+                    onClick={() => openModal(img)} // Abrir modal al hacer clic
+                  />
+                ))}
+              </div>
+              <button className={`${styles.navButton} ${styles.prevButton}`} onClick={handlePrev}>
+                ◄
+              </button>
+              <button className={`${styles.navButton} ${styles.nextButton}`} onClick={handleNext}>
+                ►
+              </button>
+            </>
           ) : (
             <p>No hay imágenes disponibles.</p>
           )}
@@ -192,6 +231,16 @@ const DetallePublicacion = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {isModalOpen && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Imagen ampliada" className={styles.modalImage} />
+            <button className={styles.modalCloseButton} onClick={closeModal}>
+              ×
+            </button>
           </div>
         </div>
       )}

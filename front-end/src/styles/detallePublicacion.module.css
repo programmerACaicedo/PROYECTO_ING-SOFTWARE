@@ -1,4 +1,43 @@
-/* Contenedor principal: ocupa todo el alto de la pantalla */
+/* Asegurar compatibilidad general */
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Personalizar la barra deslizadora para WebKit */
+::-webkit-scrollbar {
+  width: 18px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Contenedor principal */
 .detallePublicacionContainer {
   width: 100vw;
   min-height: 100vh;
@@ -8,6 +47,8 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 /* Encabezado */
@@ -15,10 +56,10 @@
   position: relative;
   display: flex;
   align-items: center;
-  background-color: #0284c7; /* color de fondo, ajústalo a tu gusto */
+  background-color: #0284c7;
   padding: 1.89rem;
   border-bottom: 1px solid #ddd;
-  flex-shrink: 0; /* evita que el header se contraiga */
+  flex-shrink: 0;
 }
 
 .headerDetalle h1 {
@@ -46,16 +87,7 @@
   text-align: center;
 }
 
-form h3 {
-  text-align: center;
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: -10px;
-  margin-top: 0px;
-  padding: 0%;
-  color: #444;
-}
-
+/* Menú */
 .menu {
   margin-top: 119px;
   display: none;
@@ -107,32 +139,97 @@ form h3 {
 }
 
 /* Contenido principal */
-.mainContent {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-}
-
 .contenidoDetalle {
-  flex: 1; /* ocupa todo el espacio restante debajo del header */
+  flex: 1;
   display: flex;
   flex-direction: row;
   gap: 2rem;
-  padding: 1rem 2rem; /* más padding para que no quede pegado */
+  padding: 1rem 2rem;
   box-sizing: border-box;
-  align-items: center; /* centra verticalmente */
-  justify-content: center; /* centra horizontalmente */
+  align-items: center;
+  justify-content: center;
 }
 
-/* Imagen más grande */
-.contenidoDetalle img {
-  width: 700px; /* ajusta según tu gusto */
-  max-width: 50vw; /* que no supere la mitad del ancho */
-  height: auto;
+/* Contenedor del carrusel */
+.carruselContainer {
+  position: relative;
+  width: 700px;
+  max-width: 50vw;
+  height: 60vh; /* Altura fija del carrusel */
+  overflow: hidden;
   border-radius: 8px;
-  object-fit: cover;
   border: 1px solid #ccc;
+}
+
+/* Contenedor interno del carrusel */
+.carrusel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  height: 100%; /* Ocupa toda la altura del contenedor */
+}
+
+/* Estilo de las imágenes */
+.imagen {
+  flex: 0 0 auto;
+  width: 700px;
+  max-width: 50vw;
+  height: 100%; /* Ocupa toda la altura del carrusel */
+  object-fit: cover; /* Cubre el espacio, recortando si es necesario */
+  border-radius: 8px;
+  scroll-snap-align: start;
+}
+
+/* Estilo de los botones de navegación */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.navButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.prevButton {
+  left: 10px;
+}
+
+.nextButton {
+  right: 10px;
+}
+
+/* Personalizar la barra de desplazamiento del carrusel */
+.carrusel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carrusel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.carrusel::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.carrusel::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 /* Columna de texto */
@@ -140,11 +237,11 @@ form h3 {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6rem;
-  background-color: #fff; /* fondo blanco */
-  padding: 5rem;
+  gap: 1rem;
+  background-color: #fff;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .textoDetalle h2 {
@@ -155,9 +252,9 @@ form h3 {
 
 .textoDetalle p {
   margin: 0;
-  font-size: 1.1rem; /* un poco más grande */
+  font-size: 1.1rem;
   color: #555;
-  line-height: 1.5; /* más altura de línea para lectura */
+  line-height: 1.5;
 }
 
 /* Botones de acción */
@@ -190,7 +287,7 @@ form h3 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -260,7 +357,7 @@ form h3 {
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
-  z-index: 1001; /* Asegura que esté por encima del modalFondo */
+  z-index: 1001;
 }
 
 /* Overlay para el mensaje de notificación */
@@ -274,20 +371,89 @@ form h3 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Por debajo del mensaje, pero por encima del contenido */
+  z-index: 1000;
 }
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalImage {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.modalCloseButton:hover {
+  background-color: #c82333;
+}
+
 
 /* Responsividad */
 @media (max-width: 768px) {
   .contenidoDetalle {
     flex-direction: column;
   }
-  .contenidoDetalle img {
+
+  .carruselContainer {
     width: 100%;
     max-width: 100%;
+    height: 60vh; /* Altura reducida en móviles para mejor usabilidad */
   }
+
+  .imagen {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+  }
+
   .textoDetalle {
     width: 100%;
-    margin-top: 1rem;
+    margin-top: 1rem  /* Corregido el comentario faltante */
+
+  }
+
+  .navButton {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
   }
 }
