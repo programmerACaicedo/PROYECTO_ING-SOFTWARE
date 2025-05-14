@@ -52,36 +52,44 @@ const InteriorInteresado = () => {
   }, []);
 
   useEffect(() => {
-    let res = publicaciones;
+    let res = [...publicaciones];
 
     // Filtro por tipo
     if (filtros.tipo) {
-      res = res.filter(p => p.tipo === filtros.tipo);
+      res = res.filter((p) =>
+        p.tipo?.toLowerCase() === filtros.tipo.toLowerCase()
+      );
     }
 
     // Filtro por precio
-    const min = parseInt(filtros.precioMin.replace(/\D/g, "")) || 0;
-    const max = parseInt(filtros.precioMax.replace(/\D/g, "")) || Infinity;
-    res = res.filter(p => {
-      const precioStr = typeof p.precio === "string" ? p.precio : "0";
-      const precioNum = parseInt(precioStr.replace(/\D/g, ""));
-      return precioNum >= min && precioNum <= max;
+    const minPrice = filtros.precioMin
+      ? parseFloat(filtros.precioMin.replace(/[^0-9.]/g, "")) || 0
+      : 0;
+    const maxPrice = filtros.precioMax
+      ? parseFloat(filtros.precioMax.replace(/[^0-9.]/g, "")) || Infinity
+      : Infinity;
+
+    res = res.filter((p) => {
+      const precio = typeof p.precio_mensual === "string"
+        ? parseFloat(p.precio_mensual.replace(/[^0-9.]/g, "")) || 0
+        : Number(p.precio_mensual) || 0;
+      return precio >= minPrice && precio <= maxPrice;
     });
 
     // Filtro por disponibilidad
     if (filtros.disponibilidad) {
-      res = res.filter(p => p.estado === filtros.disponibilidad);
+      res = res.filter((p) => p.estado === filtros.disponibilidad);
     }
 
     setFilteredPubs(res);
   }, [publicaciones, filtros]);
 
-  const filterPublications = tipo => {
+  const filterPublications = (tipo) => {
     setMostrarMenu(false);
     navigate(`/publicaciones/${tipo}`);
   };
 
-  const handlePublicationClick = pubId => navigate(`/publicacion/${pubId}`);
+  const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -102,11 +110,13 @@ const InteriorInteresado = () => {
             <div className={styles.barraRectangular}>
               <div className={styles.interior}>
                 <h1>Servicio de Arrendamientos🏘️</h1>
-              </div>              
-                <button className={styles.perfilBtn} onClick={() => navigate("/perfil")}>
-                  Mi Perfil
-                </button>
-              
+              </div>
+              <button
+                className={styles.perfilBtn}
+                onClick={() => navigate("/perfil")}
+              >
+                Mi Perfil
+              </button>
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Cerrar Sesión
               </button>
@@ -116,7 +126,9 @@ const InteriorInteresado = () => {
           <div className={styles.filters}>
             <select
               value={filtros.tipo}
-              onChange={e => setFiltros(f => ({ ...f, tipo: e.target.value }))}
+              onChange={(e) =>
+                setFiltros((f) => ({ ...f, tipo: e.target.value }))
+              }
             >
               <option value="">Tipo</option>
               <option value="casa">Casa</option>
@@ -129,18 +141,24 @@ const InteriorInteresado = () => {
               type="text"
               placeholder="Precio min"
               value={filtros.precioMin}
-              onChange={e => setFiltros(f => ({ ...f, precioMin: e.target.value }))}
+              onChange={(e) =>
+                setFiltros((f) => ({ ...f, precioMin: e.target.value }))
+              }
             />
             <input
               type="text"
               placeholder="Precio max"
               value={filtros.precioMax}
-              onChange={e => setFiltros(f => ({ ...f, precioMax: e.target.value }))}
+              onChange={(e) =>
+                setFiltros((f) => ({ ...f, precioMax: e.target.value }))
+              }
             />
 
             <select
               value={filtros.disponibilidad}
-              onChange={e => setFiltros(f => ({ ...f, disponibilidad: e.target.value }))}
+              onChange={(e) =>
+                setFiltros((f) => ({ ...f, disponibilidad: e.target.value }))
+              }
             >
               <option value="">Disponibilidad</option>
               <option value="Disponible">Inmediata</option>
@@ -156,36 +174,29 @@ const InteriorInteresado = () => {
                 No se encontraron avisos. Ajusta tus filtros.
               </p>
             ) : (
-            <div className={styles.publicacionesList}>
-              {publicaciones.length > 0 ? (
-                publicaciones.map((pub) => (
+              <div className={styles.publicacionesList}>
+                {filteredPubs.map((pub) => (
                   <div
                     key={pub.id}
                     className={styles.publicacion}
                     onClick={() => handlePublicationClick(pub.id)}
                   >
-                                        <h3>{pub.nombre || "Sin título"}</h3>
-                    
-{/* Solo mostrar imagen de portada */}
-{pub.imagenes?.length > 0 && (
-  <div className={styles.portadaWrapper}>
-    <img
-      src={pub.imagenes[0]}
-      alt={`Portada de ${pub.nombre}`}
-      className={styles.imagenPortada}
-      onError={(e) => console.log("Image load error:", e)}
-    />
-  </div>
-)}
+                    {pub.imagenes?.length > 0 && (
+                      <div className={styles.portadaWrapper}>
+                        <img
+                          src={pub.imagenes[0]}
+                          alt={`Portada de ${pub.nombre}`}
+                          className={styles.imagenPortada}
+                          onError={(e) => console.log("Image load error:", e)}
+                        />
+                      </div>
+                    )}
                     <h3>{pub.nombre || "Sin título"}</h3>
                     <p>Precio: {pub.precio_mensual || "No especificado"}</p>
                     <p>Estado: {pub.estado || "No especificado"}</p>
                     <p>Descripción: {pub.descripcion || "Sin descripción"}</p>
                   </div>
-                ))
-              ) : (
-                <p>No tienes publicaciones disponibles.</p>
-              )}
+                ))}
               </div>
             )}
           </section>
