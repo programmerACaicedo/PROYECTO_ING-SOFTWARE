@@ -55,6 +55,12 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (aviso.getEstado() != EstadoAviso.Disponible && aviso.getEstado() != EstadoAviso.EnProceso) {
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
         }
+        Optional<AcuerdosModel> acuerdoConEseAvisoActivoYaExiste = acuerdosRepository.findByAvisosIdAndEstado(acuerdo.getAvisosId(),EstadoAcuerdo.Activo);
+        if (acuerdoConEseAvisoActivoYaExiste.isPresent()) {
+            throw new InvalidAcuerdoConfigurationException("Ya existe un acuerdo activo para este aviso. ");
+        }
+
+
         if (acuerdo.getCalificacionServicio() != null && !acuerdo.getCalificacionServicio().isEmpty()) {
             throw new InvalidUserRoleException("El propietario no puede calificar el servicio");
         }
