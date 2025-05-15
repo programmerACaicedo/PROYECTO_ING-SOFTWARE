@@ -19,6 +19,7 @@ const DetallePublicacion = () => {
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal de imagen
   const [selectedImage, setSelectedImage] = useState(""); // Imagen seleccionada
+  const [usuarioId, setUsuarioId] = useState("");
 
   useEffect(() => {
     const fetchPublicacion = async () => {
@@ -38,6 +39,11 @@ const DetallePublicacion = () => {
       const decodedToken = require("jwt-decode").jwtDecode(token);
       setTipoUsuario(decodedToken.tipo || "");
     }
+    if (token) {
+      const decodedToken = require("jwt-decode").jwtDecode(token);
+      setTipoUsuario(decodedToken.tipo || "");
+      setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
+    }    
   }, [id]);
 
 const handleEnviarReporte = async (e) => {
@@ -111,6 +117,14 @@ const handleEnviarReporte = async (e) => {
       carruselRef.current.scrollBy({ left: imageWidth, behavior: "smooth" });
     }
   };
+  const handleAcuerdo = () => {
+  if (!publicacion) return;
+  if (publicacion.acuerdo) {
+    navigate(`/acuerdo/modificar/${publicacion.id}`);
+  } else {
+    navigate(`/acuerdo/crear/${publicacion.id}`);
+  }
+};
 
   // Abrir el modal con la imagen seleccionada
   const openModal = (image) => {
@@ -211,6 +225,11 @@ const handleEnviarReporte = async (e) => {
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
             <button onClick={() => setMostrarModal(true)}>Reportar</button>
+            {tipoUsuario === "propietario" && (
+              <button onClick={handleAcuerdo}>
+                {publicacion.acuerdo ? "Modificar Acuerdo" : "Crear Acuerdo"}
+              </button>
+            )}
           </div>
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
