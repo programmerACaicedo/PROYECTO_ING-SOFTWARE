@@ -26,7 +26,7 @@ import MisAvisos from "./pages/MisAvisos";// Asegúrate de que esta ruta sea cor
 import VerReportes from "./pages/verReportes";
 import CrearAcuerdo from "./pages/crearAcuerdo";
 import ModificarAcuerdo from "./pages/modificarAcuerdo";
-
+import MisAcuerdos from "./pages/misAcuerdos";
 
 
 
@@ -63,6 +63,7 @@ function App() {
               <Route path="/admin/ver-reportes" element={<RutaProtegida><VerReportes /></RutaProtegida>} />
               <Route path="/acuerdo/crear/:idAviso" element={<RutaProtegida><CrearAcuerdo /></RutaProtegida>} />
               <Route path="/acuerdo/modificar/:idAviso" element={<RutaProtegida><ModificarAcuerdo /></RutaProtegida>} />
+              <Route path="/misAcuerdos" element={<RutaProtegida><MisAcuerdos /></RutaProtegida>} />
             </Routes>
           </BackgroundWrapper>
         </BrowserRouter>

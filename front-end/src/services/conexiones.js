@@ -247,5 +247,9 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
   }
 };
 
+export const listarAcuerdosPropietario = async (idPropietario) => {
+  const respuesta = await api.get(`/acuerdos/propietario/${idPropietario}`);
+  return respuesta.data;
+};
 
 export default api;
