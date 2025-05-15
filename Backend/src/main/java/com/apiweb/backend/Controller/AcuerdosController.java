@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Model.AcuerdosModel;
 import com.apiweb.backend.Model.ExtensionAcuerdo;
-import com.apiweb.backend.Model.ENUM.EstadoAcuerdo;
 import com.apiweb.backend.Service.IAcuerdosService;
 
 @RestController
@@ -32,8 +31,8 @@ public class AcuerdosController {
         return new ResponseEntity<AcuerdosModel>(acuerdosService.modificarAcuerdo(idAcuerdo, extension),HttpStatus.OK);
     }
     @PutMapping("/cancelarAcuerdo/{idAviso}")
-    public ResponseEntity<AcuerdosModel> cancelarAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo,@RequestBody EstadoAcuerdo estado) {
-        return new ResponseEntity<AcuerdosModel> (acuerdosService.cancelarAcuerdo(idAcuerdo, estado),HttpStatus.OK);
+    public ResponseEntity<AcuerdosModel> cancelarAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo) {
+        return new ResponseEntity<AcuerdosModel> (acuerdosService.cancelarAcuerdo(idAcuerdo),HttpStatus.OK);
     }
     
 }
