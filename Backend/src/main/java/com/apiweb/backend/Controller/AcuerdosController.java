@@ -31,8 +31,8 @@ public class AcuerdosController {
         return new ResponseEntity<AcuerdosModel>(acuerdosService.modificarAcuerdo(idAcuerdo, extension),HttpStatus.OK);
     }
     @PutMapping("/cancelarAcuerdo/{idAviso}")
-    public ResponseEntity<AcuerdosModel> cancelarAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo) {
-        return new ResponseEntity<AcuerdosModel> (acuerdosService.cancelarAcuerdo(idAcuerdo),HttpStatus.OK);
+    public ResponseEntity<AcuerdosModel> cancelarAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo, @RequestBody String razonCancelacion) {
+        return new ResponseEntity<AcuerdosModel> (acuerdosService.cancelarAcuerdo(idAcuerdo, razonCancelacion),HttpStatus.OK);
     }
     
 }

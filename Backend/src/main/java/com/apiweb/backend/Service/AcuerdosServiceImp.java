@@ -111,13 +111,16 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
     @Override
     @Transactional
-    public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo) {
+    public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo, String razonCancelacion) {
         Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
         if (!acuerdoExiste.isPresent()) {
             throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
         }
         AcuerdosModel acuerdo = acuerdoExiste.get();
-
+        if (razonCancelacion.isBlank()) {
+            throw new InvalidAcuerdoConfigurationException("La razon de cancelación es obligatoria y no puede estar vacia. ");
+        }
+        acuerdo.setRazonCancelacion(razonCancelacion);
         acuerdo.setEstado(EstadoAcuerdo.Cancelado);
 
         return acuerdosRepository.save(acuerdo);
