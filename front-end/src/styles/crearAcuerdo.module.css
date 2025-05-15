@@ -1,0 +1,194 @@
+/* Contenedor principal */
+.publicarAcuerdoContainer {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  width: 100vw;
+  min-height: 100vh;
+  justify-content: center;    /* Centra verticalmente */
+  align-items: center;        /* Centra horizontalmente */
+}
+
+
+/* Header */
+.headerAcuerdo {
+  background-color: #0284c7;
+  padding: 2rem;
+  box-shadow: 0 6px 8px rgb(0, 0, 0);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.iconMenu {
+  color: black;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: block;
+  padding: 0 1rem;
+}
+
+.titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* Menú lateral */
+.menu {
+  margin-top: 119px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(150px, 30vw, 245px);
+  height: 87.6vh;
+  flex-direction: column;
+  background-color: #1c1c1cc6;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.menuOpen {
+  display: flex;
+  animation: slideIn 0.4s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.menu button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu button:last-child {
+  margin-bottom: 0;
+}
+
+.menu button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Formulario */
+.formAcuerdo {
+  text-align: left;
+  color: #000000c1;
+  width: 100%;
+  max-width: 500px;
+  /* Elimina el margin-top/margin-bottom si lo tienes */
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #00000022;
+}
+
+.campoForm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.campoForm label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.campoForm input,
+.campoForm select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  width: 100%;
+}
+
+/* Botón registrar */
+.btnRegistrar {
+  align-self: center;
+  padding: 12px 24px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btnRegistrar:hover {
+  background-color: #218838;
+}
+
+.error {
+  margin-top: 20px;
+  color: red;
+  font-size: 1.2rem;
+}
+
+.mensajeExito {
+  color: green;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.archivoNombre {
+  font-size: 0.95rem;
+  color: #0284c7;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .formAcuerdo {
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 1rem;
+  }
+  .headerAcuerdo {
+    padding: 1.5rem 1rem;
+  }
+  .titulo {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerAcuerdo {
+    padding: 1rem 0.5rem;
+  }
+  .formAcuerdo {
+    padding: 0.5rem;
+  }
+}

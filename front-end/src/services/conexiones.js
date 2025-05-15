@@ -211,5 +211,17 @@ export const listarAvisos = async () => {
     throw error;
   }
 };
+export const registrarAcuerdo = async (idPropietario, acuerdo) => {
+  try {
+    const respuesta = await api.post(`/acuerdos/registar/${idPropietario}`, acuerdo, {
+      headers: { "Content-Type": "application/json" }
+    });
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al registrar acuerdo:", error.response || error.message);
+    throw error;
+  }
+};
+
 
 export default api;
