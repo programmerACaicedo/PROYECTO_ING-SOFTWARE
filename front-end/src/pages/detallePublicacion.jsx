@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
 import { listarAvisos } from "../services/conexiones";
 import { reportarAviso } from "../services/conexiones";
+import { obtenerAcuerdoPorAviso } from "../services/conexiones";
+
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
@@ -20,6 +22,8 @@ const DetallePublicacion = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal de imagen
   const [selectedImage, setSelectedImage] = useState(""); // Imagen seleccionada
   const [usuarioId, setUsuarioId] = useState("");
+  const [acuerdoActivo, setAcuerdoActivo] = useState(null);
+
 
   useEffect(() => {
     const fetchPublicacion = async () => {
@@ -33,6 +37,7 @@ const DetallePublicacion = () => {
     };
 
     fetchPublicacion();
+    
 
     const token = localStorage.getItem("token");
     if (token) {
@@ -45,6 +50,23 @@ const DetallePublicacion = () => {
       setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
     }    
   }, [id]);
+
+  useEffect(() => {
+  const fetchAcuerdo = async () => {
+    try {
+      const acuerdo = await obtenerAcuerdoPorAviso(id);
+      console.log("Acuerdo obtenido:", acuerdo);
+      if (acuerdo && acuerdo.estado && acuerdo.estado.toLowerCase() === "activo") {
+       setAcuerdoActivo(acuerdo);
+      } else {
+        setAcuerdoActivo(null); 
+      }
+    } catch (error) {
+      setAcuerdoActivo(null);
+    }
+  };
+  fetchAcuerdo();
+}, [id]);
 
 const handleEnviarReporte = async (e) => {
   e.preventDefault();
@@ -225,11 +247,25 @@ const handleEnviarReporte = async (e) => {
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
             <button onClick={() => setMostrarModal(true)}>Reportar</button>
-            {tipoUsuario === "propietario" && (
-              <button onClick={handleAcuerdo}>
-                {publicacion.acuerdo ? "Modificar Acuerdo" : "Crear Acuerdo"}
-              </button>
-            )}
+
+            {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
+              <>
+                {/* Botón para crear acuerdo: solo si NO hay acuerdo activo */}
+                {!acuerdoActivo && (
+                 <button onClick={() => navigate(`/acuerdo/crear/${publicacion.id}`)}>
+                   Crear Acuerdo
+                 </button>
+               )}
+               {/* Botón para modificar acuerdo: solo si HAY acuerdo activo */}
+               {acuerdoActivo && (
+                 <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
+                   Modificar Acuerdo
+                 </button>
+               )}
+             </>
+           )}
+
+            
           </div>
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>

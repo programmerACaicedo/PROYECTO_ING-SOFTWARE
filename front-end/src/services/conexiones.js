@@ -222,6 +222,30 @@ export const registrarAcuerdo = async (idPropietario, acuerdo) => {
     throw error;
   }
 };
+export const listarAcuerdos = async (idPropietario) => {
+  try{
+    const respuesta = await api.get("/acuerdos/listarAcuerdos/" + idPropietario);
+    return respuesta.data;
+  }
+  catch (error) {
+    console.error("Error al listar acuerdos:", error.response || error.message);
+    throw error;
+  }
+}
+
+export const obtenerAcuerdoPorAviso = async (idAviso) => {
+  try {
+    const respuesta = await api.get(`/acuerdos/aviso/${idAviso}`);
+    return respuesta.data;
+  } catch (error) {
+    // Si no existe acuerdo, puede devolver 404, lo cual es válido para tu lógica
+    if (error.response && error.response.status === 404) {
+      return null;
+    }
+    console.error("Error al obtener acuerdo por aviso:", error.response || error.message);
+    throw error;
+  }
+};
 
 
 export default api;

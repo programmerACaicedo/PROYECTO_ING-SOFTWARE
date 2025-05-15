@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../styles/nuevoAviso.module.css";
 import { obtenerUsuario, registrarAcuerdo } from "../services/conexiones";
+import { obtenerAcuerdoPorAviso } from "../services/conexiones";
+
 
 export default function CrearAcuerdo() {
   const navigate = useNavigate();
@@ -44,6 +46,22 @@ export default function CrearAcuerdo() {
     }
   }, [mensajes]);
 
+  useEffect(() => {
+  const validarAcuerdo = async () => {
+    try {
+      const acuerdo = await obtenerAcuerdoPorAviso(idAviso);
+      if (acuerdo) {
+        setMensajes([{ texto: "Este aviso ya tiene un acuerdo registrado.", tipo: "error" }]);
+        // Opcional: redirige o deshabilita el formulario
+        setTimeout(() => navigate(`/acuerdo/modificar/${idAviso}`), 2000);
+      }
+    } catch (error) {
+      // Si no hay acuerdo, puedes continuar normalmente
+    }
+  };
+  validarAcuerdo();
+}, [idAviso]);
+
   // Manejo de campos
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -61,7 +79,7 @@ export default function CrearAcuerdo() {
       ]);
       return;
     }
-    // Puedes subir el archivo a un servicio externo y guardar la URL, aquí solo guardamos el nombre
+
     setForm((prev) => ({ ...prev, archivoContrato: file.name }));
     // Si necesitas subirlo a un backend, implementa aquí la lógica de subida y guarda la URL
   };
@@ -83,6 +101,7 @@ export default function CrearAcuerdo() {
         ...prev,
         { texto: "La fecha de finalización no puede ser anterior a la de inicio.", tipo: "error" },
       ]);
+      
       return;
     }
 
