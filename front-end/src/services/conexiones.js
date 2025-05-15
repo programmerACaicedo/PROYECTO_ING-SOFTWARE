@@ -157,6 +157,15 @@ export const listarAvisosConReportes = async () => {
     throw error;
   }
 };
+export const obtenerUsuarioPorId = async (id) => {
+  try {
+    const respuesta = await api.get(`/usuarios/${id}`);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al obtener usuario:", error.response || error.message);
+    throw error;
+  }
+};
 
 export const actualizarEstadoReporte = async (avisoId, reporteActualizado) => {
   try {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../styles/verReportes.module.css'
-import { listarAvisosConReportes, actualizarEstadoReporte } from '../services/conexiones'
+import { listarAvisosConReportes, actualizarEstadoReporte, obtenerUsuarioPorId } from '../services/conexiones'
 
 
 export default function VerReportes() {
@@ -14,73 +14,91 @@ export default function VerReportes() {
   const [loading, setLoading] = useState(false)
 
 
-  useEffect(() => {
-    const fetchReportes = async () => {
-      setLoading(true)
-      try {
-        const avisos = await listarAvisosConReportes()
-        // Transformar los avisos para mostrar los reportes
-        const reportesList = avisos
-          .filter(aviso => aviso.reporte) // Solo los que tienen reporte
-          .map(aviso => ({
-            id: aviso.id,
-            pubId: aviso.id,
-            pubTitulo: aviso.nombre,
-            pubImagen: aviso.imagenes?.[0] || '/assets/img/apartamento.jpg',
-            pubDescripcion: aviso.descripcion,
-            reporter: aviso.reporte.usuarioReporta, // Puedes mostrar el correo si lo tienes
-            motivo: aviso.reporte.motivo,
-            comentario: aviso.reporte.comentario,
-            fecha: aviso.reporte.fecha ? new Date(aviso.reporte.fecha).toLocaleString() : '',
-            estadoReporte: aviso.reporte.estadoReporte,
-          }))
-        setReportes(reportesList)
-      } catch (error) {
-        alert('Error al cargar reportes')
-      }
-      setLoading(false)
+ useEffect(() => {
+  const fetchReportes = async () => {
+    setLoading(true)
+    try {
+      const avisos = await listarAvisosConReportes()
+      // Trae los nombres de los usuarios que reportaron
+      const reportesList = await Promise.all(
+        avisos
+          .filter(aviso => aviso.reporte)
+          .map(async aviso => {
+            let nombreUsuario = aviso.reporte.usuarioReporta
+            try {
+              const usuario = await obtenerUsuarioPorId(aviso.reporte.usuarioReporta)
+              nombreUsuario = usuario.nombre || usuario.correo || aviso.reporte.usuarioReporta
+            } catch (e) {
+              // Si falla, deja el id
+            }
+            return {
+              id: aviso.id,
+              pubId: aviso.id,
+              pubTitulo: aviso.nombre,
+              pubImagen: aviso.imagenes?.[0] || '/assets/img/apartamento.jpg',
+              pubDescripcion: aviso.descripcion,
+              reporter: nombreUsuario,
+              motivo: aviso.reporte.motivo,
+              comentario: aviso.reporte.comentario,
+              fecha: aviso.reporte.fecha ? new Date(aviso.reporte.fecha).toLocaleString() : '',
+              estadoReporte: aviso.reporte.estadoReporte,
+            }
+          })
+      )
+      setReportes(reportesList)
+    } catch (error) {
+      alert('Error al cargar reportes')
     }
-    fetchReportes()
-  }, [])
+    setLoading(false)
+  }
+  fetchReportes()
+}, [])
 
   const abrirModal = (r) => setModalReporte(r)
   const cerrarModal = () => setModalReporte(null)
 
   // Acción de excluir publicación
-  const handleExcluir = async () => {
-    if (!modalReporte) return
-    try {
-      await actualizarEstadoReporte(modalReporte.pubId, {
-        estadoReporte: 'Excluido',
-        comentario: 'Excluido por el administrador',
-        usuarioReporta: modalReporte.reporter // Debe ser el id del admin autenticado
-      })
-      alert(`Se ha excluido la publicación "${modalReporte.pubTitulo}".`)
-      cerrarModal()
-      // Recargar reportes
-      window.location.reload()
-    } catch (error) {
-      alert('Error al excluir publicación')
-    }
-  }
+const handleExcluir = async () => {
+  if (!modalReporte) return
+  try {
+    const token = localStorage.getItem("token");
+    const decoded = require("jwt-decode").jwtDecode(token);
+    const adminId = decoded.id?._id || decoded.id;
 
-  // Acción de invalidar reporte
-  const handleInvalidar = async () => {
-    if (!modalReporte) return
-    try {
-      await actualizarEstadoReporte(modalReporte.pubId, {
-        estadoReporte: 'Invalido',
-        comentario: 'El reporte fue marcado como inválido por el administrador',
-        usuarioReporta: modalReporte.reporter // Debe ser el id del admin autenticado
-      })
-      alert(`Se marcó como inválido el reporte sobre "${modalReporte.pubTitulo}".`)
-      cerrarModal()
-      window.location.reload()
-    } catch (error) {
-      alert('Error al marcar como inválido')
-    }
+    await actualizarEstadoReporte(modalReporte.pubId, {
+      estadoReporte: 'Excluido',
+      comentario: 'Excluido por el administrador',
+      usuarioReporta: adminId
+    })
+    alert(`Se ha excluido la publicación "${modalReporte.pubTitulo}".`)
+    // Elimina el reporte del estado local
+    setReportes(prev => prev.filter(r => r.pubId !== modalReporte.pubId))
+    cerrarModal()
+  } catch (error) {
+    alert('Error al excluir publicación')
   }
+}
 
+const handleInvalidar = async () => {
+  if (!modalReporte) return
+  try {
+    const token = localStorage.getItem("token");
+    const decoded = require("jwt-decode").jwtDecode(token);
+    const adminId = decoded.id?._id || decoded.id;
+
+    await actualizarEstadoReporte(modalReporte.pubId, {
+      estadoReporte: 'Invalido',
+      comentario: 'El reporte fue marcado como inválido por el administrador',
+      usuarioReporta: adminId
+    })
+    alert(`Se marcó como inválido el reporte sobre "${modalReporte.pubTitulo}".`)
+    // Elimina el reporte del estado local
+    setReportes(prev => prev.filter(r => r.pubId !== modalReporte.pubId))
+    cerrarModal()
+  } catch (error) {
+    alert('Error al marcar como inválido')
+  }
+}
 return (
     <div className={styles.container}>
       <header className={styles.header}>
