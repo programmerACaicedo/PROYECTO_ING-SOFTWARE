@@ -110,6 +110,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     }
 
     @Override
+    @Transactional
     public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo) {
         Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
         if (!acuerdoExiste.isPresent()) {
