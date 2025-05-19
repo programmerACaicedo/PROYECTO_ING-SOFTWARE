@@ -4,6 +4,7 @@ import RutaProtegida from "./pages/RutaProtegida";
 import { AuthProvider } from "./services/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 
+
 // Páginas
 import Main from "./pages/main";
 import Login from "./pages/login";
@@ -22,7 +23,10 @@ import DetalleAvisoAdmin from "./pages/detalleAvisoAdmin";
 import Mensajes from "./pages/mensajes";
 import RestablecerContraseña from "./pages/RestablecerContrasena";
 import MisAvisos from "./pages/MisAvisos";// Asegúrate de que esta ruta sea correcta
-
+import VerReportes from "./pages/verReportes";
+import CrearAcuerdo from "./pages/crearAcuerdo";
+import ModificarAcuerdo from "./pages/modificarAcuerdo";
+import MisAcuerdos from "./pages/misAcuerdos";
 
 
 
@@ -55,7 +59,11 @@ function App() {
               <Route path="/publicaciones/:tipo" element={<RutaProtegida><PublicacionesFiltradas /></RutaProtegida>} />
               <Route path="/admin/confirmar-avisos" element={<RutaProtegida><ConfirmarAvisos /></RutaProtegida>} />
               <Route path="/admin/aviso/:id" element={<RutaProtegida><DetalleAvisoAdmin /></RutaProtegida>} />
-              <Route path="/MisAvisos" element={<RutaProtegida><MisAvisos /></RutaProtegida>} /> 
+              <Route path="/MisAvisos" element={<RutaProtegida><MisAvisos /></RutaProtegida>} />
+              <Route path="/admin/ver-reportes" element={<RutaProtegida><VerReportes /></RutaProtegida>} />
+              <Route path="/acuerdo/crear/:idAviso" element={<RutaProtegida><CrearAcuerdo /></RutaProtegida>} />
+              <Route path="/acuerdo/modificar/:idAviso" element={<RutaProtegida><ModificarAcuerdo /></RutaProtegida>} />
+              <Route path="/misAcuerdos" element={<RutaProtegida><MisAcuerdos /></RutaProtegida>} />
             </Routes>
           </BackgroundWrapper>
         </BrowserRouter>

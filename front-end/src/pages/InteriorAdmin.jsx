@@ -68,7 +68,7 @@ const Interior = () => {
         </div>
         <div
           className={styles.optionCard}
-          onClick={() => navigate("/admin/reportes")}
+          onClick={() => navigate("/admin/ver-reportes")}
         >
           <h2>Ver Reportes</h2>
           <p>Gestiona los reportes realizados por usuarios.</p>
@@ -76,7 +76,6 @@ const Interior = () => {
       </section>
         </div>
       )}
-      
     </>
   );
 };

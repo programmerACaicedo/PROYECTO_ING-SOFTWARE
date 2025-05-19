@@ -19,6 +19,4 @@ public interface IAvisosService {
     public List<AvisosModel> listarAvisosConReportes(); //Este get es para administradores
     public List<AvisosModel> listarAvisosSinReportes(); //Este get es para mostrar en la pagina principal todos los avisos que no tienen reportes
     public List<AvisosModel> filtrarAvisos(String tipo, Integer precioMin, Integer precioMax, String disponibilidad);
-    // public AvisosModel crearChat (ObjectId id, Mensajeria mensaje); //Este post es para un usuario interesado que desea crear un chat con el propietario del aviso
-    // public AvisosModel mandarMensajes(ObjectId idAviso, ObjectId idInteresado, MensajesMensajeria mensaje);
 }

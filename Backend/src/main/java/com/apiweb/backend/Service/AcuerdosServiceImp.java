@@ -44,7 +44,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (propietario.getTipo() != TipoUsuario.propietario) {
             throw new InvalidUserRoleException("El usuario no es propietario.");
         }
-        Optional<AvisosModel> avisoExiste = avisosRepository.findById(acuerdo.getAvisos_id());
+        Optional<AvisosModel> avisoExiste = avisosRepository.findById(acuerdo.getAvisosId());
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe");
         }
@@ -55,10 +55,16 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (aviso.getEstado() != EstadoAviso.Disponible && aviso.getEstado() != EstadoAviso.EnProceso) {
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
         }
-        if (acuerdo.getCalificacion_servicio() != null && !acuerdo.getCalificacion_servicio().isEmpty()) {
+        Optional<AcuerdosModel> acuerdoConEseAvisoActivoYaExiste = acuerdosRepository.findByAvisosIdAndEstado(acuerdo.getAvisosId(),EstadoAcuerdo.Activo);
+        if (acuerdoConEseAvisoActivoYaExiste.isPresent()) {
+            throw new InvalidAcuerdoConfigurationException("Ya existe un acuerdo activo para este aviso. ");
+        }
+
+
+        if (acuerdo.getCalificacionServicio() != null && !acuerdo.getCalificacionServicio().isEmpty()) {
             throw new InvalidUserRoleException("El propietario no puede calificar el servicio");
         }
-        if(acuerdo.getFecha_fin().isBefore(acuerdo.getFecha_inicio())){
+        if(acuerdo.getFechaFin().isBefore(acuerdo.getFechaInicio())){
             throw new IllegalArgumentException("La fecha de finalización del arrendamiento no puede ser anterior a la fecha de inicio.");
         }
 
@@ -69,7 +75,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }
         UsuariosModel arrendatario = arrendatarioExiste.get();
         if (arrendatario.getTipo() != TipoUsuario.interesado) {
-            throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " ingresado en 'usuario_id' de arrendatario no corresponde ad de un interesado.");
+            throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " ingresado en 'usuario_id' de arrendatario no corresponde al de un interesado.");
         }
         if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
             throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación.");
@@ -91,11 +97,38 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidUserRoleException("El acuerdo ya ha sido cancelado.");
         } else if (acuerdoActualizar.getEstado() == EstadoAcuerdo.Finalizado) {
             throw new InvalidUserRoleException("El acuerdo ya ha sido finalizado.");
-        }//Validacion del acuerdo anterior
+        }//Validacion del acuerdo sin los cambios aún
 
+        if (acuerdoActualizar.getExtensiones() == null || acuerdoActualizar.getExtensiones().isEmpty()) {
+            if (extension.getFechaFin().isBefore(acuerdoActualizar.getFechaFin())) {
+                throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la anterior fecha fin original. ");
+            } else {
+                for(ExtensionAcuerdo extensionAcuer : acuerdoActualizar.getExtensiones()){
+                    if (extension.getFechaFin().isBefore(extensionAcuer.getFechaFin())) {
+                        throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la anterior fecha fin extension. ");
+                    }
+                }
+            }
+        }
 
         return acuerdosRepository.save(acuerdoActualizar);
 
+    }
 
+    @Override
+    @Transactional
+    public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo, String razonCancelacion) {
+        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
+        }
+        AcuerdosModel acuerdo = acuerdoExiste.get();
+        if (razonCancelacion.isBlank()) {
+            throw new InvalidAcuerdoConfigurationException("La razon de cancelación es obligatoria y no puede estar vacia. ");
+        }
+        acuerdo.setRazonCancelacion(razonCancelacion);
+        acuerdo.setEstado(EstadoAcuerdo.Cancelado);
+
+        return acuerdosRepository.save(acuerdo);
     }
 }

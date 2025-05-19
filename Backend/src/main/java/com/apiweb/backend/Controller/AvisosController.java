@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.apiweb.backend.Model.AvisosModel;
 import com.apiweb.backend.Model.ReporteAviso;
 import com.apiweb.backend.Service.IAvisosService;
@@ -72,6 +73,7 @@ public class AvisosController {
         return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoReporteSiendoAdministrador(id, reporte), HttpStatus.OK);
     }
 
+    
 
 
 }

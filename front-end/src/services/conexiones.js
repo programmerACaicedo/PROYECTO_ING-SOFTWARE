@@ -157,6 +157,35 @@ export const listarAvisosConReportes = async () => {
     throw error;
   }
 };
+export const obtenerUsuarioPorId = async (id) => {
+  try {
+    const respuesta = await api.get(`/usuarios/${id}`);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al obtener usuario:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const actualizarEstadoReporte = async (avisoId, reporteActualizado) => {
+  try {
+    const respuesta = await api.put(`/avisos/actualizarEstadoReporteSiendoAdministrador/${avisoId}`, reporteActualizado);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al actualizar estado del reporte:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const reportarAviso = async (avisoId, reporte) => {
+  try {
+    const respuesta = await api.put(`/avisos/reportar/${avisoId}`, reporte);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al reportar aviso:", error.response || error.message);
+    throw error;
+  }
+};
 
 export const listarAvisosPropietario = async (propietarioId) => {
   try {
@@ -181,6 +210,46 @@ export const listarAvisos = async () => {
     });
     throw error;
   }
+};
+export const registrarAcuerdo = async (idPropietario, acuerdo) => {
+  try {
+    const respuesta = await api.post(`/acuerdos/registar/${idPropietario}`, acuerdo, {
+      headers: { "Content-Type": "application/json" }
+    });
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al registrar acuerdo:", error.response || error.message);
+    throw error;
+  }
+};
+export const listarAcuerdos = async (idPropietario) => {
+  try{
+    const respuesta = await api.get("/acuerdos/listarAcuerdos/" + idPropietario);
+    return respuesta.data;
+  }
+  catch (error) {
+    console.error("Error al listar acuerdos:", error.response || error.message);
+    throw error;
+  }
+}
+
+export const obtenerAcuerdoPorAviso = async (idAviso) => {
+  try {
+    const respuesta = await api.get(`/acuerdos/aviso/${idAviso}`);
+    return respuesta.data;
+  } catch (error) {
+    // Si no existe acuerdo, puede devolver 404, lo cual es válido para tu lógica
+    if (error.response && error.response.status === 404) {
+      return null;
+    }
+    console.error("Error al obtener acuerdo por aviso:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const listarAcuerdosPropietario = async (idPropietario) => {
+  const respuesta = await api.get(`/acuerdos/propietario/${idPropietario}`);
+  return respuesta.data;
 };
 
 export default api;

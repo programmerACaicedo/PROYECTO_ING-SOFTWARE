@@ -23,6 +23,8 @@ public class MensajeriaModel {
     private ObjectId id;
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId idInteresado;
+    @JsonSerialize(using = ToStringSerializer.class)
+    public ObjectId idAviso;
     public String mensaje;
     public Instant fecha;
     public Boolean leido;
