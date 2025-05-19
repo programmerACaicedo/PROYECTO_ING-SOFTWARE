@@ -107,8 +107,13 @@ const MisAvisos = () => {
                       
                 <h3>{pub.nombre}</h3>
                 <p>Precio: ${pub.precio_mensual.toLocaleString()}</p>
-                <p>Estado: {pub.estado}</p>
                 <p>Descripción: {pub.descripcion}</p>
+              {/* Mostrar "Estado Reporte" si hay un reporte, de lo contrario mostrar "Estado" */}
+              {!pub.reporte || pub.reporte.estadoReporte === "AvisoActualizado" ? (
+                <p>Estado: {pub.estado}</p>
+              ) : (
+                <p>Estado Reporte: {pub.reporte.estadoReporte}</p>
+              )}
               </div>
             ))}
           </div>

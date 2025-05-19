@@ -65,13 +65,13 @@ public class UsuariosServiceImp implements IUsuariosService {
             // Generar token de verificación válido por 24 horas
             String token = jwtTokenService.generarTokenVerificacion(usuario.getCorreo(), 24 * 60 * 60);
             // URL para el funcionamiento del tunel
-            String enlaceVerificacion = "http://localhost:8080/restablecer-contraseña?token=" + token;
+            String enlaceVerificacion = "http://localhost:8080/api/usuario/verificar?token=" + token;
 
             // Enviar correo de verificación
             emailService.sendEmail(
                 usuario.getCorreo(),
                 "Verificación de cuenta",
-                "Por favor, verifica tu cuenta haciendo clic en el siguiente enlace: " + enlaceVerificacion
+                "Por favor, verifica tu cuenta haciendo click en el siguiente enlace: " + enlaceVerificacion
             );
 
             return "El usuario " + usuario.getNombre() + " fue registrado con éxito. Se ha enviado un correo de verificación.";
