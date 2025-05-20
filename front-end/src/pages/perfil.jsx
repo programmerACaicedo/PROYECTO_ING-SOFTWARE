@@ -27,6 +27,7 @@ const Perfil = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [tipoUsuario, setTipoUsuario] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -237,31 +238,33 @@ const Perfil = () => {
     setConfirmarEliminar(true);
   };
 
-const confirmarEliminacion = async () => {
-  try {
-    await eliminarCuenta(formData.id); // Pasar el ID del usuario al backend
-    setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      {
-        texto:
-          "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
-        tipo: "success",
-      },
-    ]);
-    setConfirmarEliminar(false);
-    localStorage.removeItem("token"); // Eliminar el token del almacenamiento local
-    setTimeout(() => navigate("/"), 2000); // Redirigir al usuario a la página principal
-  } catch (error) {
-    console.error("Error al eliminar cuenta:", error);
-    const errorMessage =
-      error.response?.data?.error || "Error al eliminar la cuenta";
-    setMensajes((prevMensajes) => [
-      ...prevMensajes,
-      { texto: errorMessage, tipo: "error" },
-    ]);
-    setConfirmarEliminar(false);
-  }
-};
+  const confirmarEliminacion = async () => {
+    setIsLoading(true);
+    setConfirmarEliminar(false); // Cerrar ventana emergente
+    try {
+      await eliminarCuenta(formData.id);
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        {
+          texto:
+            "Cuenta eliminada con éxito. Se ha enviado un correo de confirmación.",
+          tipo: "success",
+        },
+      ]);
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/"), 2000);
+    } catch (error) {
+      console.error("Error al eliminar cuenta:", error);
+      const errorMessage =
+        error.response?.data?.error || "Error al eliminar la cuenta";
+      setMensajes((prevMensajes) => [
+        ...prevMensajes,
+        { texto: errorMessage, tipo: "error" },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -273,6 +276,13 @@ const confirmarEliminacion = async () => {
 
   return (
     <div className={styles.perfilContainer}>
+      {/* Overlay para opacar la pantalla y spinner centrado */}
+      {isLoading && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.centeredSpinner}></div>
+        </div>
+      )}
+
       <header className={styles.header}>
         <span className={styles.iconMenu} onClick={toggleMenu}>
           ☰
@@ -291,26 +301,25 @@ const confirmarEliminacion = async () => {
           Perfil
         </button>
         {tipoUsuario === "propietario" && (
-        <button
-        onClick={() => {
-        navigate("/misAvisos");
-        closeMenu();
-        }}
-    
-        >
-        Mis avisos
-      </button>
-)}
-      {tipoUsuario === "propietario" && (
-      <button
-      onClick={() => {
-      navigate("/nuevo-aviso");
-      closeMenu();
-    }}
-  >
-    Nuevo Aviso
-  </button>
-)}
+          <button
+            onClick={() => {
+              navigate("/misAvisos");
+              closeMenu();
+            }}
+          >
+            Mis avisos
+          </button>
+        )}
+        {tipoUsuario === "propietario" && (
+          <button
+            onClick={() => {
+              navigate("/nuevo-aviso");
+              closeMenu();
+            }}
+          >
+            Nuevo Aviso
+          </button>
+        )}
         <button
           onClick={() => {
             navigate("/mensajes");
@@ -415,8 +424,16 @@ const confirmarEliminacion = async () => {
               <button
                 onClick={handleEliminarCuenta}
                 className={styles.btnEliminar}
+                disabled={isLoading}
               >
-                Eliminar Cuenta
+                {isLoading ? (
+                  <>
+                    Cargando...
+                    <span className={styles.spinner}></span>
+                  </>
+                ) : (
+                  "Eliminar Cuenta"
+                )}
               </button>
             </div>
           </div>
@@ -434,8 +451,19 @@ const confirmarEliminacion = async () => {
               <li>Tus conversaciones e interacciones previas en la plataforma.</li>
               <li>Todos tus datos personales, que serán eliminados o anonimizados.</li>
             </ul>
-            <button onClick={confirmarEliminacion}>Sí</button>
-            <button onClick={() => setConfirmarEliminar(false)}>No</button>
+            <button onClick={confirmarEliminacion} disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  Cargando...
+                  <span className={styles.spinner}></span>
+                </>
+              ) : (
+                "Sí"
+              )}
+            </button>
+            <button onClick={() => setConfirmarEliminar(false)} disabled={isLoading}>
+              No
+            </button>
           </div>
         )}
       </main>
