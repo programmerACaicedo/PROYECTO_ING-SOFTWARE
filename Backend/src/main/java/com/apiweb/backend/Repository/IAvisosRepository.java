@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import com.apiweb.backend.Model.AvisosModel;
 import com.apiweb.backend.Model.UbicacionAviso;
@@ -15,5 +16,6 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     void deleteByPropietarioId_UsuarioId(ObjectId usuarioId);
     List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
     List<AvisosModel> findByReporteIsNotNull();
-    List<AvisosModel> findByReporteIsNullOrReporteEstadoReporte(EstadoReporte estadoReporte, EstadoReporte estadoReporte2);
+    @Query("{ 'reporte': { $not: { $elemMatch: { 'estadoReporte': ?0 } } } }")
+    List<AvisosModel> findAvisosWithoutExcludedReports(EstadoReporte estado);
 }
