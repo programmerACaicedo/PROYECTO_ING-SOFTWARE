@@ -50,7 +50,7 @@ const OlvidoContraseña = () => {
       try {
           console.log("Enviando datos:", { correo, palabra_seguridad });
           //"https://fkzklx7z-8080.use2.devtunnels.ms/api/usuario/recuperar" // URL para funcionamiento con tunel
-          const response = await fetch("https://fkzklx7z-8080.use2.devtunnels.ms/api/usuario/recuperar", {
+          const response = await fetch("http://localhost:8080/api/usuario/recuperar", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ correo, palabra_seguridad: palabra_seguridad.trim().toLowerCase() }), // Normalizar antes de enviar

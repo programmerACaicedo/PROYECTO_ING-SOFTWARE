@@ -39,7 +39,7 @@ const RestablecerContraseña = () => {
     setLoading(true);
     try {
       // URL para funcionamiento con tunel
-      const response = await fetch("https://fkzklx7z-3000.use2.devtunnels.ms/api/usuario/restablecer-contraseña", {
+      const response = await fetch("http://localhost:8080/api/usuario/restablecer-contraseña", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, nuevaContraseña }),
