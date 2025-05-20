@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalificacionesServicios {
+public class CalificacionServicio {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId calificador;
-    private Double calificacion;
+    private Integer calificacion;
     private String comentario;
     private Instant fecha;
 }

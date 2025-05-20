@@ -211,6 +211,22 @@ export const listarAvisos = async () => {
     throw error;
   }
 };
+
+//conexion para eliminar aviso 
+export const eliminarAviso = async (id) => {
+  try {
+    const response = await api.delete(`/avisos/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar aviso:', {
+      message: error.message,
+      response: error.response ? error.response.data : null,
+      status: error.response ? error.response.status : null,
+    });
+    throw error;
+  }
+}
+
 export const registrarAcuerdo = async (idPropietario, acuerdo) => {
   try {
     const respuesta = await api.post(`/acuerdos/registar/${idPropietario}`, acuerdo, {

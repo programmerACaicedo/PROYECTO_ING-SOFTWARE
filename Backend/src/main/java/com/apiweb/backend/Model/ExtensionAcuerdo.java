@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExtensionAcuerdo {
+    private Instant fechaInicio;
     private Instant fechaFin;
     private String archivoContrato;
 }

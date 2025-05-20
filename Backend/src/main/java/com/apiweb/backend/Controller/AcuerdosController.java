@@ -1,9 +1,12 @@
 package com.apiweb.backend.Controller;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Model.AcuerdosModel;
 import com.apiweb.backend.Model.ExtensionAcuerdo;
+import com.apiweb.backend.Model.ENUM.EstadoAcuerdo;
 import com.apiweb.backend.Service.IAcuerdosService;
 
 @RestController
@@ -35,4 +39,12 @@ public class AcuerdosController {
         return new ResponseEntity<AcuerdosModel> (acuerdosService.cancelarAcuerdo(idAcuerdo, razonCancelacion),HttpStatus.OK);
     }
     
+    @GetMapping("/listarAcuerdosDeUnPropietario/{propietarioId}")
+    public ResponseEntity<List<AcuerdosModel>> listarAcuerdosDeUnPropietario (@PathVariable("propietarioId") ObjectId propietarioId) {
+        return new ResponseEntity<List<AcuerdosModel>>(acuerdosService.listarAcuerdosDeUnPropietario(propietarioId),HttpStatus.OK);
+    }
+    @GetMapping("/listarAcuerdosDeUnPropietarioAndEstado/{propietarioId}")
+    public ResponseEntity<List<AcuerdosModel>> listarAcuerdosDeUnPropietarioAndEstado (@PathVariable("propietarioId") ObjectId propietarioId,@RequestBody EstadoAcuerdo estado) {
+        return new ResponseEntity<List<AcuerdosModel>>(acuerdosService.listarAcuerdosDeUnPropietarioAndEstado(propietarioId, estado),HttpStatus.OK);
+    }
 }

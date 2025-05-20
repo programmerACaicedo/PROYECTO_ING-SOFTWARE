@@ -64,13 +64,13 @@ public class AvisosController {
     }
 
     @GetMapping("/listarSinReportes")
-    public ResponseEntity<List<AvisosModel>> listarAvisosSinReportes() {
-        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosSinReportes(), HttpStatus.OK);
+    public ResponseEntity<List<AvisosModel>> listarAvisosSinExluir() {
+        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosSinExluir(), HttpStatus.OK);
     }
 
-    @PutMapping("/actualizarEstadoReporteSiendoAdministrador/{id}")
-    public ResponseEntity<AvisosModel> actualizarEstadoReporteSiendoAdministrador(@PathVariable("id") ObjectId id,@RequestBody ReporteAviso reporte){
-        return new ResponseEntity<AvisosModel>(avisosService.actualizarEstadoReporteSiendoAdministrador(id, reporte), HttpStatus.OK);
+    @PutMapping("/decidirReporte/{idAviso}/{idReporte}")
+    public ResponseEntity<AvisosModel> decidirReporte(@PathVariable("idAviso") ObjectId idAviso,@PathVariable("idReporte") ObjectId idReporte ,@RequestBody ReporteAviso reporte){
+        return new ResponseEntity<AvisosModel>(avisosService.decidirReporte(idAviso, idReporte, reporte), HttpStatus.OK);
     }
 
     

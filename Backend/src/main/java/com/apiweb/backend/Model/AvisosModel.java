@@ -33,7 +33,7 @@ public class AvisosModel {
     private Double calificacion_prom;
     private Integer precio_mensual;
     private EstadoAviso estado;
-    private ReporteAviso reporte;
+    private ArrayList<ReporteAviso> reporte = new ArrayList<ReporteAviso>();
     public void setImagenes(List<String> imagenes) {
         this.imagenes = (ArrayList<String>) imagenes;
     }
