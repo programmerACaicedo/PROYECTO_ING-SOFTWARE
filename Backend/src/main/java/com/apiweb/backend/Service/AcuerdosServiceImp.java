@@ -1,5 +1,6 @@
 package com.apiweb.backend.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -55,13 +56,10 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (aviso.getEstado() != EstadoAviso.Disponible && aviso.getEstado() != EstadoAviso.EnProceso) {
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
         }
-        Optional<AcuerdosModel> acuerdoConEseAvisoActivoYaExiste = acuerdosRepository.findByAvisosIdAndEstado(acuerdo.getAvisosId(),EstadoAcuerdo.Activo);
-        if (acuerdoConEseAvisoActivoYaExiste.isPresent()) {
-            throw new InvalidAcuerdoConfigurationException("Ya existe un acuerdo activo para este aviso. ");
-        }
 
 
-        if (acuerdo.getCalificacionServicio() != null && !acuerdo.getCalificacionServicio().isEmpty()) {
+
+        if (acuerdo.getCalificacionServicio() != null ) {
             throw new InvalidUserRoleException("El propietario no puede calificar el servicio");
         }
         if(acuerdo.getFechaFin().isBefore(acuerdo.getFechaInicio())){
@@ -83,6 +81,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
         aviso.setEstado(EstadoAviso.Arrendado);
         acuerdo.setEstado(EstadoAcuerdo.Activo);
+        acuerdo.setPropietarioId(aviso.getPropietarioId().getUsuarioId());
         return acuerdosRepository.save(acuerdo);
     }
 
@@ -100,16 +99,22 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }//Validacion del acuerdo sin los cambios aún
 
         if (acuerdoActualizar.getExtensiones() == null || acuerdoActualizar.getExtensiones().isEmpty()) {
-            if (extension.getFechaFin().isBefore(acuerdoActualizar.getFechaFin())) {
-                throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la anterior fecha fin original. ");
-            } else {
+            if (extension.getFechaInicio().isBefore(acuerdoActualizar.getFechaInicio())) {
+                throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la fecha fin del acuerdo. ");
+            }
+            if (extension.getFechaFin().isBefore(extension.getFechaInicio())) {
+                throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la nueva fecha inicio extensión. ");
+            } 
+        } else {
+                if (extension.getFechaFin().isBefore(extension.getFechaInicio())) {
+                    throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la nueva fecha inicio extensión. ");
+                }
                 for(ExtensionAcuerdo extensionAcuer : acuerdoActualizar.getExtensiones()){
-                    if (extension.getFechaFin().isBefore(extensionAcuer.getFechaFin())) {
-                        throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la anterior fecha fin extension. ");
+                    if (extension.getFechaInicio().isBefore(extensionAcuer.getFechaFin())) {
+                        throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la ultima fecha fin de las extensiones ya creadas. ");
                     }
                 }
             }
-        }
 
         return acuerdosRepository.save(acuerdoActualizar);
 
@@ -131,4 +136,17 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
         return acuerdosRepository.save(acuerdo);
     }
+
+    @Override
+    public List<AcuerdosModel> listarAcuerdosDeUnPropietario (ObjectId propietarioId){
+        List<AcuerdosModel> acuerdos = acuerdosRepository.findByPropietarioId(propietarioId);
+        return acuerdos;
+    }
+
+    @Override
+    public List<AcuerdosModel> listarAcuerdosDeUnPropietarioAndEstado (ObjectId propietarioId, EstadoAcuerdo estado){
+        List<AcuerdosModel> acuerdos = acuerdosRepository.findByPropietarioIdAndEstado(propietarioId, estado);
+        return acuerdos;
+    }
+
 }

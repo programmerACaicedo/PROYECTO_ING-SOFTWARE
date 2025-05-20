@@ -27,7 +27,7 @@ public class MensajeriaContoller {
         return new ResponseEntity<MensajeriaModel> (MensajeriaService.crearChat(chat),HttpStatus.CREATED);
     }
 
-    @PutMapping("/mandarMmensaje/{idMensajeria}")
+    @PutMapping("/mandarMensaje/{idMensajeria}")
     public ResponseEntity<MensajeriaModel> mandarMensaje(@PathVariable("idMensajeria") ObjectId idMensajeria,@RequestBody MensajesMensajeria mensajes) {
         return new ResponseEntity<MensajeriaModel>(MensajeriaService.mandarMensaje(idMensajeria, mensajes),HttpStatus.OK);
     }

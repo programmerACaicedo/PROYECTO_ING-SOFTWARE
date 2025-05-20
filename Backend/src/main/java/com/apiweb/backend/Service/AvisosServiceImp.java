@@ -44,7 +44,7 @@ public class AvisosServiceImp implements IAvisosService{
         if (usuario.getTipo() != TipoUsuario.propietario){
             throw new InvalidUserRoleException("Solamente un propietario puede crear un aviso.");
         }
-        if (aviso.getReporte() != null) {
+        if (aviso.getReporte() != null && !aviso.getReporte().isEmpty()) {
             throw new InvalidAvisoConfigurationException("El aviso no puede tener un reporte al momento de crearse.");
         }
         if (aviso.getCalificacion_prom() != null && aviso.getCalificacion_prom() != 0) {
@@ -135,12 +135,13 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
-        if (aviso.getReporte() != null) {
-            if (aviso.getReporte().getEstadoReporte() == EstadoReporte.Excluido) {
-                aviso.getReporte().setEstadoReporte(EstadoReporte.AvisoActualizado);
-                aviso.getReporte().setComentario("El aviso fue actualizado por el propietario.");
-            }
+        if (aviso.getReporte() != null && !aviso.getReporte().isEmpty()) {
+            aviso.getReporte().stream().filter(reporte -> reporte.getEstadoReporte() == EstadoReporte.Excluido).forEach(reporte -> {
+                reporte.setEstadoReporte(EstadoReporte.AvisoActualizado);
+                reporte.setComentario("El aviso fue actualizado por el propietario para cumplir con las normas.");
+            });
         }
+        
         
         
         
@@ -214,7 +215,7 @@ public class AvisosServiceImp implements IAvisosService{
         
         reporte.setFecha(Instant.now());
         reporte.setEstadoReporte(EstadoReporte.Reportado);
-        avisoActualizado.setReporte(reporte);
+        avisoActualizado.getReporte().add(reporte);
 
         //Notificacion al propietario
         
@@ -233,8 +234,8 @@ public class AvisosServiceImp implements IAvisosService{
 
     @Override
     @Transactional
-    public AvisosModel actualizarEstadoReporteSiendoAdministrador(ObjectId id, ReporteAviso reporte) {
-        Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
+    public AvisosModel decidirReporte(ObjectId idAviso,ObjectId idReporte ,ReporteAviso reporte) {
+        Optional<AvisosModel> avisoExiste = avisosRepository.findById(idAviso);
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe.");
         }
@@ -248,51 +249,87 @@ public class AvisosServiceImp implements IAvisosService{
         if (usuarioAdministrador.getTipo() != TipoUsuario.administrador) {
             throw new InvalidUserRoleException("El usuario no es un administrador.");
         }
-        if (reporte.getEstadoReporte() == null) {
-            throw new InvalidAvisoConfigurationException("El estado del reporte no puede estar vacío.");
+        
+        Optional<ReporteAviso> optReporte = aviso.getReporte().stream()
+            .filter(r -> r.getIdReporte().equals(idReporte))
+            .findFirst();
+        if (!optReporte.isPresent()) {
+            throw new ResourceNotFoundException("El reporte especificado no existe en el aviso.");
         }
-        if (reporte.getEstadoReporte() == EstadoReporte.Reportado) {
-            throw new InvalidAvisoConfigurationException("El administrador no tiene necesidad de reportar, el toma la desicion de excluir o de dejar el aviso.");
-        } 
-        if (reporte.getMotivo() != null) {
-            throw new InvalidAvisoConfigurationException("El administrador no tiene necesidad de poner un motivo, el toma la desicion de excluir o de dejar el aviso.");
-        }
-        if (reporte.getFecha() != null) {
-            throw new InvalidAvisoConfigurationException("La fecha se actualizara automaticamente al momento de que el administrador actualiza el estado del reporte.");
-        }
-        if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
-            if (reporte.getComentario() == null || reporte.getComentario().isBlank()) {
-                throw new InvalidAvisoConfigurationException("El administrador tiene que poner un comentario justificando porque exluyo el aviso.");
+        ReporteAviso reporteSeleccionado = optReporte.get();
+
+        if (reporte.getEstadoReporte() == EstadoReporte.Invalido) {
+            // Se marca el reporte como inválido
+            reporteSeleccionado.setEstadoReporte(EstadoReporte.Invalido);
+            reporteSeleccionado.setFecha(Instant.now());
+            
+            // Notificar al usuario que realizó el reporte
+            Optional<UsuariosModel> usuarioReportaOpt = usuariosRepository.findById(reporteSeleccionado.getUsuarioReporta());
+            if (usuarioReportaOpt.isPresent()) {
+                    UsuariosModel usuarioReporto = usuarioReportaOpt.get();
+                    Notificaciones notificacionReporto = new Notificaciones();
+                    notificacionReporto.setRemitente(usuarioAdministrador.getId());
+                    notificacionReporto.setContenido("El administrador " + usuarioAdministrador.getNombre() +" ha marcado su reporte sobre el aviso '" + aviso.getNombre() + "' como inválido.");
+                    notificacionReporto.setFecha(Instant.now());
+                    notificacionReporto.setTipo(TipoNotificacion.Mensaje);
+                    notificacionReporto.setLeido(false);
+                    usuarioReporto.getNotificaciones().add(notificacionReporto);
+                    usuariosRepository.save(usuarioReporto);
             }
+        } else if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
+            // Validar que se proporcione un comentario justificativo
+            if (reporte.getComentario() == null || reporte.getComentario().isBlank()) {
+                throw new InvalidAvisoConfigurationException("El administrador debe proporcionar un comentario justificando la exclusión.");
+            }
+            
+            // Filtrar y actualizar TODOS los reportes que estén en estado Reportado
+            List<ReporteAviso> reportesAActualizar = aviso.getReporte().stream()
+                    .filter(r -> r.getEstadoReporte() == EstadoReporte.Reportado)
+                    .toList();
+            if (reportesAActualizar.isEmpty()) {
+                throw new InvalidAvisoConfigurationException("No hay reportes en estado Reportado para actualizar.");
+            }
+            
+            for (ReporteAviso rep : reportesAActualizar) {
+                rep.setEstadoReporte(EstadoReporte.Excluido);
+                rep.setFecha(Instant.now());
+                rep.setComentario(reporte.getComentario());
+            }
+            
+            // Notificar al propietario del aviso sobre la exclusión
+            Optional<UsuariosModel> usuarioPropietarioOpt = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
+            if (usuarioPropietarioOpt.isPresent()) {
+                UsuariosModel propietario = usuarioPropietarioOpt.get();
+                Notificaciones notificacionPropietario = new Notificaciones();
+                notificacionPropietario.setRemitente(usuarioAdministrador.getId());
+                notificacionPropietario.setContenido("El administrador " + usuarioAdministrador.getNombre() +
+                        " ha excluido su aviso '" + aviso.getNombre() + "' por la siguiente razón: " + reporte.getComentario());
+                notificacionPropietario.setFecha(Instant.now());
+                notificacionPropietario.setTipo(TipoNotificacion.Mensaje);
+                notificacionPropietario.setLeido(false);
+                propietario.getNotificaciones().add(notificacionPropietario);
+                usuariosRepository.save(propietario);
+            }
+            
+            // Notificar a cada usuario que realizó un reporte (sólo para aquellos que estaban en Reportado)
+            reportesAActualizar.forEach(rep -> {
+                Optional<UsuariosModel> usuarioReportaOpt = usuariosRepository.findById(rep.getUsuarioReporta());
+                if (usuarioReportaOpt.isPresent()) {
+                    UsuariosModel usuarioReporto = usuarioReportaOpt.get();
+                    Notificaciones notificacionReporto = new Notificaciones();
+                    notificacionReporto.setRemitente(usuarioAdministrador.getId());
+                    notificacionReporto.setContenido("El administrador " + usuarioAdministrador.getNombre() +" ha decidido excluir el aviso '" + aviso.getNombre() + "' basándose en su reporte.");
+                    notificacionReporto.setFecha(Instant.now());
+                    notificacionReporto.setTipo(TipoNotificacion.Mensaje);
+                    notificacionReporto.setLeido(false);
+                    usuarioReporto.getNotificaciones().add(notificacionReporto);
+                    usuariosRepository.save(usuarioReporto);
+                }
+            });
+        } else {
+        throw new InvalidAvisoConfigurationException("La decisión debe ser Invalido o Excluido.");
         }
 
-        //Notificacion al propietario si se excluye un aviso
-        Optional<UsuariosModel> usuarioPropietario = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
-        UsuariosModel propietario = usuarioPropietario.get();
-        if (reporte.getEstadoReporte() == EstadoReporte.Excluido) {
-            Notificaciones notificacionPropietario = new Notificaciones();
-            notificacionPropietario.setRemitente(usuarioAdministrador.getId());
-            notificacionPropietario.setContenido("El administrador " + usuarioAdministrador.getNombre() + " ha excluido su aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + " por la siguiente razón: "+ reporte.getComentario() +".");
-            notificacionPropietario.setFecha(Instant.now());
-            notificacionPropietario.setTipo(TipoNotificacion.Mensaje);
-            notificacionPropietario.setLeido(false);
-            propietario.getNotificaciones().add(notificacionPropietario);
-            usuariosRepository.save(propietario);
-        }
-
-        //Notificación al usuario que hizo el reporte, sobre la decisión del administrador
-        Optional<UsuariosModel> usuarioReporta = usuariosRepository.findById(reporte.getUsuarioReporta());
-        UsuariosModel usuarioReporto = usuarioReporta.get();
-        Notificaciones notificacionQuienReporto = new Notificaciones();
-        notificacionQuienReporto.setRemitente(usuarioAdministrador.getId());
-        notificacionQuienReporto.setContenido("El administrador " + usuarioAdministrador.getNombre() + " ha tomado la siguiente decisión sobre su reporte del aviso llamado: " + aviso.getNombre() + " en la ubicacion: " + aviso.getUbicacion() + ": " + reporte.getEstadoReporte() + ".");
-        notificacionQuienReporto.setFecha(Instant.now());
-        notificacionQuienReporto.setTipo(TipoNotificacion.Mensaje);
-        notificacionQuienReporto.setLeido(false);
-        usuarioReporto.getNotificaciones().add(notificacionQuienReporto);
-        usuariosRepository.save(usuarioReporto);   
-        reporte.setFecha(Instant.now());
-        aviso.setReporte(reporte);
 
         return avisosRepository.save(aviso);
     }
