@@ -174,13 +174,8 @@ const InteriorInteresado = () => {
                 No se encontraron avisos. Ajusta tus filtros.
               </p>
             ) : (
-              <div className={styles.avisosList}>
-                {publicaciones
-                  .filter(pub =>
-                  !pub.reporte ||
-                  (pub.reporte.estadoReporte !== "Excluido" && pub.reporte.estadoReporte !== "Invalido")
-                )
-                .map((pub) => (
+              <div className={styles.publicacionesList}>
+                {filteredPubs.map((pub) => (
                   <div
                     key={pub.id}
                     className={styles.publicacion}
