@@ -5,9 +5,16 @@ import { listarAvisosPropietario, obtenerUsuario } from "../services/conexiones"
 
 const MisAvisos = () => {
   const [publicaciones, setPublicaciones] = useState([]);
+  const [filteredPublicaciones, setFilteredPublicaciones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [filtros, setFiltros] = useState({
+    tipo: "",
+    precioMin: "",
+    precioMax: "",
+    disponibilidad: "",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,8 +27,8 @@ const MisAvisos = () => {
           return;
         }
         const avisos = await listarAvisosPropietario(usuario.id);
-        console.log("Avisos obtenidos:", avisos);
         setPublicaciones(avisos);
+        setFilteredPublicaciones(avisos);
       } catch (error) {
         console.error("Error al cargar avisos:", error);
         setError("No se pudieron cargar tus avisos. Intenta de nuevo más tarde.");
@@ -32,6 +39,40 @@ const MisAvisos = () => {
 
     cargarAvisos();
   }, [navigate]);
+
+  // Filtro de búsqueda
+  useEffect(() => {
+    let result = [...publicaciones];
+
+    // Filtro por tipo
+    if (filtros.tipo) {
+      result = result.filter((p) =>
+        p.tipo?.toLowerCase() === filtros.tipo.toLowerCase()
+      );
+    }
+
+    // Filtro por precio
+    const minPrice = filtros.precioMin
+      ? parseFloat(filtros.precioMin.replace(/[^0-9.]/g, "")) || 0
+      : 0;
+    const maxPrice = filtros.precioMax
+      ? parseFloat(filtros.precioMax.replace(/[^0-9.]/g, "")) || Infinity
+      : Infinity;
+
+    result = result.filter((p) => {
+      const precio = typeof p.precio_mensual === "string"
+        ? parseFloat(p.precio_mensual.replace(/[^0-9.]/g, "")) || 0
+        : Number(p.precio_mensual) || 0;
+      return precio >= minPrice && precio <= maxPrice;
+    });
+
+    // Filtro por disponibilidad
+    if (filtros.disponibilidad) {
+      result = result.filter((p) => p.estado === filtros.disponibilidad);
+    }
+
+    setFilteredPublicaciones(result);
+  }, [publicaciones, filtros]);
 
   const handlePublicationClick = (pubId) => navigate(`/publicacion/${pubId}`);
 
@@ -77,23 +118,72 @@ const MisAvisos = () => {
         </button>
       </div>
 
+      {/* Filtros de búsqueda */}
+      <br />
+      <div className={styles.filters}>
+        <select
+          value={filtros.tipo}
+          onChange={(e) =>
+            setFiltros((f) => ({ ...f, tipo: e.target.value }))
+          }
+        >
+          <option value="">Tipo</option>
+          <option value="Casa">Casa</option>
+          <option value="Apartamento">Apartamento</option>
+          <option value="Bodega">Bodega</option>
+          <option value="Parqueadero">Parqueadero</option>
+          <option value="Habitacion">Habitacion</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder="Precio min"
+          value={filtros.precioMin}
+          onChange={(e) =>
+            setFiltros((f) => ({ ...f, precioMin: e.target.value }))
+          }
+        />
+        <input
+          type="text"
+          placeholder="Precio max"
+          value={filtros.precioMax}
+          onChange={(e) =>
+            setFiltros((f) => ({ ...f, precioMax: e.target.value }))
+          }
+        />
+
+        <select
+          value={filtros.disponibilidad}
+          onChange={(e) =>
+            setFiltros((f) => ({ ...f, disponibilidad: e.target.value }))
+          }
+        >
+          <option value="">Disponibilidad</option>
+          <option value="Disponible">Inmediata</option>
+          <option value="EnProceso">Próximamente</option>
+          <option value="Arrendado">Arrendado</option>
+        </select>
+      </div>
+
       <section className={styles.avisosSection}>
         <h2>Tus Avisos</h2>
         {isLoading ? (
           <p className={styles.loading}>Cargando avisos...</p>
         ) : error ? (
           <p className={styles.error}>{error}</p>
-        ) : publicaciones.length > 0 ? (
+        ) : publicaciones.length === 0 ? (
+          <p className={styles.noAvisos}>No tienes avisos publicados.</p>
+        ) : filteredPublicaciones.length === 0 ? (
+          <p className={styles.noAvisos}>No tienes avisos publicados con esos criterios. Ajusta tus filtros.</p>
+        ) : (
           <div className={styles.avisosList}>
-            {publicaciones.map((pub) => (
+            {filteredPublicaciones.map((pub) => (
               <div
                 key={pub.id}
                 className={styles.avisoCard}
                 onClick={() => handlePublicationClick(pub.id)}
               >
                 <h3>{pub.nombre || "Sin título"}</h3>
-                                    
-                {/* Solo mostrar imagen de portada */}
                 {pub.imagenes?.length > 0 && (
                   <div className={styles.portadaWrapper}>
                     <img
@@ -104,21 +194,17 @@ const MisAvisos = () => {
                     />
                   </div>
                 )}
-                      
-                <h3>{pub.nombre}</h3>
-                <p>Precio: ${pub.precio_mensual.toLocaleString()}</p>
+                <p>Precio: {pub.precio_mensual ? `$${pub.precio_mensual.toLocaleString()}` : "No especificado"}</p>
                 <p>Descripción: {pub.descripcion}</p>
-              {/* Mostrar "Estado Reporte" si hay un reporte, de lo contrario mostrar "Estado" */}
-              {!pub.reporte || pub.reporte.estadoReporte === "AvisoActualizado" ? (
-                <p>Estado: {pub.estado}</p>
-              ) : (
-                <p>Estado Reporte: {pub.reporte.estadoReporte}</p>
-              )}
+                {/* Mostrar "Estado Reporte" si hay un reporte, de lo contrario mostrar "Estado" */}
+                {!pub.reporte || pub.reporte.estadoReporte === "AvisoActualizado" ? (
+                  <p>Estado: {pub.estado}</p>
+                ) : (
+                  <p>Estado Reporte: {pub.reporte.estadoReporte}</p>
+                )}
               </div>
             ))}
           </div>
-        ) : (
-          <p className={styles.noAvisos}>No tienes avisos publicados.</p>
         )}
       </section>
     </div>

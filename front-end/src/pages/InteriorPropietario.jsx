@@ -141,10 +141,11 @@ const InteriorPropietario = () => {
               }
             >
               <option value="">Tipo</option>
-              <option value="casa">Casa</option>
-              <option value="apartamento">Apartamento</option>
-              <option value="bodega">Bodega</option>
-              <option value="garaje">Garaje</option>
+              <option value="Casa">Casa</option>
+              <option value="Apartamento">Apartamento</option>
+              <option value="Bodega">Bodega</option>
+              <option value="Parqueadero">Parqueadero</option>
+              <option value="Habitacion">Habitacion</option>
             </select>
 
             <input
@@ -178,7 +179,7 @@ const InteriorPropietario = () => {
           </div>
 
           <section className={styles.publicaciones}>
-            <h2>Publicaciones</h2>
+            <h2>Avisos</h2>
             {filteredPublications.length === 0 ? (
               <p className={styles.noResults}>
                 No se encontraron avisos. Ajusta tus filtros.
