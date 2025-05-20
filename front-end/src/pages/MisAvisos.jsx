@@ -166,7 +166,6 @@ const MisAvisos = () => {
       </div>
 
       <section className={styles.avisosSection}>
-        <h2>Tus Avisos</h2>
         {isLoading ? (
           <p className={styles.loading}>Cargando avisos...</p>
         ) : error ? (
