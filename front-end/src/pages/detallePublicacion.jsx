@@ -4,6 +4,7 @@ import styles from "../styles/detallePublicacion.module.css";
 import { listarAvisos } from "../services/conexiones";
 import { reportarAviso } from "../services/conexiones";
 import { obtenerAcuerdoPorAviso } from "../services/conexiones";
+import { eliminarAviso } from "../services/conexiones";
 
 
 const DetallePublicacion = () => {
@@ -67,6 +68,19 @@ const DetallePublicacion = () => {
   };
   fetchAcuerdo();
 }, [id]);
+
+const handleEliminar = async () => {
+  const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este aviso?");
+  if (!confirmacion) return;
+
+  try {
+    await eliminarAviso(publicacion.id);
+    alert("Aviso eliminado con éxito");
+    navigate("/propietario");
+  } catch (error) {
+    alert("Error al eliminar el aviso");
+  }
+};
 
 const handleEnviarReporte = async (e) => {
   e.preventDefault();
@@ -240,13 +254,15 @@ const handleEnviarReporte = async (e) => {
           <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
           <p><strong>Estado:</strong> {publicacion.estado}</p>
           <div className={styles.botonesAccion}>
-            {tipoUsuario === "interesado" && (
+           
               <button onClick={handleNotificar}>Notificar arrendatario</button>
-            )}
+       
             {tipoUsuario === "propietario" && (
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
-            <button onClick={() => setMostrarModal(true)}>Reportar</button>
+            <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
+              Reportar
+              </button>
 
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <>
@@ -261,8 +277,11 @@ const handleEnviarReporte = async (e) => {
                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
                    Modificar Acuerdo
                  </button>
-               )}
-             </>
+                     )}
+                     <button onClick={handleEliminar} className={styles.botonEliminar}>
+                       Eliminar Publicación
+                     </button>
+                   </>         
            )}
 
             
