@@ -268,7 +268,6 @@ const PublicarAviso = () => {
                     className={styles.removeImageButton}
                     onClick={() => handleRemoveImage(index)}
                   >
-                    ×
                   </button>
                 </div>
               ))}
