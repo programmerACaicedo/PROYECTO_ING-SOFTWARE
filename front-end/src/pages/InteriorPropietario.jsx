@@ -172,7 +172,7 @@ const InteriorPropietario = () => {
             >
               <option value="">Disponibilidad</option>
               <option value="Disponible">Inmediata</option>
-              <option value="En proceso">Próximamente</option>
+              <option value="EnProceso">Próximamente</option>
               <option value="Arrendado">Arrendado</option>
             </select>
           </div>
