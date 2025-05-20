@@ -16,7 +16,7 @@ public interface IAvisosService {
     public AvisosModel decidirReporte(ObjectId idAviso,ObjectId idReporte ,ReporteAviso reporte);
     public List<AvisosModel> listarAvisos(); //Este get es para visualizar todos los avisos sin importar si esta reportado o no (para el administrador)
     public List<AvisosModel> listarAvisosPropietario(ObjectId propietarioId); //Este get es para que los propietarios puedan ver sus publicaciones creadas
-    public List<AvisosModel> listarAvisosConReportes(); //Este get es para administradores
-    public List<AvisosModel> listarAvisosSinReportes(); //Este get es para mostrar en la pagina principal todos los avisos que no tienen reportes
+    public List<AvisosModel> listarAvisosConReportes(); //Cambiar metodo por cambios en el backend
+    public List<AvisosModel> listarAvisosSinExluir(); //Este get es para mostrar en la pagina principal todos los avisos que no estan excluidos, no esta testeado en postman
     public List<AvisosModel> filtrarAvisos(String tipo, Integer precioMin, Integer precioMax, String disponibilidad);
 }

@@ -228,7 +228,7 @@ public class AvisosServiceImp implements IAvisosService{
     }
     
     @Override
-    public List<AvisosModel> listarAvisosSinReportes() {
+    public List<AvisosModel> listarAvisosSinExluir() {
         List<AvisosModel> avisosNoExcluidos = avisosRepository.findAvisosWithoutExcludedReports(EstadoReporte.Excluido);
         return avisosNoExcluidos; 
     }

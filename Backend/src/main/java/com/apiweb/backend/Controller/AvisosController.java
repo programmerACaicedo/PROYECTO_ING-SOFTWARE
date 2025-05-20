@@ -64,8 +64,8 @@ public class AvisosController {
     }
 
     @GetMapping("/listarSinReportes")
-    public ResponseEntity<List<AvisosModel>> listarAvisosSinReportes() {
-        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosSinReportes(), HttpStatus.OK);
+    public ResponseEntity<List<AvisosModel>> listarAvisosSinExluir() {
+        return new ResponseEntity<List<AvisosModel>>(avisosService.listarAvisosSinExluir(), HttpStatus.OK);
     }
 
     @PutMapping("/decidirReporte/{idAviso}/{idReporte}")
