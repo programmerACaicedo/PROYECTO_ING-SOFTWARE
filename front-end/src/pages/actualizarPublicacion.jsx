@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../styles/actualizarPublicacion.module.css";
-import { listarAvisos, actualizarAviso, subirImagenACloudinary } from "../services/conexiones";
+import { listarSinReportes, actualizarAviso, subirImagenACloudinary } from "../services/conexiones";
 
 const ActualizarPublicacion = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const ActualizarPublicacion = () => {
   useEffect(() => {
     const fetchAviso = async () => {
       try {
-        const avisos = await listarAvisos();
+        const avisos = await listarSinReportes();
         const aviso = avisos.find(a => String(a.id) === String(id));
         if (aviso) {
           setFormData({

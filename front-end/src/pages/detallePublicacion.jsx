@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../styles/detallePublicacion.module.css";
-import { listarAvisos } from "../services/conexiones";
+import { listarSinReportes } from "../services/conexiones";
 import { reportarAviso } from "../services/conexiones";
 import { obtenerAcuerdoPorAviso } from "../services/conexiones";
 import { eliminarAviso } from "../services/conexiones";
@@ -29,7 +29,7 @@ const DetallePublicacion = () => {
   useEffect(() => {
     const fetchPublicacion = async () => {
       try {
-        const avisos = await listarAvisos();
+        const avisos = await listarSinReportes();
         const encontrada = avisos.find((p) => String(p.id) === String(id));
         setPublicacion(encontrada || null);
       } catch (error) {

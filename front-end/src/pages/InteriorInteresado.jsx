@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/interiorInteresado.module.css";
-import { obtenerUsuario, listarAvisos } from "../services/conexiones";
+import { obtenerUsuario, listarSinReportes } from "../services/conexiones";
 
 const InteriorInteresado = () => {
   const [isPropietario, setIsPropietario] = useState(false);
@@ -37,7 +37,7 @@ const InteriorInteresado = () => {
       try {
         const usuario = await obtenerUsuario();
         setIsPropietario(usuario.tipo === "propietario");
-        const avisos = await listarAvisos();
+        const avisos = await listarSinReportes();
         setPublicaciones(avisos);
         setFilteredPubs(avisos);
       } catch (error) {
