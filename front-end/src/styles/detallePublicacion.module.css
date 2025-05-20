@@ -139,11 +139,13 @@ body {
 }
 
 .botonReportar {
+  align-items: center; 
   padding: 10px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   background-color: #dc3545;
+  width: 200px;
 
 }
 
@@ -270,11 +272,15 @@ body {
 
 /* Botones de acción */
 .botonesAccion {
+  align-items: center; 
+  justify-content: center;
   display: flex;
   gap: 1rem;
 }
 
 .botonesAccion button {
+  align-items: center; 
+  justify-content: center;
   padding: 10px 16px;
   border: none;
   border-radius: 4px;

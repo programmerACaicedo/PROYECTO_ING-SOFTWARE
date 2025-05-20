@@ -254,15 +254,20 @@ const handleEnviarReporte = async (e) => {
           <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
           <p><strong>Estado:</strong> {publicacion.estado}</p>
           <div className={styles.botonesAccion}>
-           
-              <button onClick={handleNotificar}>Notificar arrendatario</button>
+
+           {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
+           <button onClick={handleNotificar}>Notificar arrendatario</button>
+          )}
        
-            {tipoUsuario === "propietario" && (
+            {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId &&  (
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
+
+            {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
             <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
               Reportar
               </button>
+            )}
 
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <>
