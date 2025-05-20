@@ -5,7 +5,7 @@ import { listarSinReportes } from "../services/conexiones";
 import { reportarAviso } from "../services/conexiones";
 import { obtenerAcuerdoPorAviso } from "../services/conexiones";
 import { eliminarAviso } from "../services/conexiones";
-
+import { jwtDecode} from "jwt-decode";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
@@ -116,6 +116,27 @@ const handleEnviarReporte = async (e) => {
   }
 };
 
+const handleInicioClick = () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const usuario = jwtDecode(token);
+    if (usuario.tipo === "propietario") {
+      navigate("/propietario");
+    } else if (usuario.tipo === "interesado") {
+      navigate("/interesado");
+    }
+  } catch (error) {
+    console.error("Error al decodificar el token:", error);
+    navigate("/login");
+  }
+  setIsMenuOpen(false);
+};
+
   const handleNotificar = (e) => {
     e.preventDefault();
     if (!publicacion) return;
@@ -191,15 +212,8 @@ const handleEnviarReporte = async (e) => {
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
-      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button
-          onClick={() => {
-            navigate("/propietario");
-            closeMenu();
-          }}
-        >
-          Inicio
-        </button>
+        <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
+            <button onClick={handleInicioClick}>Inicio</button>
         <button
           onClick={() => {
             navigate("/perfil");
