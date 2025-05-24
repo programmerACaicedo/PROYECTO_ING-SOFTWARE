@@ -177,9 +177,8 @@ body {
 
 /* Área de imagen */
 .imagenPreview {
-  width: 100%;
-  max-width: 500px;
-  height: 500px;
+  height: 67vh;
+  width: 300px;
   padding: 1rem;
   background-color: #fff;
   border: 2px dashed #007bff;
@@ -198,6 +197,10 @@ body {
   border: 1px solid #007bff;
   object-fit: cover;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Indicar que es interactiva */
+}
+
+.imageGallery img {
   cursor: pointer;
 }
 
@@ -222,24 +225,29 @@ body {
 /* Botón de eliminar imagen */
 .removeImageButton {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: #dc3545;
-  color: white;
+  top: -12px;
+  right: -12px;
+  width: 32px;
+  height: 32px;
+  background: #e53935;
+  color: #fff;
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  font-size: 1.5rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: background 0.2s;
+  z-index: 2;
   line-height: 1;
+  padding: 0;
 }
 
 .removeImageButton:hover {
-  background-color: #c82333;
+  background: #b71c1c;
 }
 
 /* Mensaje si no hay imagen */
