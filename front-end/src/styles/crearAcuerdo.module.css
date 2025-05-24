@@ -1,17 +1,17 @@
 /* Contenedor principal */
-.publicarAcuerdoContainer {
+.acuerdoContainer {
   margin: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;   /* Centra verticalmente */
+  align-items: center;       /* Centra horizontalmente */
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
   overflow-x: hidden;
   width: 100vw;
-  min-height: 100vh;
-  justify-content: center;    /* Centra verticalmente */
-  align-items: center;        /* Centra horizontalmente */
+  overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
+  height: 100vh; /* Ocupa toda la altura de la ventana */
 }
-
 
 /* Header */
 .headerAcuerdo {
@@ -63,13 +63,26 @@
   display: flex;
   animation: slideIn 0.4s ease forwards;
 }
+.menuClosed {
+  animation: slideOut 1s ease forwards;
+  display: flex;
+}
 
+/*porque se le puso eso*/
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
   }
   to {
     transform: translateX(0);
+  }
+}
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
   }
 }
 
@@ -93,6 +106,24 @@
   background-color: #007bff;
   color: white;
 }
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  flex-wrap: wrap;
+}
+
+
+/* Título de sección */
+.seccionTitulo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
 
 /* Formulario */
 .formAcuerdo {
@@ -100,15 +131,12 @@
   color: #000000c1;
   width: 100%;
   max-width: 500px;
-  /* Elimina el margin-top/margin-bottom si lo tienes */
-  margin: 0 auto;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
   background-color: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 2px 8px #00000022;
 }
 
 .campoForm {

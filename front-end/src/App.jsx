@@ -24,7 +24,7 @@ import Mensajes from "./pages/mensajes";
 import RestablecerContraseña from "./pages/RestablecerContrasena";
 import MisAvisos from "./pages/MisAvisos";// Asegúrate de que esta ruta sea correcta
 import VerReportes from "./pages/verReportes";
-import CrearAcuerdo from "./pages/crearAcuerdo";
+import CrearAcuerdo from "./pages/crearAcuerdo";//
 import ModificarAcuerdo from "./pages/modificarAcuerdo";
 import MisAcuerdos from "./pages/misAcuerdos";
 

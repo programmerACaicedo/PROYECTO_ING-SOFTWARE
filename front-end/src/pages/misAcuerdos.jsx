@@ -32,17 +32,24 @@ const MisAcuerdos = () => {
 
   const handleAcuerdoClick = (acuerdoId) => navigate(`/acuerdo/modificar/${acuerdoId}`);
 
+    const handleLogout = () => {
+    setIsMenuOpen(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("sesionActiva");
+    navigate("/login");
+  };
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div className={styles.misAvisosPage}>
+    <div className={styles.misAcuerdosPage}>
       <header className={styles.header}>
         <div className={styles.headerContainer}>
           <span className={styles.iconMenu} onClick={toggleMenu}>
             ☰
           </span>
           <div className={styles.title}>
-            <h1>Mis Acuerdos 📄</h1>
+            <h1>Servicios de Arrendamientos</h1>
           </div>
         </div>
       </header>
@@ -56,6 +63,9 @@ const MisAcuerdos = () => {
         </button>
         <button onClick={() => { setIsMenuOpen(false); navigate("/MisAvisos"); }}>
           Mis Avisos
+        </button>
+        <button onClick={handleLogout}>
+          Cerrar Sesión
         </button>
       </div>
 

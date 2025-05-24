@@ -98,7 +98,7 @@ const MisAvisos = () => {
             ☰
           </span>
           <div className={styles.title}>
-            <h1>Mis Avisos 🏘️</h1>
+            <h1>Servicios de Arrendamientos</h1>
           </div>
         </div>
       </header>
@@ -166,6 +166,7 @@ const MisAvisos = () => {
       </div>
 
       <section className={styles.avisosSection}>
+        <h2>Mis Avisos 🏘️</h2>
         {isLoading ? (
           <p className={styles.loading}>Cargando avisos...</p>
         ) : error ? (

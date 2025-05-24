@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styles from "../styles/nuevoAviso.module.css";
+import styles from "../styles/crearAcuerdo.module.css";
 import { obtenerUsuario, registrarAcuerdo } from "../services/conexiones";
 import { obtenerAcuerdoPorAviso } from "../services/conexiones";
+import api from "../services/conexiones"; // Asegúrate de tener tu instancia de axios aquí
+
 
 
 export default function CrearAcuerdo() {
   const navigate = useNavigate();
   const { idAviso } = useParams();
-
+  const [archivoContratoFile, setArchivoContratoFile] = useState(null);
   const [usuarioSesion, setUsuarioSesion] = useState(null);
   const [form, setForm] = useState({
     fechaInicio: "",
     fechaFin: "",
     archivoContrato: "",
-    arrendatarioId: "",
+    arrendatarioCorreo: "",
     arrendatarioNombre: "",
   });
   const [mensajes, setMensajes] = useState([]);
@@ -79,7 +81,7 @@ export default function CrearAcuerdo() {
       ]);
       return;
     }
-
+    setArchivoContratoFile(file);
     setForm((prev) => ({ ...prev, archivoContrato: file.name }));
     // Si necesitas subirlo a un backend, implementa aquí la lógica de subida y guarda la URL
   };
@@ -89,7 +91,7 @@ export default function CrearAcuerdo() {
     e.preventDefault();
 
     // Validaciones
-    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioId || !form.arrendatarioNombre || !form.archivoContrato) {
+    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo || !form.arrendatarioNombre || !form.archivoContrato) {
       setMensajes((prev) => [
         ...prev,
         { texto: "Todos los campos son obligatorios.", tipo: "error" },
@@ -104,15 +106,34 @@ export default function CrearAcuerdo() {
       
       return;
     }
+        // Buscar usuario por correo
+    let usuarioArrendatario;
+    try {
+      const res = await api.get(`/usuario/correo/${form.arrendatarioCorreo}`);
+      usuarioArrendatario = res.data; 
+      if (!usuarioArrendatario || !(usuarioArrendatario.id || usuarioArrendatario._id)) {
+        setMensajes((prev) => [
+          ...prev,
+          { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
+        ]);
+        return;
+      }
+    } catch (error) {
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
+      ]);
+      return;
+    }console.log(usuarioArrendatario);
 
     // Construcción del objeto para el backend
     const acuerdo = {
-      avisosId: idAviso,
+      avisosId: idAviso, 
       fechaInicio: new Date(form.fechaInicio),
       fechaFin: new Date(form.fechaFin),
       archivoContrato: form.archivoContrato,
       arrendatario: {
-        usuarioId: form.arrendatarioId,
+        correo: form.arrendatarioCorreo,
         nombre: form.arrendatarioNombre,
       },
     };
@@ -134,23 +155,22 @@ export default function CrearAcuerdo() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  return (
-    <div className={styles.publicarAvisoContainer}>
-      <header className={styles.headerPublicar}>
-        <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
-        <h1 className={styles.titulo}>Servicios de arrendamiento</h1>
-      </header>
+return (
+  <div className={styles.acuerdoContainer}>
+    <header className={styles.headerAcuerdo}>
+      <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
+      <h1 className={styles.titulo}>Servicios de arrendamiento</h1>
+    </header>
 
-      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={() => { navigate("/propietario"); }}>Inicio</button>
-        <button onClick={() => { navigate("/perfil"); }}>Perfil</button>
-        <button onClick={() => { navigate("/MisAvisos"); }}>Mis Avisos</button>
-      </nav>
-      
-      <h2 className={styles.seccionTitulo}>Registrar Acuerdo de Arrendamiento</h2>
+    <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
+      <button onClick={() => { navigate("/propietario"); }}>Inicio</button>
+      <button onClick={() => { navigate("/perfil"); }}>Perfil</button>
+      <button onClick={() => { navigate("/MisAvisos"); }}>Mis Avisos</button>
+    </nav>
+    
+    <h2 className={styles.seccionTitulo}>Registrar Acuerdo de Arrendamiento</h2>
 
-
-      <form className={styles.formPublicar} onSubmit={handleSubmit}>
+    <form className={styles.formAcuerdo} onSubmit={handleSubmit}>
         <div className={styles.campoForm}>
           <label>Fecha de inicio:</label>
           <input
@@ -172,13 +192,13 @@ export default function CrearAcuerdo() {
           />
         </div>
         <div className={styles.campoForm}>
-          <label>Arrendatario (ID):</label>
+          <label>Correo del arrendatario:</label>
           <input
-            type="text"
-            name="arrendatarioId"
-            value={form.arrendatarioId}
+            type="email"
+            name="arrendatarioCorreo"
+            value={form.arrendatarioCorreo}
             onChange={handleInputChange}
-            placeholder="ID del arrendatario"
+            placeholder="Correo del arrendatario"
             required
           />
         </div>
@@ -202,12 +222,24 @@ export default function CrearAcuerdo() {
             required
           />
           {form.archivoContrato && (
-            <span className={styles.archivoNombre}>{form.archivoContrato}</span>
+            <span className={styles.archivoNombre}></span>
           )}
-        </div>
-        <button type="submit" className={styles.btnPublicar}>
-          Registrar Acuerdo
-        </button>
+  {/* Enlace para descargar o ver el PDF */}
+  {archivoContratoFile && (
+    <a
+      href={URL.createObjectURL(archivoContratoFile)}
+      target="_blank"
+      rel="noopener noreferrer"
+      download={form.archivoContrato}
+      style={{ marginTop: "0.5rem", display: "inline-block", color: "#0284c7", textDecoration: "underline" }}
+    >
+      {form.archivoContrato}
+    </a>
+  )}
+</div>
+      <button type="submit" className={styles.btnRegistrar}>
+        Registrar Acuerdo
+      </button>
         {mensajes.length > 0 && (
           <p className={mensajes[0].tipo === "success" ? styles.mensajeExito : styles.error}>
             {mensajes[0].texto}
