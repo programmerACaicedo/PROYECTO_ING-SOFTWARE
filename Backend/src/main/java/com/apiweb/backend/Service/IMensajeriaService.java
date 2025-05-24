@@ -9,4 +9,5 @@ import com.apiweb.backend.Model.MensajesMensajeria;
 public interface IMensajeriaService {
     public MensajeriaModel crearChat(MensajeriaModel chat); //Ya esta testeado en postman
     public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria mensajes); //Ya esta hecho el metodo pero falta testear en postman
+    public MensajeriaModel obtenerChat(ObjectId idMensajeria);
 }

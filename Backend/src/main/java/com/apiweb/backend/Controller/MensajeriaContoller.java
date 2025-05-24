@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,5 +31,10 @@ public class MensajeriaContoller {
     @PutMapping("/mandarMensaje/{idMensajeria}")
     public ResponseEntity<MensajeriaModel> mandarMensaje(@PathVariable("idMensajeria") ObjectId idMensajeria,@RequestBody MensajesMensajeria mensajes) {
         return new ResponseEntity<MensajeriaModel>(MensajeriaService.mandarMensaje(idMensajeria, mensajes),HttpStatus.OK);
+    }
+
+    @GetMapping("/mostrarChat/{idMensajeria}")
+    public ResponseEntity<MensajeriaModel> obtenerChat(@PathVariable("idMensajeria") ObjectId idMensajeria) {
+        return new ResponseEntity<MensajeriaModel>(MensajeriaService.obtenerChat(idMensajeria),HttpStatus.OK);
     }
 }

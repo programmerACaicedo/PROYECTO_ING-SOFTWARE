@@ -113,4 +113,13 @@ public class MensajeriaServiceImp implements IMensajeriaService{
         chat.getMensajes().add(mensajes);
         return MensajeriaRepository.save(chat);
     }
+
+    @Override
+    public MensajeriaModel obtenerChat(ObjectId idMensajeria) {
+        Optional<MensajeriaModel> chatExiste = MensajeriaRepository.findById(idMensajeria);
+        if (!chatExiste.isPresent()) {
+            throw new ResourceNotFoundException("El chat con id:" + idMensajeria +" no existe.");
+        }
+        return chatExiste.get();
+    }
 }
