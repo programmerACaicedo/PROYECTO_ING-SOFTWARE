@@ -275,6 +275,11 @@ body {
     transition: background 0.3s;
   }
 
+  .publicacion:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
   .splashScreen {
     width: 99vw;
     height: 99vh;

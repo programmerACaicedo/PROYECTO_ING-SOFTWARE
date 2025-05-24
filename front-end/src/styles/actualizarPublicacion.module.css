@@ -217,6 +217,7 @@ body {
 .removeImageButton:hover {
   background-color: #c82333;
 }
+
 /* contenedor de búsqueda */
 .searchContainer {
   position: relative;
@@ -468,4 +469,29 @@ body {
     max-height: 90vh;
     border-radius: 8px;
   }
+}
+
+.btnEliminarImagen {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.btnEliminarImagen:hover {
+  background: #b71c1c;
 }

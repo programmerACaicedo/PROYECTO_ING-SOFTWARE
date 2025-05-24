@@ -18,8 +18,9 @@ const ActualizarPublicacion = () => {
     precio_mensual: "",
     condiciones: "",
     estado: "Disponible",
-    imagenes: [],
+    imagenes: [], // Archivos nuevos
   });
+  const [imagenesExistentes, setImagenesExistentes] = useState([]); // URLs ya subidas
   const [errores, setErrores] = useState({});
   const [mensajeExito, setMensajeExito] = useState("");
   const [imageError, setImageError] = useState("");
@@ -35,12 +36,13 @@ const ActualizarPublicacion = () => {
         if (aviso) {
           setFormData({
             nombre: aviso.nombre || "",
-            descripcion: aviso.descripcion || aviso.descripcion || "",
+            descripcion: aviso.descripcion || "",
             precio_mensual: aviso.precio_mensual || "",
             condiciones: aviso.condiciones || "",
-            estado: aviso.estado || "",
-            imagenes: [], // No cargamos imágenes existentes aquí, solo nuevas
+            estado: aviso.estado || "Disponible",
+            imagenes: [], // Solo archivos nuevos aquí
           });
+          setImagenesExistentes(aviso.imagenes || []); // URLs de imágenes ya subidas
         }
       } catch (error) {
         setMensajeExito("No se pudo cargar el aviso.");
@@ -61,8 +63,8 @@ const ActualizarPublicacion = () => {
     let validFiles = [];
     let errorMsg = "";
 
-    // Suma total de imágenes seleccionadas + nuevas
-    const totalImagenes = formData.imagenes.length + files.length;
+    // Suma total de imágenes seleccionadas + nuevas + existentes
+    const totalImagenes = imagenesExistentes.length + formData.imagenes.length + files.length;
     if (totalImagenes > 5) {
       setImageError("Solo puedes subir un máximo de 5 imágenes.");
       return;
@@ -91,12 +93,20 @@ const ActualizarPublicacion = () => {
     setMensajeExito("");
   };
 
+  // Eliminar imagen (diferenciar entre existente y nueva)
   const handleEliminarImagen = (index) => {
-  setFormData(f => ({
-    ...f,
-    imagenes: f.imagenes.filter((_, i) => i !== index)
-  }));
-  setImageError("");
+    if (index < imagenesExistentes.length) {
+      // Eliminar de las existentes
+      setImagenesExistentes(imgs => imgs.filter((_, i) => i !== index));
+    } else {
+      // Eliminar de las nuevas
+      const newIndex = index - imagenesExistentes.length;
+      setFormData(f => ({
+        ...f,
+        imagenes: f.imagenes.filter((_, i) => i !== newIndex)
+      }));
+    }
+    setImageError("");
   };
 
   // Validaciones
@@ -111,10 +121,11 @@ const ActualizarPublicacion = () => {
       newErr.descripcion = "La descripción es obligatoria";
     else if (formData.descripcion.length > 500)
       newErr.descripcion = "Máx. 500 caracteres";
-    if (formData.imagenes.length < 3) {
-      newErr.imagenes = "Debes subir al menos 3 imágenes.";
-    } else if (formData.imagenes.length > 10) {
-      newErr.imagenes = "No puedes subir más de 10 imágenes.";
+    const totalImagenes = imagenesExistentes.length + formData.imagenes.length;
+    if (totalImagenes < 3) {
+      newErr.imagenes = "Debes tener al menos 3 imágenes.";
+    } else if (totalImagenes > 5) {
+      newErr.imagenes = "No puedes tener más de 5 imágenes.";
     }
     formData.imagenes.forEach((img, i) => {
       const ext = img.name.split(".").pop().toLowerCase();
@@ -130,23 +141,24 @@ const ActualizarPublicacion = () => {
   };
 
   // Submit
-    const handleSubmit = async e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    console.log("handleSubmit ejecutado"); // Verifica si se ejecuta
     setMensajeExito("");
     if (!validarFormulario()) {
-      console.log("Validación fallida:", errores); // Verifica si la validación falla
       return;
     }
-  
+
     try {
-      // Subir imágenes a Cloudinary y obtener URLs
+      // Subir solo las nuevas imágenes a Cloudinary
       const imagenesUrls = [];
       for (const file of formData.imagenes) {
         const url = await subirImagenACloudinary(file);
         imagenesUrls.push(url);
       }
-  
+
+      // Combina las existentes (no eliminadas) y las nuevas
+      const todasLasImagenes = [...imagenesExistentes, ...imagenesUrls];
+
       // Preparar datos para actualizar
       const datosActualizados = {
         nombre: formData.nombre,
@@ -154,23 +166,22 @@ const ActualizarPublicacion = () => {
         precio_mensual: formData.precio_mensual,
         condiciones: formData.condiciones,
         estado: formData.estado,
-        imagenes: imagenesUrls, // Enviar URLs de Cloudinary
+        imagenes: todasLasImagenes,
       };
-  
-      console.log("Datos enviados al backend:", datosActualizados); // Verifica los datos enviados
+
       const respuesta = await actualizarAviso(id, datosActualizados);
-      console.log("Respuesta del backend:", respuesta); // Verifica la respuesta del backend
       setMensajeExito("¡Cambios guardados con éxito!");
+      setFormData(f => ({ ...f, imagenes: [] })); // Limpiar imágenes nuevas
     } catch (error) {
-      console.error("Error al actualizar el aviso:", error); // Muestra el error en la consola
       setMensajeExito("Error al actualizar el aviso.");
     }
   };
 
-  // Preview de imágenes
-  const previewUrls = formData.imagenes.map(f =>
-    URL.createObjectURL(f)
-  );
+  // Preview de imágenes (existentes + nuevas)
+  const previewUrls = [
+    ...imagenesExistentes,
+    ...formData.imagenes.map(f => URL.createObjectURL(f))
+  ];
 
   return (
     <div className={styles.actualizarPublicacionContainer}>
@@ -185,34 +196,34 @@ const ActualizarPublicacion = () => {
         <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
       </nav>
 
-      <h2 className={styles.seccionTitulo}>Actualizar Publicación</h2>
+      <br /><h2 className={styles.seccionTitulo}>Actualizar Publicación</h2>
 
       <div className={styles.contenidoActualizar}>
         <div className={styles.imagenPreview}>
           {previewUrls.length > 0 ? (
-          <div className={styles.imageGallery}>
-            {previewUrls.map((src, i) => (
-              <div key={i} className={styles.imageContainer}>
-                <img
-                  src={src}
-                  alt={`Vista previa ${i + 1}`}
-                  className={styles.modalImage}
-                  onClick={() => {
-                    setSelectedPreview(src);
-                    setIsModalOpen(true);
-                  }}
-                />
-                <button
-                  type="button"
-                  className={styles.btnEliminarImagen}
-                  onClick={() => handleEliminarImagen(i)}
-                  title="Eliminar imagen"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
+            <div className={styles.imageGallery}>
+              {previewUrls.map((src, i) => (
+                <div key={i} className={styles.imageContainer}>
+                  <img
+                    src={src}
+                    alt={`Vista previa ${i + 1}`}
+                    className={styles.modalImage}
+                    onClick={() => {
+                      setSelectedPreview(src);
+                      setIsModalOpen(true);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className={styles.btnEliminarImagen}
+                    onClick={() => handleEliminarImagen(i)}
+                    title="Eliminar imagen"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className={styles.imagenVacia}>
               <p>No hay imagen seleccionada</p>
@@ -225,10 +236,10 @@ const ActualizarPublicacion = () => {
             id="imagenes-upload"
             type="file"
             accept="image/png,image/jpeg"
-            multiple            
+            multiple
             onChange={handleImagenesChange}
             style={{ display: "none" }}
-          />
+          /><br></br>
           {errores.imagenes && (
             <p className={styles.error}>{errores.imagenes}</p>
           )}

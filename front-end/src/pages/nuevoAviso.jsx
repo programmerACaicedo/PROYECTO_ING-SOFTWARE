@@ -250,7 +250,7 @@ const PublicarAviso = () => {
         <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
       </nav>
 
-      <h2 className={styles.seccionTitulo}>Datos del inmueble</h2>
+      <h2 className={styles.seccionTitulo}>Datos del Aviso</h2>
 
       <div className={styles.contenidoPublicar}>
         <div className={styles.imagenPreview}>
@@ -268,6 +268,7 @@ const PublicarAviso = () => {
                     className={styles.removeImageButton}
                     onClick={() => handleRemoveImage(index)}
                   >
+                  x  
                   </button>
                 </div>
               ))}
