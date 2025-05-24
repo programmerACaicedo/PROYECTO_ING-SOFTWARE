@@ -57,8 +57,6 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
         }
 
-
-
         if (acuerdo.getCalificacionServicio() != null ) {
             throw new InvalidUserRoleException("El propietario no puede calificar el servicio");
         }
@@ -67,16 +65,20 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }
 
 
-        Optional<UsuariosModel> arrendatarioExiste = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId());
-        if (!arrendatarioExiste.isPresent()) {
-            throw new UserNotFoundException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " no corresponde a un usuario.");
+        UsuariosModel arrendatarioExiste = usuariosRepository.findByCorreo(acuerdo.getArrendatario().getCorreo());
+        if (arrendatarioExiste == null){
+            throw new UserNotFoundException("El correo: " + acuerdo.getArrendatario().getCorreo() + " no corresponde a un usuario.");
         }
-        UsuariosModel arrendatario = arrendatarioExiste.get();
-        if (arrendatario.getTipo() != TipoUsuario.interesado) {
-            throw new InvalidUserRoleException("El id: " + acuerdo.getArrendatario().getUsuarioId() + " ingresado en 'usuario_id' de arrendatario no corresponde al de un interesado.");
+
+        if (arrendatarioExiste.getId()==acuerdo.getPropietarioId()) {
+            throw new InvalidAcuerdoConfigurationException("El arrendador y el arrendatario no pueden ser la misma persona a la ahora de crear un acuerdo. ");
         }
+        if (arrendatarioExiste.getTipo() == TipoUsuario.administrador){
+            throw new InvalidUserRoleException("El arrendatario no puede ser un administrador. ");
+        }
+        acuerdo.getArrendatario().setUsuarioId(arrendatarioExiste.getId());
         if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
-            throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación.");
+            throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación. ");
         }
 
         aviso.setEstado(EstadoAviso.Arrendado);

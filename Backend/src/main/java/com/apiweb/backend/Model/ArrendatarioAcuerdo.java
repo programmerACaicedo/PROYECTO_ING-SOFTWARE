@@ -16,4 +16,5 @@ public class ArrendatarioAcuerdo {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId usuarioId;
     private String nombre;
+    private String correo;
 }
