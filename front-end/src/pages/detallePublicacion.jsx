@@ -67,7 +67,7 @@ const DetallePublicacion = () => {
   }, [id]);
 
   const handleEliminar = async () => {
-    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este aviso?");
+    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?")
     if (!confirmacion) return;
 
     try {
