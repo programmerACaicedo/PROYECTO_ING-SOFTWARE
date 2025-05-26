@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../styles/misAvisos.module.css";
-import { listarAcuerdosPropietario, obtenerUsuario } from "../services/conexiones";
+import styles from "../styles/misAcuerdos.module.css";
+import { listarAcuerdosPropietario, obtenerUsuario, obtenerAvisoPorId } from "../services/conexiones";
 
 const MisAcuerdos = () => {
   const [acuerdos, setAcuerdos] = useState([]);
@@ -15,12 +15,25 @@ const MisAcuerdos = () => {
       try {
         setIsLoading(true);
         const usuario = await obtenerUsuario();
+        console.log("Usuario obtenido:", usuario);
         if (usuario.tipo !== "propietario") {
           navigate("/");
           return;
         }
         const acuerdosData = await listarAcuerdosPropietario(usuario.id);
-        setAcuerdos(acuerdosData);
+
+        const acuerdosConNombre = await Promise.all(
+          acuerdosData.map(async (acuerdo) => {
+            let nombreAviso = "Sin título";
+            try {
+              const aviso = await obtenerAvisoPorId(acuerdo.avisosId);
+              nombreAviso = aviso.nombre || "Sin título";
+            } catch (e) {}
+            return { ...acuerdo, nombreAviso };
+          })
+        );
+        
+        setAcuerdos(acuerdosConNombre);
       } catch (error) {
         setError("No se pudieron cargar tus acuerdos. Intenta de nuevo más tarde.");
       } finally {
@@ -69,30 +82,33 @@ const MisAcuerdos = () => {
         </button>
       </div>
 
-      <section className={styles.avisosSection}>
+      <section className={styles.acuerdosSection}>
         <h2>Tus Acuerdos</h2>
         {isLoading ? (
           <p className={styles.loading}>Cargando acuerdos...</p>
         ) : error ? (
           <p className={styles.error}>{error}</p>
-        ) : acuerdos.length > 0 ? (
-          <div className={styles.avisosList}>
-            {acuerdos.map((acuerdo) => (
+        ) : acuerdos.length === 0 ? (
+          <p className={styles.noAcuerdos}>No tienes acuerdos registrados.</p>
+        ) : (
+          <div className={styles.acuerdosList}>
+            {acuerdos.map((acuerdo) => {
+                console.log(acuerdo.avisosId);
+                return (
               <div
                 key={acuerdo.id}
-                className={styles.avisoCard}
+                className={styles.acuerdoCard}
                 onClick={() => handleAcuerdoClick(acuerdo.id)}
               >
-                <h3>{acuerdo.nombreAviso || "Sin título"}</h3>
+                {/*<h3>{acuerdo.nombreAviso}</h3>*/}
                 <p>Arrendatario: {acuerdo.arrendatario?.nombre || "No especificado"}</p>
                 <p>Fecha inicio: {acuerdo.fechaInicio?.slice(0,10)}</p>
                 <p>Fecha fin: {acuerdo.fechaFin?.slice(0,10)}</p>
                 <p>Estado: {acuerdo.estado}</p>
               </div>
-            ))}
+                );
+            })}
           </div>
-        ) : (
-          <p className={styles.noAvisos}>No tienes acuerdos registrados.</p>
         )}
       </section>
     </div>

@@ -254,7 +254,6 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
     const respuesta = await api.get(`/acuerdos/aviso/${idAviso}`);
     return respuesta.data;
   } catch (error) {
-    // Si no existe acuerdo, puede devolver 404, lo cual es válido para tu lógica
     if (error.response && error.response.status === 404) {
       return null;
     }
@@ -264,8 +263,26 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
 };
 
 export const listarAcuerdosPropietario = async (idPropietario) => {
-  const respuesta = await api.get(`/acuerdos/propietario/${idPropietario}`);
+  const respuesta = await api.get(`/acuerdos/listarAcuerdosDeUnPropietario/${idPropietario}`);
   return respuesta.data;
 };
 
+export const modificarAcuerdo = async (idAcuerdo, extension) => {
+  const respuesta = await api.put(`/acuerdos/extension/${idAcuerdo}`, extension, {
+    headers: { "Content-Type": "application/json" }
+  });
+  return respuesta.data;
+};
+
+export const cancelarAcuerdo = async (idAcuerdo, razon) => {
+  const respuesta = await api.put(`/acuerdos/cancelarAcuerdo/${idAcuerdo}`, razon, {
+    headers: { "Content-Type": "application/json" }
+  });
+  return respuesta.data;
+};
+
+export const obtenerAvisoPorId = async (idAviso) => {
+  const respuesta = await api.get(`/avisos/${idAviso}`);
+  return respuesta.data;
+};
 export default api;

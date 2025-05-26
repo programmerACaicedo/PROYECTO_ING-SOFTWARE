@@ -109,7 +109,7 @@ export default function CrearAcuerdo() {
         // Buscar usuario por correo
     let usuarioArrendatario;
     try {
-      const res = await api.get(`/usuario/correo/${form.arrendatarioCorreo}`);
+    const res = await api.get(`/usuario/correo/${encodeURIComponent(form.arrendatarioCorreo)}`);
       usuarioArrendatario = res.data; 
       if (!usuarioArrendatario || !(usuarioArrendatario.id || usuarioArrendatario._id)) {
         setMensajes((prev) => [
@@ -144,7 +144,7 @@ export default function CrearAcuerdo() {
         ...prev,
         { texto: "¡Acuerdo registrado exitosamente!", tipo: "success" },
       ]);
-      setTimeout(() => navigate("/MisAvisos"), 2000);
+      setTimeout(() => navigate("/misAcuerdos"), 2000);
     } catch (error) {
       setMensajes((prev) => [
         ...prev,
