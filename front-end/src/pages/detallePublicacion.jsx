@@ -22,7 +22,6 @@ const DetallePublicacion = () => {
   const [usuarioId, setUsuarioId] = useState("");
   const [acuerdoActivo, setAcuerdoActivo] = useState(null);
 
-  // Estados para calificación
   const [rating, setRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [hasRated, setHasRated] = useState(false);
@@ -45,6 +44,7 @@ const DetallePublicacion = () => {
     const token = localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
+      console.log("Decoded token:", decodedToken); // Debug log
       setTipoUsuario(decodedToken.tipo || "");
       setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
     }
@@ -54,17 +54,26 @@ const DetallePublicacion = () => {
     const fetchAcuerdo = async () => {
       try {
         const acuerdo = await obtenerAcuerdoPorAviso(id);
-        if (acuerdo && acuerdo.estado && acuerdo.estado.toLowerCase() === "activo") {
+        console.log("Fetched acuerdo:", acuerdo); // Debug log
+        console.log("Acuerdo estado:", acuerdo?.estado); // Debug log
+
+        if (
+          acuerdo &&
+          (acuerdo.estado?.toLowerCase() === "activo" ||
+            acuerdo.estado?.toLowerCase() === "finalizado")
+        ) {
           setAcuerdoActivo(acuerdo);
         } else {
           setAcuerdoActivo(null);
         }
       } catch (error) {
+        console.error("Error fetching acuerdo:", error);
         setAcuerdoActivo(null);
       }
     };
-    fetchAcuerdo();
-  }, [id]);
+
+    if (usuarioId) fetchAcuerdo();
+  }, [id, usuarioId]);
 
   const handleEliminar = async () => {
     const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este aviso?");
@@ -197,6 +206,22 @@ const DetallePublicacion = () => {
     }, 1500);
   };
 
+  const puedeCalificar = () => {
+    if (!acuerdoActivo) {
+      return false;
+    }
+
+    const estadoTerminado = acuerdoActivo.estado?.toLowerCase() === "finalizado";
+    const noEsPropietario = publicacion?.propietarioId?.usuarioId !== usuarioId;
+    const esUsuarioValido = tipoUsuario === "interesado" || tipoUsuario === "propietario";
+
+    console.log("Estado terminado:", estadoTerminado); // Debug log
+    console.log("No es propietario:", noEsPropietario); // Debug log
+    console.log("Es usuario valido:", esUsuarioValido); // Debug log
+
+    return estadoTerminado && noEsPropietario && esUsuarioValido;
+  };
+
   if (!publicacion) {
     return (
       <div className={styles.detallePublicacionContainer}>
@@ -274,45 +299,44 @@ const DetallePublicacion = () => {
             )}
           </div>
 
-{/* Mostrar sección de calificación SOLO si no es el propietario */}
-{publicacion?.propietarioId?.usuarioId !== usuarioId &&
-  (tipoUsuario === "interesado" || tipoUsuario === "propietario") && (
-    !hasRated ? (
-      <div className={styles.calificacionContainer}>
-        <h3>Califica esta experiencia</h3>
-        <label>
-          Calificación:
-          <select
-            value={rating}
-            onChange={(e) => setRating(parseInt(e.target.value))}
-          >
-            <option value={0}>Selecciona estrellas</option>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <option key={star} value={star}>{star} estrella{star > 1 ? "s" : ""}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Comentarios (opcional):
-          <textarea
-            value={reviewComment}
-            onChange={(e) => setReviewComment(e.target.value)}
-            placeholder="Escribe tu comentario"
-          />
-        </label>
-        <button
-          onClick={handleSubmitRating}
-          disabled={loadingRating}
-        >
-          {loadingRating ? "Enviando..." : "Enviar Calificación"}
-        </button>
-        {ratingMessage && <p>{ratingMessage}</p>}
-      </div>
-    ) : (
-      <p>Gracias por calificar esta experiencia.</p>
-    )
-)}
-
+          {puedeCalificar() ? (
+            !hasRated ? (
+              <div className={styles.calificacionContainer}>
+                <h3>Califica esta experiencia</h3>
+                <label>
+                  Calificación:
+                  <select
+                    value={rating}
+                    onChange={(e) => setRating(parseInt(e.target.value))}
+                  >
+                    <option value={0}>Selecciona estrellas</option>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <option key={star} value={star}>{star} estrella{star > 1 ? "s" : ""}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Comentarios (opcional):
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Escribe tu comentario"
+                  />
+                </label>
+                <button
+                  onClick={handleSubmitRating}
+                  disabled={loadingRating}
+                >
+                  {loadingRating ? "Enviando..." : "Enviar Calificación"}
+                </button>
+                {ratingMessage && <p>{ratingMessage}</p>}
+              </div>
+            ) : (
+              <p>Gracias por calificar esta experiencia.</p>
+            )
+          ) : (
+            console.log("No se puede calificar") // Debug log
+          )}
 
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
