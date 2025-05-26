@@ -55,7 +55,7 @@ const Interior = () => {
           <header className={styles.header1}>
             <div className={styles.interior}>
               <h1>Servicio de Arrendamientos🏘️</h1>
-              <h1>Hola de nuevo admin</h1>
+              <h1>Hola de nuevo admin </h1>
             </div>
           </header>
           <section className={styles.adminOptions}>

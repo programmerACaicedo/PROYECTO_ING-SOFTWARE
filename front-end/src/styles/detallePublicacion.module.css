@@ -320,6 +320,15 @@ body {
   margin: 0 0 1rem;
 }
 
+/* Cambia el color del texto del formulario de reporte a negro */
+.modalContenido,
+.modalContenido h3,
+.modalContenido label,
+.modalContenido select,
+.modalContenido textarea {
+  color: #000 !important;
+}
+
 .modalContenido form {
   display: flex;
   flex-direction: column;
@@ -335,6 +344,7 @@ body {
 
 .modalBotones {
   display: flex;
+  justify-content: center;
   gap: 1rem;
 }
 

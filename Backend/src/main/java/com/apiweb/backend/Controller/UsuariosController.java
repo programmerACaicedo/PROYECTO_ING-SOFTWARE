@@ -104,6 +104,15 @@ public class UsuariosController {
         }
     }
 
+    @GetMapping("/correo/{correo}")
+    public ResponseEntity<UsuariosModel> buscarPorCorreo(@PathVariable String correo) {
+        UsuariosModel usuario = usuariosRepository.findByCorreo(correo);
+        if (usuario == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
+    }
+
     @Transactional
     @PostMapping("/restablecer-contraseña")
     public ResponseEntity<String> restablecerContrasena(@RequestBody Map<String, String> datos) {
