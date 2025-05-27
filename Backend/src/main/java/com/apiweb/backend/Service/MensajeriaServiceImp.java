@@ -10,6 +10,7 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AvisosModel;
 import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
+import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
@@ -38,6 +40,9 @@ public class MensajeriaServiceImp implements IMensajeriaService{
 
     @Autowired
     IUsuariosRepository UsuarioRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
 @Override
 @Transactional
@@ -154,7 +159,26 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
 
     chat.getMensajes().add(nuevoMsg);
 
-  
+    // Crear notificación
+    Notificaciones notificacion = new Notificaciones();
+    notificacion.setContenido("Nuevo mensaje de " + remitente.getNombre());
+    notificacion.setFecha(Instant.now());
+    notificacion.setLeido(false);
+
+    // Guardar notificación en el usuario destinatario
+    UsuariosModel usuarioDestinatario = UsuarioRepository.findById(destinatario)
+        .orElse(null);
+    if (usuarioDestinatario != null) {
+        usuarioDestinatario.getNotificaciones().add(notificacion);
+        UsuarioRepository.save(usuarioDestinatario);
+
+        // Enviar notificación por WebSocket
+        messagingTemplate.convertAndSend(
+            "/topic/notificaciones/" + destinatario.toHexString(),
+            notificacion
+        );
+    }
+
     System.out.println("Finalizando mandarMensaje");
     return MensajeriaRepository.save(chat);
 }

@@ -17,6 +17,7 @@ const Mensajes = () => {
   const [nuevoMensaje, setNuevoMensaje] = useState("");
   const [error, setError] = useState("");
   const [userId, setUserId] = useState("");
+  const [userNotifications, setUserNotifications] = useState([]);
   const mensajesEndRef = useRef(null);
 
   useEffect(() => {
@@ -30,6 +31,9 @@ const Mensajes = () => {
     setTipoUsuario(decoded.tipo || "");
     const id = decoded.id?._id || decoded.id || "";
     setUserId(id);
+
+    // Extraer notificaciones del token
+    setUserNotifications(decoded.notificaciones || []);
 
     socket.emit("join", id);
     fetchConversaciones(id);
@@ -56,7 +60,9 @@ const Mensajes = () => {
       setConversaciones(prev => [...prev, nuevaConversacion]);
     });
 
-    socket.on("receiveNotification", () => {
+    // Escuchar notificaciones en tiempo real
+    socket.on("nuevaNotificacion", (notificacion) => {
+      setUserNotifications(prev => [notificacion, ...prev]);
       setNotifications(prev => prev + 1);
     });
 
@@ -74,6 +80,7 @@ const Mensajes = () => {
       socket.off("nuevoChat");
       socket.off("receiveNotification");
       socket.off("error");
+      socket.off("nuevaNotificacion");
     };
   }, [socket, navigate, location.state, userId, conversacionSeleccionada]);
 
@@ -173,11 +180,29 @@ const Mensajes = () => {
         {showNotifications && (
           <div className={styles.notificationDropdown}>
             <h3>Notificaciones</h3>
-            {notifications > 0
-              ? <p>Tienes {notifications} notificación(es) nueva(s).</p>
-              : <p>No hay notificaciones.</p>
-            }
-            <button onClick={() => setNotifications(0)} className={styles.clearButton}>
+            {userNotifications.length > 0 ? (
+              <ul>
+                {userNotifications.map((notif, idx) => (
+                  <li key={idx}>
+                    {/* Mostrar solo los primeros 60 caracteres del contenido */}
+                    {notif.contenido?.substring(0, 48)}
+                    {/* Mostrar fecha y hora completa */}
+                    <br />
+                    <small>
+                      {notif.fecha
+                        ? new Date(notif.fecha).toLocaleString()
+                        : ""}
+                    </small>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No hay notificaciones.</p>
+            )}
+            <button
+              onClick={() => setUserNotifications([])}
+              className={styles.clearButton}
+            >
               Limpiar Notificaciones
             </button>
           </div>

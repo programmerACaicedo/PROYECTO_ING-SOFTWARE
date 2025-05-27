@@ -13,8 +13,10 @@ import com.apiweb.backend.Exception.UserUpdateException;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Repository.IAcuerdosRepository;
@@ -211,6 +213,19 @@ public class UsuariosServiceImp implements IUsuariosService {
             claims.put("foto", usuarioExistente.getFoto());
             claims.put("verificado", usuarioExistente.isVerificado());
             claims.put("palabra_seguridad", usuarioExistente.getPalabra_seguridad());
+            // Agrega las notificaciones completas
+            List<Map<String, Object>> notificacionesSerializables = usuarioExistente.getNotificaciones().stream()
+                .map(notif -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("contenido", notif.getContenido());
+  
+                    map.put("leido", notif.getLeido());
+                    // Convierte fecha a String
+                    map.put("fecha", notif.getFecha() != null ? notif.getFecha().toString() : null);
+                    return map;
+                })
+                .collect(Collectors.toList());
+            claims.put("notificaciones", notificacionesSerializables);
     
             // Generar el token JWT
             return jwtTokenService.generarToken(claims, 60 * 60 * 24);
