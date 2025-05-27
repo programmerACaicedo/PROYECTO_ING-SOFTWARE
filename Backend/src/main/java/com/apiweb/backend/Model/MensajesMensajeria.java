@@ -20,4 +20,12 @@ public class MensajesMensajeria {
     public String mensaje;
     public Instant fecha;
     public Boolean leido;
+    
+    // Agregado para el servicio
+    private String nombreInteresado;
+    private String nombrePropietario;
+    public void setNombreRemitente(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setNombreRemitente'");
+    }
 }

@@ -47,4 +47,9 @@ public class MensajeriaModel {
     public void setPropietarioId(String propietarioId) {
         this.propietarioId = propietarioId;
     }
+
+    public void setPropietarioId(ObjectId propietarioId2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPropietarioId'");
+    }
 }

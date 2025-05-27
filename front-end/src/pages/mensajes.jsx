@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { SocketContext } from "../context/SocketContext";
-import { obtenerConversaciones, enviarMensaje, obtenerChat } from "../services/conexiones"; // Importar servicios
+import { obtenerConversaciones, mandarMensaje, obtenerChat } from "../services/conexiones";
 import styles from "../styles/mensajes.module.css";
 
 const Mensajes = () => {
@@ -35,19 +35,21 @@ const Mensajes = () => {
 
     fetchConversaciones(id);
 
-    socket.on("nuevoMensaje", ({ conversacionId, mensaje }) => {
-      setConversaciones((prev) =>
-        prev.map((conv) =>
-          conv.id === conversacionId
-            ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
-            : conv
-        )
-      );
-      if (conversacionSeleccionada && conversacionId === conversacionSeleccionada.id) {
-        setConversacionSeleccionada((prev) => ({
-          ...prev,
-          mensajes: [...prev.mensajes, mensaje],
-        }));
+    socket.on("nuevoMensaje", ({ conversacionId, mensaje, emisorId, destinatarioId }) => {
+      if (userId === destinatarioId) {
+        setConversaciones((prev) =>
+          prev.map((conv) =>
+            conv.id === conversacionId
+              ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
+              : conv
+          )
+        );
+        if (conversacionSeleccionada && conversacionId === conversacionSeleccionada.id) {
+          setConversacionSeleccionada((prev) => ({
+            ...prev,
+            mensajes: [...prev.mensajes, mensaje],
+          }));
+        }
       }
     });
 
@@ -112,10 +114,13 @@ const Mensajes = () => {
     const mensajeData = {
       idRemitente: userId,
       mensaje: nuevoMensaje,
+      idDestinatario: userId === conversacionSeleccionada.idInteresado
+        ? conversacionSeleccionada.propietarioId
+        : conversacionSeleccionada.idInteresado,
     };
 
     try {
-      const updatedChat = await enviarMensaje(conversacionSeleccionada.id, mensajeData);
+      const updatedChat = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
       setConversacionSeleccionada(updatedChat);
       setConversaciones((prev) =>
         prev.map((conv) => (conv.id === updatedChat.id ? updatedChat : conv))
@@ -123,12 +128,12 @@ const Mensajes = () => {
       socket.emit("enviarMensaje", {
         conversacionId: conversacionSeleccionada.id,
         emisorId: userId,
+        destinatarioId: mensajeData.idDestinatario,
         mensaje: nuevoMensaje,
       });
       setNuevoMensaje("");
     } catch (error) {
-      setError("Error al enviar el mensaje");
-      console.error(error);
+      setError("Error al enviar el mensaje: " + (error.response?.data?.message || error.message));
     }
   };
 
@@ -213,7 +218,13 @@ const Mensajes = () => {
                   }`}
                   onClick={() => seleccionarConversacion(conv)}
                 >
-                  <p>Chat con Aviso {conv.idAviso}</p>
+                  <p>
+                    Chat con{" "}
+                    {userId === conv.idInteresado
+                      ? conv.nombrePropietario
+                      : conv.nombreInteresado}
+                    {" "}({conv.idAviso})
+                  </p>
                 </div>
               ))
             )}
@@ -233,7 +244,9 @@ const Mensajes = () => {
                         msg.idRemitente === userId ? styles.mensajeEnviado : styles.mensajeRecibido
                       }`}
                     >
-                      <p>{msg.mensaje}</p>
+                      <p>
+                        <strong>{msg.nombreRemitente || "Usuario"}:</strong> {msg.mensaje}
+                      </p>
                       <span>{new Date(msg.fecha).toLocaleTimeString()}</span>
                     </div>
                   ))}

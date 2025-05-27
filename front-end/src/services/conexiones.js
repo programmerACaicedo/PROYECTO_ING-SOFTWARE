@@ -288,16 +288,31 @@ export const obtenerAvisoPorId = async (idAviso) => {
 
 // Funciones de mensajería
 export const crearChat = async (chatData) => {
+  // Validar que todos los campos necesarios estén presentes
+  if (!chatData.idInteresado || !chatData.idAviso || !chatData.propietarioId) {
+    throw new Error("Faltan campos requeridos en chatData: se necesitan idInteresado, idAviso y propietarioId.");
+  }
+  
   try {
     const response = await api.post("/mensajeria/crearChat", chatData);
     return response.data;
   } catch (error) {
-    console.error("Error al crear chat:", error.response || error.message);
+    console.error("Error al crear chat:", error.response?.data || error.message);
     throw error;
   }
 };
-
-export const enviarMensaje = async (idMensajeria, mensajeData) => {
+/*implementar
+  @PutMapping("/mandarMensaje/{idMensajeria}")
+  public ResponseEntity<MensajeriaModel> mandarMensaje(
+      @PathVariable("idMensajeria") String idMensajeria,
+      @RequestBody MensajesMensajeria mensajes) {
+    MensajeriaModel chatActualizado = mensajeriaService.mandarMensaje(idMensajeria, mensajes);
+    messagingTemplate.convertAndSend("/topic/nuevoMensaje", 
+        new MensajeSocket(idMensajeria, mensajes));
+    return new ResponseEntity<>(chatActualizado, HttpStatus.OK);
+  }
+*/
+export const mandarMensaje = async (idMensajeria, mensajeData) => {
   try {
     const response = await api.put(`/mensajeria/mandarMensaje/${idMensajeria}`, mensajeData);
     return response.data;
@@ -306,6 +321,8 @@ export const enviarMensaje = async (idMensajeria, mensajeData) => {
     throw error;
   }
 };
+
+
 
 export const obtenerChat = async (idMensajeria) => {
   try {
@@ -319,11 +336,16 @@ export const obtenerChat = async (idMensajeria) => {
 
 // Nueva función para obtener todas las conversaciones (requiere un endpoint en el backend)
 export const obtenerConversaciones = async (userId) => {
+  // Validar que userId esté presente
+  if (!userId) {
+    throw new Error("Se requiere userId para obtener las conversaciones.");
+  }
+  
   try {
     const response = await api.get(`/mensajeria/conversaciones/${userId}`);
     return response.data;
   } catch (error) {
-    console.error("Error al obtener conversaciones:", error.response || error.message);
+    console.error(`Error al obtener conversaciones para el usuario ${userId}:`, error.response?.data || error.message);
     throw error;
   }
 };

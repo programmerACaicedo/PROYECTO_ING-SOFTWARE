@@ -18,4 +18,5 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     List<AvisosModel> findByReporteIsNotNull();
     @Query("{ 'reporte': { $not: { $elemMatch: { 'estadoReporte': ?0 } } } }")
     List<AvisosModel> findAvisosWithoutExcludedReports(EstadoReporte estado);
+    List<AvisosModel> findByPropietarioId(String userId);
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
-import { crearChat } from "../services/conexiones"; // Importar la función
+import { crearChat, verificarChatExistente } from "../services/conexiones";
 import styles from "../styles/detallePublicacion.module.css";
 
 const DetallePublicacion = () => {
@@ -79,6 +79,7 @@ const DetallePublicacion = () => {
       const chatData = {
         idInteresado: usuarioId,
         idAviso: publicacion.id,
+        propietarioId: publicacion.propietarioId?.usuarioId || publicacion.propietarioId, // Adjust based on structure
       };
       const nuevoChat = await crearChat(chatData);
       setMensajeNotificacion("Chat creado con éxito.");

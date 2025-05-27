@@ -1,6 +1,7 @@
 package com.apiweb.backend.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
+import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Repository.IUsuariosRepository;
 import com.apiweb.backend.Service.IMensajeriaService;
 
 
@@ -31,6 +34,9 @@ public class MensajeriaController {
   @Autowired
   private SimpMessagingTemplate messagingTemplate;
 
+  @Autowired
+  private IUsuariosRepository usuarioRepository;
+
   @PostMapping("/crearChat")
   public ResponseEntity<MensajeriaModel> crearChat(@RequestBody MensajeriaModel chat) {
     MensajeriaModel nuevoChat = mensajeriaService.crearChat(chat);
@@ -39,11 +45,10 @@ public class MensajeriaController {
   }
 
   @GetMapping("/conversaciones/{userId}")
-  public ResponseEntity<List<MensajeriaModel>> obtenerConversaciones(@PathVariable("userId") String userId) {
+  public ResponseEntity<List<MensajeriaModel>> obtenerConversacionesPorUsuario(@PathVariable String userId) {
     List<MensajeriaModel> conversaciones = mensajeriaService.obtenerConversacionesPorUsuario(userId);
-    return new ResponseEntity<>(conversaciones, HttpStatus.OK);
+    return ResponseEntity.ok(conversaciones);
   }
-
   @PutMapping("/mandarMensaje/{idMensajeria}")
   public ResponseEntity<MensajeriaModel> mandarMensaje(
       @PathVariable("idMensajeria") String idMensajeria,
@@ -54,9 +59,24 @@ public class MensajeriaController {
     return new ResponseEntity<>(chatActualizado, HttpStatus.OK);
   }
 
+@GetMapping("/verificarChat/{idInteresado}/{idAviso}")
+    public ResponseEntity<MensajeriaModel> verificarChatExistente(
+            @PathVariable String idInteresado,
+            @PathVariable String idAviso) {
+        Optional<MensajeriaModel> chat = mensajeriaService.findByInteresadoAndAviso(idInteresado, idAviso);
+        return chat.map(ResponseEntity::ok)
+                   .orElseGet(() -> ResponseEntity.ok(null)); // Retorna null si no existe
+    }
   @GetMapping("/mostrarChat/{idMensajeria}")
   public ResponseEntity<MensajeriaModel> mostrarChat(@PathVariable("idMensajeria") String idMensajeria) {
     MensajeriaModel chat = mensajeriaService.mostrarChat(idMensajeria);
+
+    for (MensajesMensajeria mensaje : chat.getMensajes()) {
+        UsuariosModel remitente = usuarioRepository.findById(mensaje.getIdRemitente()).orElse(null);
+        mensaje.setNombreRemitente(remitente != null ? remitente.getNombre() : "");
+    }
+
+
     return new ResponseEntity<>(chat, HttpStatus.OK);
   }
 
