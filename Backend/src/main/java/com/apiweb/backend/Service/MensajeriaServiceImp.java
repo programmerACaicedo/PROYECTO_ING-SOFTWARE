@@ -42,118 +42,132 @@ public class MensajeriaServiceImp implements IMensajeriaService{
 @Override
 @Transactional
 public MensajeriaModel crearChat(MensajeriaModel chat) {
-    Optional<AvisosModel> avisoExiste = AvisosRepository.findById(chat.getIdAviso());
-    if (!avisoExiste.isPresent()) {
-        throw new ResourceNotFoundException("El aviso con el id: "+ chat.getIdAviso() + " no existe.");
-    }
-    AvisosModel aviso = avisoExiste.get();
+    // 1. Validaciones básicas de existencia
+    AvisosModel aviso = AvisosRepository.findById(chat.getIdAviso())
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "El aviso con el id: " + chat.getIdAviso() + " no existe."));
+    UsuariosModel interesado = UsuarioRepository.findById(chat.getIdInteresado())
+        .orElseThrow(() -> new UserNotFoundException(
+            "El usuario con id: " + chat.getIdInteresado() + " no existe."));
     
-    Optional<UsuariosModel> usuarioExiste = UsuarioRepository.findById(chat.getIdInteresado());
-    if (!usuarioExiste.isPresent()) {
-        throw new UserNotFoundException("El usuario con id: "+ chat.getIdInteresado()+" no existe.");
-    }
-    UsuariosModel interesado = usuarioExiste.get();
-
-    if (interesado.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
-        throw new InvalidUserRoleException("Un usuario no se puede interesar por un aviso que es de su propiedad. ");
+    // 2. Validaciones de roles
+    ObjectId idPropietario = aviso.getPropietarioId().getUsuarioId();
+    if (interesado.getId().equals(idPropietario)) {
+        throw new InvalidUserRoleException(
+            "Un usuario no se puede interesar por un aviso que es de su propiedad.");
     }
     if (interesado.getTipo() == TipoUsuario.administrador) {
-        throw new InvalidUserRoleException("Un administrador no se puede interesar por un aviso. ");
+        throw new InvalidUserRoleException(
+            "Un administrador no se puede interesar por un aviso.");
     }
 
-    Optional<MensajeriaModel> mensajeExiste = MensajeriaRepository.findByIdInteresadoAndIdAviso(chat.getIdInteresado(), chat.getIdAviso());
-    if (mensajeExiste.isPresent()) {
-        throw new InvalidMensajeriaConfigurationException("El interesado con id: " + chat.getIdInteresado() + " ya tiene un chat creado con ese aviso");
+    // 3. Validar que no exista ya un chat entre interesado y aviso
+    if (MensajeriaRepository
+          .findByIdInteresadoAndIdAviso(interesado.getId(), chat.getIdAviso())
+          .isPresent()) {
+        throw new InvalidMensajeriaConfigurationException(
+            "El interesado con id: " + chat.getIdInteresado()
+            + " ya tiene un chat creado con ese aviso");
     }
 
-    // Obtener los nombres
-    String nombrePropietario = aviso.getPropietarioId().getNombre();
-    String nombreInteresado = interesado.getNombre();
+    // 4. Preparar nombres y mensaje inicial
+    String nombrePropietario   = aviso.getPropietarioId().getNombre();
+    String nombreInteresado    = interesado.getNombre();
+    String textoInicial = String.format(
+        "Hola %s, soy %s y estoy interesado en tu aviso llamado: %s",
+        nombrePropietario, nombreInteresado, aviso.getNombre()
+    );
 
-    // Construir mensaje
-    chat.setMensaje("Hola " + nombrePropietario + ", soy "+ nombreInteresado + " y estoy interesado en tu aviso llamado: "+ aviso.getNombre());
+    // 5. Setear datos en el chat
+    chat.setMensaje(textoInicial);
     chat.setFecha(Instant.now());
     chat.setLeido(false);
-
-    // Agregar nombres al modelo
     chat.setNombrePropietario(nombrePropietario);
     chat.setNombreInteresado(nombreInteresado);
 
-    // Crear el mensaje inicial
+    // 6. Crear y agregar el mensaje inicial
     MensajesMensajeria mensajeInicial = new MensajesMensajeria();
     mensajeInicial.setIdRemitente(interesado.getId());
-    mensajeInicial.setMensaje(chat.getMensaje());
+    mensajeInicial.setNombreRemitente(nombreInteresado);
+    mensajeInicial.setIdDestinatario(idPropietario);
+    mensajeInicial.setNombreDestinatario(nombrePropietario);
+    mensajeInicial.setMensaje(textoInicial);
     mensajeInicial.setFecha(chat.getFecha());
     mensajeInicial.setLeido(false);
 
     chat.getMensajes().add(mensajeInicial);
 
+    // 7. Guardar y devolver
     return MensajeriaRepository.save(chat);
 }
-
 
 @Override
 @Transactional
-public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria mensajes){
-    // Verificar si el chat existe
-    Optional<MensajeriaModel> chatExiste = MensajeriaRepository.findById(idMensajeria);
-    if (!chatExiste.isPresent()) {
-        throw new ResourceNotFoundException("La mensajeria con id: " + idMensajeria + " no existe.");
-    }
-    MensajeriaModel chat = chatExiste.get();
+public MensajeriaModel mandarMensaje(ObjectId idMensajeria,
+                                     MensajesMensajeria nuevoMsg) {
+    // 1. Encontrar chat y aviso
+    MensajeriaModel chat = MensajeriaRepository.findById(idMensajeria)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "La mensajería con id: " + idMensajeria + " no existe."));
+    AvisosModel aviso = AvisosRepository.findById(chat.getIdAviso())
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "El aviso con id: " + chat.getIdAviso() + " no existe."));
 
-    // Verificar si el aviso asociado existe
-    Optional<AvisosModel> avisoExiste = AvisosRepository.findById(chat.getIdAviso());
-    if (!avisoExiste.isPresent()) {
-        throw new ResourceNotFoundException("El aviso con id: " + chat.getIdAviso() + " no existe.");
-    }
-    AvisosModel aviso = avisoExiste.get();
-
-    // Verificar si el usuario remitente existe
-    Optional<UsuariosModel> usuarioExiste = UsuarioRepository.findById(mensajes.getIdRemitente());
-    if (!usuarioExiste.isPresent()) {
-        throw new UserNotFoundException("El id: " + mensajes.getIdRemitente() + " no pertenece a ningún usuario existente.");
-    }
-    UsuariosModel usuario = usuarioExiste.get();
-
-    // Validar que el remitente sea el interesado o el propietario
-    if (!usuario.getId().equals(chat.getIdInteresado()) && !usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
-        throw new InvalidUserRoleException("El usuario remitente debe ser el mismo usuario que creó el chat o el propietario del aviso.");
+    // 2. Verificar remitente válido
+    UsuariosModel remitente = UsuarioRepository.findById(nuevoMsg.getIdRemitente())
+        .orElseThrow(() -> new UserNotFoundException(
+            "El id: " + nuevoMsg.getIdRemitente() + " no pertenece a ningún usuario."));
+    ObjectId idInteresado = chat.getIdInteresado();
+    ObjectId idPropietario = aviso.getPropietarioId().getUsuarioId();
+    if (!remitente.getId().equals(idInteresado)
+     && !remitente.getId().equals(idPropietario)) {
+        throw new InvalidUserRoleException(
+            "El remitente debe ser el interesado o el propietario del aviso.");
     }
 
-    // Depuración: Registrar información útil
-    System.out.println("Enviando mensaje - Chat ID: " + idMensajeria);
-    System.out.println("Remitente: " + mensajes.getIdRemitente() + ", Mensaje: " + mensajes.getMensaje());
-    System.out.println("Interesado: " + chat.getIdInteresado() + ", Propietario: " + aviso.getPropietarioId().getUsuarioId());
-
-    // Temporalmente relajar la validación de alternancia para depurar
-
-    if (chat.getMensajes() == null || chat.getMensajes().isEmpty()) {
-        if (!usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
-            throw new InvalidUserRoleException("El propietario debe responder el mensaje del interesado.");
+    // 3. Validar alternancia (quién debe contestar)
+    if (!chat.getMensajes().isEmpty()) {
+        MensajesMensajeria ultimo = chat.getMensajes()
+            .get(chat.getMensajes().size() - 1);
+        // Si el último lo envió el interesado, ahora debe enviar el propietario
+        if (ultimo.getIdRemitente().equals(idInteresado)
+           && !remitente.getId().equals(idPropietario)) {
+            throw new InvalidUserRoleException(
+                "El propietario debe responder al mensaje del interesado.");
+        }
+        // Si el último lo envió el propietario, ahora debe enviar el interesado
+        if (ultimo.getIdRemitente().equals(idPropietario)
+           && !remitente.getId().equals(idInteresado)) {
+            throw new InvalidUserRoleException(
+                "El interesado debe responder al mensaje del propietario.");
         }
     } else {
-        MensajesMensajeria ultimoMensaje = chat.getMensajes().get(chat.getMensajes().size() - 1);
-        if (ultimoMensaje.getIdRemitente().equals(chat.getIdInteresado())) {
-            if (!usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
-                throw new InvalidUserRoleException("El propietario debe responder al mensaje del interesado.");
-            }
-        } else {
-            if (!usuario.getId().equals(chat.getIdInteresado())) {
-                throw new InvalidUserRoleException("El interesado debe responder al mensaje del propietario.");
-            }
+        // Si aún no hay mensajes (caso improbable aquí), forzar al propietario a responder
+        if (!remitente.getId().equals(idPropietario)) {
+            throw new InvalidUserRoleException(
+                "El propietario debe responder el primer mensaje del interesado.");
         }
     }
-    
 
-    // Configurar y agregar el mensaje
-    mensajes.setFecha(Instant.now());
-    mensajes.setLeido(false);
-    chat.getMensajes().add(mensajes);
+    // 4. Completar datos del nuevo mensaje
+    ObjectId destinatario = remitente.getId().equals(idInteresado)
+        ? idPropietario
+        : idInteresado;
+    String nombreDest = remitente.getId().equals(idInteresado)
+        ? aviso.getPropietarioId().getNombre()
+        : chat.getNombreInteresado();  // ya seteado al crearChat
 
-    // Guardar y devolver el chat actualizado
+    nuevoMsg.setIdDestinatario(destinatario);
+    nuevoMsg.setNombreDestinatario(nombreDest);
+    nuevoMsg.setNombreRemitente(remitente.getNombre());
+    nuevoMsg.setFecha(Instant.now());
+    nuevoMsg.setLeido(false);
+
+    // 5. Agregar y guardar
+    chat.getMensajes().add(nuevoMsg);
     return MensajeriaRepository.save(chat);
 }
+
 
     @Override
     public MensajeriaModel mostrarChat(String idMensajeria) {
@@ -164,29 +178,71 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria m
         return chatExiste.get();
     }
 
-    @Override
-    public List<MensajeriaModel> obtenerConversacionesPorUsuario(String userId) {
+@Override
+public List<MensajeriaModel> obtenerConversacionesPorUsuario(String userId) {
     ObjectId userObjectId = new ObjectId(userId);
 
-    // Obtener conversaciones donde el usuario es el interesado
-    List<MensajeriaModel> conversacionesInteresado = MensajeriaRepository.findByIdInteresado(userObjectId);
+    // 1) Chats donde el usuario es el interesado
+    List<MensajeriaModel> conversacionesInteresado =
+        MensajeriaRepository.findByIdInteresado(userObjectId);
 
-    // Obtener avisos donde el usuario es el propietario
-    List<AvisosModel> avisosPropietario = AvisosRepository.findByPropietarioId(userId);
+    // 2) Chats donde el usuario es propietario de avisos
+    List<AvisosModel> avisosPropietario =
+        AvisosRepository.findByPropietarioIdUsuarioId(userObjectId);
     List<MensajeriaModel> conversacionesPropietario = new ArrayList<>();
-
     for (AvisosModel aviso : avisosPropietario) {
-        List<MensajeriaModel> chats = MensajeriaRepository.findByIdAviso(aviso.getId());
-        conversacionesPropietario.addAll(chats);
+        conversacionesPropietario.addAll(
+            MensajeriaRepository.findByIdAviso(aviso.getId())
+        );
     }
 
-    // Combinar ambas listas y eliminar duplicados
+    // 3) Unir y eliminar duplicados
     Set<MensajeriaModel> conversacionesUnicas = new HashSet<>();
     conversacionesUnicas.addAll(conversacionesInteresado);
     conversacionesUnicas.addAll(conversacionesPropietario);
 
-    return new ArrayList<>(conversacionesUnicas);
+    // 4) Para cada conversación, cargar nombres y poblar mensajes
+    List<MensajeriaModel> resultado = new ArrayList<>();
+    for (MensajeriaModel chat : conversacionesUnicas) {
+        // 4a) Nombre de interesado
+        UsuariosModel interesado = UsuarioRepository
+            .findById(chat.getIdInteresado()).orElse(null);
+        chat.setNombreInteresado(
+            interesado != null ? interesado.getNombre() : ""
+        );
+
+        // 4b) Nombre de propietario (desde el aviso)
+        AvisosModel aviso = AvisosRepository.findById(chat.getIdAviso())
+            .orElse(null);
+        UsuariosModel propietario = aviso != null
+            ? UsuarioRepository.findById(aviso.getPropietarioId().getUsuarioId()).orElse(null)
+            : null;
+        chat.setNombrePropietario(
+            propietario != null ? propietario.getNombre() : ""
+        );
+
+        // 4c) Para cada mensaje interno, setear remitente y destinatario
+        for (MensajesMensajeria msg : chat.getMensajes()) {
+            // Remitente
+            UsuariosModel rem = UsuarioRepository
+                .findById(msg.getIdRemitente()).orElse(null);
+            msg.setNombreRemitente(
+                rem != null ? rem.getNombre() : ""
+            );
+            // Destinatario
+            UsuariosModel dest = UsuarioRepository
+                .findById(msg.getIdDestinatario()).orElse(null);
+            msg.setNombreDestinatario(
+                dest != null ? dest.getNombre() : ""
+            );
+        }
+
+        resultado.add(chat);
+    }
+
+    return resultado;
 }
+
 
 @Override
 public MensajeriaModel obtenerChat(ObjectId idMensajeria) {
@@ -219,6 +275,12 @@ public MensajeriaModel mandarMensaje(String idMensajeria, MensajesMensajeria men
     public MensajeriaModel verificarChat(String idInteresado, String idAviso) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'verificarChat'");
+    }
+
+    @Override
+    public MensajeriaModel mostrarChat(ObjectId idMensajeria) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'mostrarChat'");
     }
 
 

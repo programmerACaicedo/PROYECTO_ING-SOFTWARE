@@ -16,4 +16,5 @@ public interface IMensajeriaService {
     MensajeriaModel mostrarChat(String idMensajeria);
     MensajeriaModel verificarChat(String idInteresado, String idAviso);
     Optional<MensajeriaModel> findByInteresadoAndAviso(String idInteresado, String idAviso);
+    MensajeriaModel mostrarChat(ObjectId idMensajeria);
 }
