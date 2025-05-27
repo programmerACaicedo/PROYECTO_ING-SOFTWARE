@@ -226,6 +226,9 @@ body {
 }
 
 .conversacion {
+  border-radius: 20px;
+  height: auto;
+  margin: 5px;
   padding: clamp(0.8rem, 2vw, 1rem);
   border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
@@ -243,7 +246,8 @@ body {
 }
 
 .selected {
-  background-color: #7c1515;
+
+  background-color: #a9a9a9;
 }
 
 .chatArea {

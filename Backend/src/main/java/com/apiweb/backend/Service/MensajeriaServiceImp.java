@@ -47,6 +47,7 @@ public MensajeriaModel crearChat(MensajeriaModel chat) {
         throw new ResourceNotFoundException("El aviso con el id: "+ chat.getIdAviso() + " no existe.");
     }
     AvisosModel aviso = avisoExiste.get();
+    
     Optional<UsuariosModel> usuarioExiste = UsuarioRepository.findById(chat.getIdInteresado());
     if (!usuarioExiste.isPresent()) {
         throw new UserNotFoundException("El usuario con id: "+ chat.getIdInteresado()+" no existe.");
@@ -60,29 +61,36 @@ public MensajeriaModel crearChat(MensajeriaModel chat) {
         throw new InvalidUserRoleException("Un administrador no se puede interesar por un aviso. ");
     }
 
-    Optional<MensajeriaModel> mensajeExiste = MensajeriaRepository.findByIdInteresadoAndIdAviso(chat.getIdInteresado(),chat.getIdAviso());
-    if (mensajeExiste.isPresent()){
+    Optional<MensajeriaModel> mensajeExiste = MensajeriaRepository.findByIdInteresadoAndIdAviso(chat.getIdInteresado(), chat.getIdAviso());
+    if (mensajeExiste.isPresent()) {
         throw new InvalidMensajeriaConfigurationException("El interesado con id: " + chat.getIdInteresado() + " ya tiene un chat creado con ese aviso");
     }
 
-    // Obtener el nombre del propietario
+    // Obtener los nombres
     String nombrePropietario = aviso.getPropietarioId().getNombre();
+    String nombreInteresado = interesado.getNombre();
 
-    // Modificar el mensaje para incluir el nombre del propietario
-    chat.setMensaje("Hola " + nombrePropietario + ", soy "+ interesado.getNombre() + " y estoy interesado en tu aviso llamado: "+ aviso.getNombre());
+    // Construir mensaje
+    chat.setMensaje("Hola " + nombrePropietario + ", soy "+ nombreInteresado + " y estoy interesado en tu aviso llamado: "+ aviso.getNombre());
     chat.setFecha(Instant.now());
     chat.setLeido(false);
 
-    // Crear el mensaje inicial y agregarlo al array de mensajes
+    // Agregar nombres al modelo
+    chat.setNombrePropietario(nombrePropietario);
+    chat.setNombreInteresado(nombreInteresado);
+
+    // Crear el mensaje inicial
     MensajesMensajeria mensajeInicial = new MensajesMensajeria();
     mensajeInicial.setIdRemitente(interesado.getId());
     mensajeInicial.setMensaje(chat.getMensaje());
     mensajeInicial.setFecha(chat.getFecha());
     mensajeInicial.setLeido(false);
+
     chat.getMensajes().add(mensajeInicial);
 
     return MensajeriaRepository.save(chat);
 }
+
 
 @Override
 @Transactional

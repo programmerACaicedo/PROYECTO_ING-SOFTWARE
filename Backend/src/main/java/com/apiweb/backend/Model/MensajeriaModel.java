@@ -30,6 +30,8 @@ public class MensajeriaModel {
     public Instant fecha;
     public Boolean leido;
     public ArrayList<MensajesMensajeria> mensajes = new ArrayList<MensajesMensajeria>();
+    private String nombrePropietario;
+    private String nombreInteresado;
     
     // Getters and setters
     public ObjectId getIdInteresado() {
@@ -52,4 +54,6 @@ public class MensajeriaModel {
     public void setIdPropietario(ObjectId idPropietario) {
         this.propietarioId = idPropietario; // Ahora asigna el valor correctamente
     }
+
+    
 }

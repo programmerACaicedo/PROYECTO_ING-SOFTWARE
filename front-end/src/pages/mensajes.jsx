@@ -219,12 +219,14 @@ const Mensajes = () => {
                   onClick={() => seleccionarConversacion(conv)}
                 >
                   <p>
-                    Chat con{" "}
-                    {userId === conv.idInteresado
-                      ? conv.nombrePropietario
-                      : conv.nombreInteresado}
-                    {" "}({conv.idAviso})
-                  </p>
+          {" "}
+          {userId === conv.idInteresado
+            ? conv.nombrePropietario
+            : conv.nombreInteresado}
+          {" "}({conv.usuario_id})
+          </p>
+
+
                 </div>
               ))
             )}
@@ -234,7 +236,13 @@ const Mensajes = () => {
             {conversacionSeleccionada ? (
               <>
                 <div className={styles.chatHeader}>
-                  <h3>Chat con Aviso {conversacionSeleccionada.idAviso}</h3>
+                  <h3>
+            {" "}
+             {userId === conversacionSeleccionada.idInteresado
+                ? conversacionSeleccionada.nombrePropietario
+             : conversacionSeleccionada.nombreInteresado}
+              </h3>
+
                 </div>
                 <div className={styles.mensajes}>
                   {conversacionSeleccionada.mensajes.map((msg, index) => (
