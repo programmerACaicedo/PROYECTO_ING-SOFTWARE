@@ -1,59 +1,81 @@
-/* Asegurar compatibilidad general */
+/* Variables CSS para facilitar el cambio de temas y mantenimiento */
+:root {
+  --background-color: #f2f2f2;
+  --text-color: black;
+  --header-bg: #0284c7;
+  --menu-bg: #1c1c1cc6;
+  --chat-bg: #e3efe2;
+  --sent-msg-bg: #d9fdd3;
+  --received-msg-bg: #fff;
+  --input-bg: #fff;
+  --button-bg: #075e54;
+  --button-hover-bg: #064c44;
+  --scrollbar-thumb: #888;
+  --scrollbar-track: #f1f1f1;
+  --header-height: 109px;
+}
+
+/* Compatibilidad general y estilo de barra de desplazamiento */
 html {
   font-size: 100%;
   overflow-x: hidden;
-  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  overflow-y: auto;
   box-sizing: border-box;
-  scrollbar-width: thin; /* Para Firefox: hacer la barra más delgada */
-  scrollbar-color: #888 #f1f1f1; /* Color del pulgar y de la pista en Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 body {
   min-width: 320px;
   overflow-x: hidden;
-  overflow-y: auto; /* Permitir desplazamiento vertical cuando sea necesario */
+  overflow-y: auto;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
 }
 
-/* Personalizar la barra deslizadora para WebKit (Chrome, Safari) */
+/* Estilo de barra de desplazamiento para WebKit (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 12px; /* Ancho de la barra vertical */
-  height: 12px; /* Altura de la barra horizontal, si aplica */
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color del fondo de la pista */
-  border-radius: 10px; /* Bordes redondeados */
+  background: var(--scrollbar-track);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; /* Color del pulgar (la parte móvil) */
-  border-radius: 10px; /* Bordes redondeados */
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color del pulgar al pasar el mouse */
+  background: #555;
 }
 
-/* Estilos para el contenedor principal */
+/* Contenedor de mensajes */
 .mensajeContainer {
-  overflow-y: auto; /* Habilita desplazamiento vertical cuando sea necesario */
-  height: 100vh; /* Ocupa toda la altura de la ventana */
-} 
+  overflow-y: auto;
+  height: 100vh;
+}
 
+/* Contenedor principal de mensajes */
 .mensajesContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f2f2f2;
-  color: black;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: Arial, sans-serif;
 }
 
+/* Estilo del encabezado */
 .header {
-  background-color: #0284c7;
+  background-color: var(--header-bg);
   padding: 1.7rem;
   box-shadow: 0 6px 8px rgb(0, 0, 0);
   width: 100vw;
@@ -75,7 +97,7 @@ body {
 .titulo {
   font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: bold;
-  color: #333;
+  color: #000; /* Mejorado para mayor contraste */
   margin: 0;
   flex: 1;
   text-align: center;
@@ -98,22 +120,25 @@ body {
   padding: 2px 6px;
   font-size: clamp(0.7rem, 1.5vw, 0.9rem);
 }
-.notificationDropdown{
-  margin-top: 109px;
+
+/* Dropdown de notificaciones */
+.notificationDropdown {
   display: flex;
   position: absolute;
-  top: 0;
+  top: var(--header-height); /* Posicionamiento dinámico */
   right: 10px;
-  width: clamp(200px, 30vw, 30px);
-  height: 20.6vh;
+  width: clamp(200px, 30vw, 300px); /* Corregido el valor máximo */
+  max-height: 50vh;
+  overflow-y: auto;
   flex-direction: column;
-  background-color: #1c1c1cc6;
+  background-color: var(--menu-bg);
   padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  color:white;
+  color: white;
 }
-.clearButton{
+
+.clearButton {
   background-color: #fff;
   border: 1px solid #ccc;
   font-size: clamp(0.9rem, 2.5vw, 1rem);
@@ -123,25 +148,25 @@ body {
   margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
   border-radius: 5px;
   transition: background-color 0.2s ease, transform 0.2s ease;
+  color: #333; /* Asegurar visibilidad del texto */
 }
 
 .clearButton:hover {
   background-color: #007bff;
   color: white;
   transform: translateY(-4px);
-
 }
 
+/* Estilo del menú */
 .menu {
-  margin-top: 109px;
   display: none;
   position: absolute;
-  top: 0;
+  top: var(--header-height); /* Posicionamiento dinámico */
   left: 0;
   width: clamp(200px, 30vw, 245px);
   height: 83.6vh;
   flex-direction: column;
-  background-color: #1c1c1cc6;
+  background-color: var(--menu-bg);
   padding: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -187,34 +212,36 @@ body {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
 }
 
+/* Contenido principal */
 .mainContent {
+  margin-top: 3rem;
   flex: 1;
   display: flex;
   justify-content: center;
   margin-left: 18rem;
-  padding: clamp(1rem, 3vw, 2rem);
+  
 }
 
+/* Diseño del chat */
 .chatLayout {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  max-width: clamp(600px, 80vw, 800px);
-  height: 73vh; /* Igual que perfilForm */
+  width: 90vw;
+  height: 73vh;
   background-color: #fff;
-  padding: clamp(1rem, 3vw, 2rem);
+ 
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
+/* Lista de conversaciones */
 .conversaciones {
-  width: 35%;
+  width: 40%;
   background-color: #f8f9fa;
   border-right: 1px solid #e0e0e0;
   overflow-y: auto;
   padding: clamp(0rem, 2vw, 1.5rem);
-  
 }
 
 .conversaciones h2 {
@@ -246,20 +273,20 @@ body {
 }
 
 .selected {
-
-  background-color: #a9a9a9;
+  background-color: #3c60d9b4;
 }
 
+/* Área de chat */
 .chatArea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #e3efe2; /* Fondo típico de WhatsApp */
+  background-color: var(--chat-bg);
   width: 100%;
 }
 
 .chatHeader {
-  background-color: #075e54; /* Verde de WhatsApp */
+  background-color: #075e54;
   color: white;
   padding: clamp(0.5rem, 2vw, 1rem);
   border-bottom: 1px solid #e0e0e0;
@@ -288,13 +315,13 @@ body {
 }
 
 .mensajeEnviado {
-  background-color: #d9fdd3; /* Verde claro para mensajes enviados */
+  background-color: var(--sent-msg-bg);
   margin-left: auto;
   border-bottom-right-radius: 0;
 }
 
 .mensajeRecibido {
-  background-color: #fff;
+  background-color: var(--received-msg-bg);
   margin-right: auto;
   border-bottom-left-radius: 0;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
@@ -328,17 +355,17 @@ body {
   padding: clamp(0.5rem, 1.5vw, 0.8rem);
   border: none;
   border-radius: 20px;
-  background-color: #fff;
+  background-color: var(--input-bg);
   font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .inputArea input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(7, 94, 84, 0.2); /* Verde de WhatsApp */
+  box-shadow: 0 0 0 2px rgba(7, 94, 84, 0.2);
 }
 
 .inputArea button {
-  background-color: #075e54; /* Verde de WhatsApp */
+  background-color: var(--button-bg);
   color: white;
   border: none;
   border-radius: 50%;
@@ -352,7 +379,7 @@ body {
 }
 
 .inputArea button:hover {
-  background-color: #064c44;
+  background-color: var(--button-hover-bg);
 }
 
 .error {
@@ -381,8 +408,8 @@ body {
 
   .chatLayout {
     flex-direction: column;
-    height: auto; /* Ajuste para que no se corte */
-    min-height: 73vh; /* Mínimo igual al perfilForm */
+    height: auto;
+    min-height: 73vh;
   }
 
   .conversaciones {
