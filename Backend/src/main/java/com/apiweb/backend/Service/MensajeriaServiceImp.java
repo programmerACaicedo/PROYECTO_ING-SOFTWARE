@@ -119,7 +119,7 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria m
     System.out.println("Interesado: " + chat.getIdInteresado() + ", Propietario: " + aviso.getPropietarioId().getUsuarioId());
 
     // Temporalmente relajar la validación de alternancia para depurar
-    /*
+
     if (chat.getMensajes() == null || chat.getMensajes().isEmpty()) {
         if (!usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
             throw new InvalidUserRoleException("El propietario debe responder el mensaje del interesado.");
@@ -136,7 +136,7 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria m
             }
         }
     }
-    */
+    
 
     // Configurar y agregar el mensaje
     mensajes.setFecha(Instant.now());

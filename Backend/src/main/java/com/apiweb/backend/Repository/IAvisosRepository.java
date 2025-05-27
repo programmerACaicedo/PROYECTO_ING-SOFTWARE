@@ -20,3 +20,5 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     List<AvisosModel> findAvisosWithoutExcludedReports(EstadoReporte estado);
     List<AvisosModel> findByPropietarioId(String userId);
 }
+
+

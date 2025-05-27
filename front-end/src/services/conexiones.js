@@ -281,6 +281,7 @@ export const cancelarAcuerdo = async (idAcuerdo, razon) => {
   return respuesta.data;
 };
 
+
 export const obtenerAvisoPorId = async (idAviso) => {
   const respuesta = await api.get(`/avisos/${idAviso}`);
   return respuesta.data;

@@ -19,5 +19,4 @@ public interface IMensajeriaRepository extends MongoRepository<MensajeriaModel, 
     List<MensajeriaModel> findByIdInteresado(ObjectId userObjectId);
     List<MensajeriaModel> findByIdAviso(ObjectId id);
     Optional<MensajeriaModel> findByIdInteresadoAndPropietarioId(ObjectId idInteresado, ObjectId usuarioId);
-
 }

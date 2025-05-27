@@ -84,7 +84,6 @@ public class MensajeriaController {
   public static class MensajeSocket {
     public String idMensajeria;
     public MensajesMensajeria mensajes;
-
     public MensajeSocket(String idMensajeria, MensajesMensajeria mensajes) {
       this.idMensajeria = idMensajeria;
       this.mensajes = mensajes;
