@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apiweb.backend.Exception.InvalidUserRoleException;
+import com.apiweb.backend.Exception.ResourceNotFoundException;
+import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
 import com.apiweb.backend.Model.UsuariosModel;
@@ -49,15 +52,35 @@ public class MensajeriaController {
     List<MensajeriaModel> conversaciones = mensajeriaService.obtenerConversacionesPorUsuario(userId);
     return ResponseEntity.ok(conversaciones);
   }
-  @PutMapping("/mandarMensaje/{idMensajeria}")
-  public ResponseEntity<MensajeriaModel> mandarMensaje(
-      @PathVariable("idMensajeria") String idMensajeria,
-      @RequestBody MensajesMensajeria mensajes) {
-    MensajeriaModel chatActualizado = mensajeriaService.mandarMensaje(idMensajeria, mensajes);
-    messagingTemplate.convertAndSend("/topic/nuevoMensaje", 
-        new MensajeSocket(idMensajeria, mensajes));
-    return new ResponseEntity<>(chatActualizado, HttpStatus.OK);
-  }
+@PostMapping("/mandarMensaje/{id}")
+public ResponseEntity<MensajeriaModel> mandarMensaje(
+        @PathVariable("id") String id,
+        @RequestBody MensajesMensajeria nuevoMsg) {
+    System.out.println("Solicitud recibida para id: " + id);
+    System.out.println("Datos recibidos: " + nuevoMsg.toString());  // Usa toString() para mejor legibilidad
+    try {
+        // Validar el ID antes de convertirlo
+        if (!ObjectId.isValid(id)) {
+            System.out.println("ID inválido: " + id);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  // 400 para ID inválido
+        }
+        ObjectId objectId = new ObjectId(id);
+        System.out.println("ObjectId creado: " + objectId);
+        MensajeriaModel result = mensajeriaService.mandarMensaje(objectId, nuevoMsg);
+        System.out.println("Resultado del servicio: " + result);
+        return ResponseEntity.ok(result);
+    } catch (ResourceNotFoundException | UserNotFoundException e) {
+        System.out.println("Excepción de recurso no encontrado: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    } catch (InvalidUserRoleException e) {
+        System.out.println("Excepción de rol inválido: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    } catch (Exception e) {
+        System.out.println("Error inesperado: " + e.getMessage());
+        e.printStackTrace();  // Imprime el stack trace para más detalles
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 
 @GetMapping("/verificarChat/{idInteresado}/{idAviso}")
     public ResponseEntity<MensajeriaModel> verificarChatExistente(

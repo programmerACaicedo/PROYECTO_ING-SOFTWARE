@@ -103,59 +103,48 @@ public MensajeriaModel crearChat(MensajeriaModel chat) {
 
 @Override
 @Transactional
-public MensajeriaModel mandarMensaje(ObjectId idMensajeria,
-                                     MensajesMensajeria nuevoMsg) {
-    // 1. Encontrar chat y aviso
+public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria nuevoMsg) {
+    System.out.println("Iniciando mandarMensaje para id: " + idMensajeria);
     MensajeriaModel chat = MensajeriaRepository.findById(idMensajeria)
         .orElseThrow(() -> new ResourceNotFoundException(
             "La mensajería con id: " + idMensajeria + " no existe."));
+
     AvisosModel aviso = AvisosRepository.findById(chat.getIdAviso())
         .orElseThrow(() -> new ResourceNotFoundException(
             "El aviso con id: " + chat.getIdAviso() + " no existe."));
 
-    // 2. Verificar remitente válido
     UsuariosModel remitente = UsuarioRepository.findById(nuevoMsg.getIdRemitente())
         .orElseThrow(() -> new UserNotFoundException(
             "El id: " + nuevoMsg.getIdRemitente() + " no pertenece a ningún usuario."));
+
     ObjectId idInteresado = chat.getIdInteresado();
     ObjectId idPropietario = aviso.getPropietarioId().getUsuarioId();
+
     if (!remitente.getId().equals(idInteresado)
      && !remitente.getId().equals(idPropietario)) {
-        throw new InvalidUserRoleException(
-            "El remitente debe ser el interesado o el propietario del aviso.");
+        throw new InvalidUserRoleException("El remitente debe ser el interesado o el propietario del aviso.");
     }
 
-    // 3. Validar alternancia (quién debe contestar)
     if (!chat.getMensajes().isEmpty()) {
-        MensajesMensajeria ultimo = chat.getMensajes()
-            .get(chat.getMensajes().size() - 1);
-        // Si el último lo envió el interesado, ahora debe enviar el propietario
+        MensajesMensajeria ultimo = chat.getMensajes().get(chat.getMensajes().size() - 1);
         if (ultimo.getIdRemitente().equals(idInteresado)
-           && !remitente.getId().equals(idPropietario)) {
-            throw new InvalidUserRoleException(
-                "El propietario debe responder al mensaje del interesado.");
+         && !remitente.getId().equals(idPropietario)) {
+            throw new InvalidUserRoleException("El propietario debe responder al mensaje del interesado.");
         }
-        // Si el último lo envió el propietario, ahora debe enviar el interesado
         if (ultimo.getIdRemitente().equals(idPropietario)
-           && !remitente.getId().equals(idInteresado)) {
-            throw new InvalidUserRoleException(
-                "El interesado debe responder al mensaje del propietario.");
+         && !remitente.getId().equals(idInteresado)) {
+            throw new InvalidUserRoleException("El interesado debe responder al mensaje del propietario.");
         }
     } else {
-        // Si aún no hay mensajes (caso improbable aquí), forzar al propietario a responder
         if (!remitente.getId().equals(idPropietario)) {
-            throw new InvalidUserRoleException(
-                "El propietario debe responder el primer mensaje del interesado.");
+            throw new InvalidUserRoleException("El propietario debe responder el primer mensaje del interesado.");
         }
     }
 
-    // 4. Completar datos del nuevo mensaje
-    ObjectId destinatario = remitente.getId().equals(idInteresado)
-        ? idPropietario
-        : idInteresado;
+    ObjectId destinatario = remitente.getId().equals(idInteresado) ? idPropietario : idInteresado;
     String nombreDest = remitente.getId().equals(idInteresado)
         ? aviso.getPropietarioId().getNombre()
-        : chat.getNombreInteresado();  // ya seteado al crearChat
+        : chat.getNombreInteresado();
 
     nuevoMsg.setIdDestinatario(destinatario);
     nuevoMsg.setNombreDestinatario(nombreDest);
@@ -163,10 +152,13 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria,
     nuevoMsg.setFecha(Instant.now());
     nuevoMsg.setLeido(false);
 
-    // 5. Agregar y guardar
     chat.getMensajes().add(nuevoMsg);
+
+  
+    System.out.println("Finalizando mandarMensaje");
     return MensajeriaRepository.save(chat);
 }
+
 
 
     @Override

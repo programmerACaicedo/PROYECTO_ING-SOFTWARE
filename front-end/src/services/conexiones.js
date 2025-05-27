@@ -314,15 +314,19 @@ export const crearChat = async (chatData) => {
   }
 */
 export const mandarMensaje = async (idMensajeria, mensajeData) => {
+  // Declara id aquí para que esté disponible en todo el scope
+  const id = typeof idMensajeria === "object" ? idMensajeria.id : idMensajeria;
   try {
-    const response = await api.put(`/mensajeria/mandarMensaje/${idMensajeria}`, mensajeData);
+    const response = await api.post(`/mensajeria/mandarMensaje/${id}`, mensajeData);
     return response.data;
   } catch (error) {
     console.error("Error al enviar mensaje:", error.response || error.message);
+    console.log("URL:", `/mensajeria/mandarMensaje/${id}`);
+    console.log("Datos enviados:", mensajeData);
+    console.log("idMensajeria:", idMensajeria);
     throw error;
   }
 };
-
 
 
 export const obtenerChat = async (idMensajeria) => {
@@ -352,3 +356,4 @@ export const obtenerConversaciones = async (userId) => {
 };
 
 export default api;
+

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode}   from "jwt-decode";
 import { SocketContext } from "../context/SocketContext";
 import { obtenerConversaciones, mandarMensaje, obtenerChat } from "../services/conexiones";
 import styles from "../styles/mensajes.module.css";
@@ -26,26 +26,25 @@ const Mensajes = () => {
       return;
     }
 
-    const decodedToken = jwtDecode(token);
-    setTipoUsuario(decodedToken.tipo || "");
-    const id = decodedToken.id?._id || decodedToken.id || "";
+    const decoded = jwtDecode(token);
+    setTipoUsuario(decoded.tipo || "");
+    const id = decoded.id?._id || decoded.id || "";
     setUserId(id);
 
     socket.emit("join", id);
-
     fetchConversaciones(id);
 
-    socket.on("nuevoMensaje", ({ conversacionId, mensaje, emisorId, destinatarioId }) => {
+    socket.on("nuevoMensaje", ({ conversacionId, mensaje, destinatarioId }) => {
       if (userId === destinatarioId) {
-        setConversaciones((prev) =>
-          prev.map((conv) =>
+        setConversaciones(prev =>
+          prev.map(conv =>
             conv.id === conversacionId
               ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
               : conv
           )
         );
-        if (conversacionSeleccionada && conversacionId === conversacionSeleccionada.id) {
-          setConversacionSeleccionada((prev) => ({
+        if (conversacionSeleccionada?.id === conversacionId) {
+          setConversacionSeleccionada(prev => ({
             ...prev,
             mensajes: [...prev.mensajes, mensaje],
           }));
@@ -53,12 +52,12 @@ const Mensajes = () => {
       }
     });
 
-    socket.on("nuevoChat", (nuevaConversacion) => {
-      setConversaciones((prev) => [...prev, nuevaConversacion]);
+    socket.on("nuevoChat", nuevaConversacion => {
+      setConversaciones(prev => [...prev, nuevaConversacion]);
     });
 
-    socket.on("receiveNotification", (data) => {
-      setNotifications((prev) => prev + 1);
+    socket.on("receiveNotification", () => {
+      setNotifications(prev => prev + 1);
     });
 
     socket.on("error", ({ mensaje }) => {
@@ -76,35 +75,32 @@ const Mensajes = () => {
       socket.off("receiveNotification");
       socket.off("error");
     };
-  }, [socket, navigate, location.state]);
+  }, [socket, navigate, location.state, userId, conversacionSeleccionada]);
 
   useEffect(() => {
-    if (mensajesEndRef.current) {
-      mensajesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    mensajesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversacionSeleccionada?.mensajes]);
 
-  const fetchConversaciones = async (userId) => {
+  const fetchConversaciones = async id => {
     try {
-      const data = await obtenerConversaciones(userId);
+      const data = await obtenerConversaciones(id);
       setConversaciones(data);
-    } catch (error) {
-      console.error("Error al cargar conversaciones:", error);
+    } catch {
       setError("Error al cargar conversaciones");
     }
   };
 
-  const seleccionarConversacionPorId = async (chatId) => {
+  const seleccionarConversacionPorId = async chatId => {
     try {
       const chat = await obtenerChat(chatId);
       setConversacionSeleccionada(chat);
-    } catch (error) {
-      console.error("Error al seleccionar conversación:", error);
+    } catch {
+      console.error("Error al seleccionar conversación");
     }
   };
 
-  const seleccionarConversacion = (conversacion) => {
-    setConversacionSeleccionada(conversacion);
+  const seleccionarConversacion = conv => {
+    setConversacionSeleccionada(conv);
     setError("");
   };
 
@@ -114,56 +110,41 @@ const Mensajes = () => {
     const mensajeData = {
       idRemitente: userId,
       mensaje: nuevoMensaje,
-      idDestinatario: userId === conversacionSeleccionada.idInteresado
-        ? conversacionSeleccionada.propietarioId
-        : conversacionSeleccionada.idInteresado,
+      idDestinatario:
+        userId === conversacionSeleccionada.idInteresado
+          ? conversacionSeleccionada.propietarioId
+          : conversacionSeleccionada.idInteresado,
     };
 
     try {
       const updatedChat = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
       setConversacionSeleccionada(updatedChat);
-      setConversaciones((prev) =>
-        prev.map((conv) => (conv.id === updatedChat.id ? updatedChat : conv))
+      setConversaciones(prev =>
+        prev.map(conv => (conv.id === updatedChat.id ? updatedChat : conv))
       );
       socket.emit("enviarMensaje", {
-        conversacionId: conversacionSeleccionada.id,
+        conversacionId: updatedChat.id,
         emisorId: userId,
         destinatarioId: mensajeData.idDestinatario,
         mensaje: nuevoMensaje,
       });
       setNuevoMensaje("");
-    } catch (error) {
-      setError("Error al enviar el mensaje: " + (error.response?.data?.message || error.message));
+    } catch (err) {
+      setError("Error al enviar el mensaje: " + (err.response?.data?.message || err.message));
     }
   };
 
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const toggleNotifications = () => setShowNotifications(prev => !prev);
+  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
 
   const handleInicioClick = () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+      if (!token) return navigate("/login");
       const usuario = jwtDecode(token);
-      if (usuario.tipo === "propietario") {
-        navigate("/propietario");
-      } else if (usuario.tipo === "interesado") {
-        navigate("/interesado");
-      }
-    } catch (error) {
-      console.error("Error al decodificar el token:", error);
+      navigate(usuario.tipo === "propietario" ? "/propietario" : "/interesado");
+    } catch {
       navigate("/login");
     }
     closeMenu();
@@ -175,8 +156,7 @@ const Mensajes = () => {
         <span className={styles.iconMenu} onClick={toggleMenu}>≡</span>
         <h1 className={styles.titulo}>Servicio de Arrendamientos</h1>
         <div className={styles.notificationBell} onClick={toggleNotifications}>
-          🔔
-          <span className={styles.notificationCount}>{notifications}</span>
+          🔔<span className={styles.notificationCount}>{notifications}</span>
         </div>
       </header>
 
@@ -193,11 +173,10 @@ const Mensajes = () => {
         {showNotifications && (
           <div className={styles.notificationDropdown}>
             <h3>Notificaciones</h3>
-            {notifications > 0 ? (
-              <p>Tienes {notifications} notificación(es) nueva(s).</p>
-            ) : (
-              <p>No hay notificaciones.</p>
-            )}
+            {notifications > 0
+              ? <p>Tienes {notifications} notificación(es) nueva(s).</p>
+              : <p>No hay notificaciones.</p>
+            }
             <button onClick={() => setNotifications(0)} className={styles.clearButton}>
               Limpiar Notificaciones
             </button>
@@ -205,12 +184,11 @@ const Mensajes = () => {
         )}
 
         <div className={styles.chatLayout}>
-          <div className={styles.conversaciones}>
+          <aside className={styles.conversaciones}>
             <h2>Conversaciones</h2>
-            {conversaciones.length === 0 ? (
-              <p>No tienes conversaciones.</p>
-            ) : (
-              conversaciones.map((conv) => (
+            {conversaciones.length === 0
+              ? <p>No tienes conversaciones.</p>
+              : conversaciones.map(conv => (
                 <div
                   key={conv.id}
                   className={`${styles.conversacion} ${
@@ -219,41 +197,37 @@ const Mensajes = () => {
                   onClick={() => seleccionarConversacion(conv)}
                 >
                   <p>
-          {" "}
-          {userId === conv.idInteresado
-            ? conv.nombrePropietario
-            : conv.nombreInteresado}
-          {" "}({conv.usuario_id})
-          </p>
-
-
+                    {userId === conv.idInteresado
+                      ? conv.nombrePropietario
+                      : conv.nombreInteresado}
+                  </p>
                 </div>
               ))
-            )}
-          </div>
+            }
+          </aside>
 
-          <div className={styles.chatArea}>
+          <section className={styles.chatArea}>
             {conversacionSeleccionada ? (
               <>
                 <div className={styles.chatHeader}>
                   <h3>
-            {" "}
-             {userId === conversacionSeleccionada.idInteresado
-                ? conversacionSeleccionada.nombrePropietario
-             : conversacionSeleccionada.nombreInteresado}
-              </h3>
-
+                    {userId === conversacionSeleccionada.idInteresado
+                      ? conversacionSeleccionada.nombrePropietario
+                      : conversacionSeleccionada.nombreInteresado}
+                  </h3>
                 </div>
                 <div className={styles.mensajes}>
-                  {conversacionSeleccionada.mensajes.map((msg, index) => (
+                  {conversacionSeleccionada.mensajes.map((msg, i) => (
                     <div
-                      key={index}
+                      key={i}
                       className={`${styles.mensaje} ${
-                        msg.idRemitente === userId ? styles.mensajeEnviado : styles.mensajeRecibido
+                        msg.idRemitente === userId
+                          ? styles.mensajeEnviado
+                          : styles.mensajeRecibido
                       }`}
                     >
                       <p>
-                        <strong>{msg.nombreRemitente || "Usuario"}:</strong> {msg.mensaje}
+                        <strong>{msg.nombreRemitente}:</strong> {msg.mensaje}
                       </p>
                       <span>{new Date(msg.fecha).toLocaleTimeString()}</span>
                     </div>
@@ -264,9 +238,9 @@ const Mensajes = () => {
                   <input
                     type="text"
                     value={nuevoMensaje}
-                    onChange={(e) => setNuevoMensaje(e.target.value)}
+                    onChange={e => setNuevoMensaje(e.target.value)}
                     placeholder="Escribe un mensaje..."
-                    onKeyPress={(e) => e.key === "Enter" && handleEnviarMensaje()}
+                    onKeyPress={e => e.key === "Enter" && handleEnviarMensaje()}
                   />
                   <button onClick={handleEnviarMensaje}>➤</button>
                 </div>
@@ -275,7 +249,7 @@ const Mensajes = () => {
             ) : (
               <p className={styles.noChat}>Selecciona una conversación para empezar a chatear.</p>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>
