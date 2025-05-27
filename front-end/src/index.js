@@ -3,10 +3,12 @@ import ReactDOM from "react-dom/client";
 import App from "./App"; // Asegúrate de que la ruta sea correcta
 import "./styles/index.module.css"; // Revisa que este archivo exista
 import { AuthProvider } from "./services/AuthContext"; // Importa el proveedor de contexto
+import { SocketProvider } from './context/SocketContext';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
+  <SocketProvider>
   <AuthProvider> {/* Envolver la aplicación con el proveedor */}
     <div className="index-page">
       <React.StrictMode>
@@ -14,4 +16,5 @@ root.render(
       </React.StrictMode>
     </div>
   </AuthProvider>
+  </SocketProvider>
 );

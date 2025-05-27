@@ -285,4 +285,47 @@ export const obtenerAvisoPorId = async (idAviso) => {
   const respuesta = await api.get(`/avisos/${idAviso}`);
   return respuesta.data;
 };
+
+// Funciones de mensajería
+export const crearChat = async (chatData) => {
+  try {
+    const response = await api.post("/mensajeria/crearChat", chatData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear chat:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const enviarMensaje = async (idMensajeria, mensajeData) => {
+  try {
+    const response = await api.put(`/mensajeria/mandarMensaje/${idMensajeria}`, mensajeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar mensaje:", error.response || error.message);
+    throw error;
+  }
+};
+
+export const obtenerChat = async (idMensajeria) => {
+  try {
+    const response = await api.get(`/mensajeria/mostrarChat/${idMensajeria}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener chat:", error.response || error.message);
+    throw error;
+  }
+};
+
+// Nueva función para obtener todas las conversaciones (requiere un endpoint en el backend)
+export const obtenerConversaciones = async (userId) => {
+  try {
+    const response = await api.get(`/mensajeria/conversaciones/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener conversaciones:", error.response || error.message);
+    throw error;
+  }
+};
+
 export default api;

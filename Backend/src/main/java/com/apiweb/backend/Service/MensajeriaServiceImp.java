@@ -1,6 +1,7 @@
 package com.apiweb.backend.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -47,8 +48,8 @@ public class MensajeriaServiceImp implements IMensajeriaService{
         }
         UsuariosModel interesado = usuarioExiste.get();
 
-        if (interesado.getId()==aviso.getPropietarioId().getUsuarioId()) {
-            throw new InvalidUserRoleException("Un usuario no se puede interesar por un aviso que es de supropiedad. ");
+        if (interesado.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
+            throw new InvalidUserRoleException("Un usuario no se puede interesar por un aviso que es de su propiedad. ");
         }
         if (interesado.getTipo() == TipoUsuario.administrador) {
             throw new InvalidUserRoleException("Un administrador no se puede interesar por un aviso. ");
@@ -83,30 +84,29 @@ public class MensajeriaServiceImp implements IMensajeriaService{
         }
         UsuariosModel usuario = usuarioExiste.get();
 
-        if (usuario.getId() == chat.idInteresado || usuario.getId() == aviso.getPropietarioId().getUsuarioId()) {
+        if (usuario.getId().equals(chat.getIdInteresado()) || usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
+            // ok
+        } else {
             throw new InvalidUserRoleException("El usuario remitente debe ser el mismo usuario que creo el chat o el propietario del aviso. ");
         }
         
 
         if (chat.getMensajes() == null || chat.getMensajes().isEmpty()) {
-            if (usuario.getId() != aviso.getPropietarioId().getUsuarioId()) {
+            if (!usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
                 throw new InvalidUserRoleException("El propietario debe responder el mensaje del interesado. ");
             }
-
         } else {
             MensajesMensajeria ultimoMensaje = chat.getMensajes().get(chat.getMensajes().size() - 1);
 
             if (ultimoMensaje.getIdRemitente().equals(chat.getIdInteresado())) {
-                if (usuario.getId() != aviso.getPropietarioId().getUsuarioId()) {
+                if (!usuario.getId().equals(aviso.getPropietarioId().getUsuarioId())) {
                     throw new InvalidUserRoleException("El propietario debe responder al mensaje del interesado.");
                 }
             } else {
-                // Si el último mensaje fue enviado por el propietario, la respuesta debe venir del interesado.
-                if (usuario.getId() != chat.idInteresado) {
+                if (!usuario.getId().equals(chat.getIdInteresado())) {
                     throw new InvalidUserRoleException("El interesado debe responder al mensaje del propietario.");
                 }
             }
-
         }
         mensajes.setFecha(Instant.now());
         mensajes.setLeido(false);
@@ -115,11 +115,42 @@ public class MensajeriaServiceImp implements IMensajeriaService{
     }
 
     @Override
-    public MensajeriaModel obtenerChat(ObjectId idMensajeria) {
-        Optional<MensajeriaModel> chatExiste = MensajeriaRepository.findById(idMensajeria);
+    public MensajeriaModel mostrarChat(String idMensajeria) {
+        Optional<MensajeriaModel> chatExiste = MensajeriaRepository.findById(new ObjectId(idMensajeria));
         if (!chatExiste.isPresent()) {
             throw new ResourceNotFoundException("El chat con id:" + idMensajeria +" no existe.");
         }
         return chatExiste.get();
+    }
+
+    @Override
+    public MensajeriaModel obtenerChat(ObjectId idMensajeria) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'obtenerChat'");
+    }
+
+    @Override
+    public List<MensajeriaModel> obtenerConversacionesPorUsuario(String userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'obtenerConversacionesPorUsuario'");
+    }
+
+    @Override
+    public MensajeriaModel mandarMensaje(String idMensajeria, MensajesMensajeria mensajes) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'mandarMensaje'");
+    }
+
+    // Método para buscar conversaciones por interesado o propietario
+    public List<MensajeriaModel> findByInteresadoOrPropietario(String idInteresado, String propietarioId) {
+        ObjectId interesadoId = new ObjectId(idInteresado); // Convertir String a ObjectId
+        return MensajeriaRepository.findByIdInteresadoOrPropietarioId(interesadoId, propietarioId);
+    }
+
+    // Método para buscar conversación por interesado y aviso
+    public Optional<MensajeriaModel> findByInteresadoAndAviso(String idInteresado, String idAviso) {
+        ObjectId interesadoId = new ObjectId(idInteresado);
+        ObjectId avisoId = new ObjectId(idAviso);
+        return MensajeriaRepository.findByIdInteresadoAndIdAviso(interesadoId, avisoId);
     }
 }

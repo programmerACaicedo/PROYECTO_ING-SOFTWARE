@@ -23,6 +23,7 @@ public class MensajeriaModel {
     private ObjectId id;
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId idInteresado;
+    private String propietarioId;
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId idAviso;
     public String mensaje;
@@ -30,5 +31,20 @@ public class MensajeriaModel {
     public Boolean leido;
     public ArrayList<MensajesMensajeria> mensajes = new ArrayList<MensajesMensajeria>();
     
-    
+    // Getters and setters
+    public ObjectId getIdInteresado() {
+        return idInteresado;
+    }
+
+    public void setIdInteresado(ObjectId idInteresado) {
+        this.idInteresado = idInteresado;
+    }
+
+    public String getPropietarioId() {
+        return propietarioId;
+    }
+
+    public void setPropietarioId(String propietarioId) {
+        this.propietarioId = propietarioId;
+    }
 }

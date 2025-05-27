@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import styles from "../styles/detallePublicacion.module.css";
-import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
 import { jwtDecode } from "jwt-decode";
+import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
+import { crearChat } from "../services/conexiones"; // Importar la función
+import styles from "../styles/detallePublicacion.module.css";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
@@ -21,7 +22,6 @@ const DetallePublicacion = () => {
   const [selectedImage, setSelectedImage] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
   const [acuerdoActivo, setAcuerdoActivo] = useState(null);
-
   const [rating, setRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [hasRated, setHasRated] = useState(false);
@@ -44,7 +44,6 @@ const DetallePublicacion = () => {
     const token = localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
-      console.log("Decoded token:", decodedToken); // Debug log
       setTipoUsuario(decodedToken.tipo || "");
       setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
     }
@@ -54,13 +53,9 @@ const DetallePublicacion = () => {
     const fetchAcuerdo = async () => {
       try {
         const acuerdo = await obtenerAcuerdoPorAviso(id);
-        console.log("Fetched acuerdo:", acuerdo); // Debug log
-        console.log("Acuerdo estado:", acuerdo?.estado); // Debug log
-
         if (
           acuerdo &&
-          (acuerdo.estado?.toLowerCase() === "activo" ||
-            acuerdo.estado?.toLowerCase() === "finalizado")
+          (acuerdo.estado?.toLowerCase() === "activo" || acuerdo.estado?.toLowerCase() === "finalizado")
         ) {
           setAcuerdoActivo(acuerdo);
         } else {
@@ -75,8 +70,31 @@ const DetallePublicacion = () => {
     if (usuarioId) fetchAcuerdo();
   }, [id, usuarioId]);
 
+  const handleNotificar = async (e) => {
+    e.preventDefault();
+    if (!publicacion) return;
+    setMensajeNotificacion("Creando chat con el propietario...");
+
+    try {
+      const chatData = {
+        idInteresado: usuarioId,
+        idAviso: publicacion.id,
+      };
+      const nuevoChat = await crearChat(chatData);
+      setMensajeNotificacion("Chat creado con éxito.");
+      setTimeout(() => {
+        setMensajeNotificacion("");
+        navigate("/mensajes", { state: { conversacionId: nuevoChat.id } });
+      }, 1500);
+    } catch (error) {
+      setMensajeNotificacion("Error al crear el chat.");
+      console.error("Error:", error);
+      setTimeout(() => setMensajeNotificacion(""), 3000);
+    }
+  };
+
   const handleEliminar = async () => {
-    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?")
+    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?");
     if (!confirmacion) return;
 
     try {
@@ -143,18 +161,6 @@ const DetallePublicacion = () => {
     setIsMenuOpen(false);
   };
 
-  const handleNotificar = (e) => {
-    e.preventDefault();
-    if (!publicacion) return;
-    setMensajeNotificacion("Enviando mensaje al propietario...");
-    setTimeout(() => {
-      setMensajeNotificacion("");
-      navigate("/mensajes", {
-        state: { iniciarChat: true, propietarioId: publicacion.propietarioId },
-      });
-    }, 1500);
-  };
-
   const handleActualizar = () => {
     navigate(`/actualizar-publicacion/${publicacion.id}`);
   };
@@ -207,33 +213,25 @@ const DetallePublicacion = () => {
   };
 
   const puedeCalificar = () => {
-    if (!acuerdoActivo) {
-      return false;
-    }
+    if (!acuerdoActivo) return false;
 
     const estadoTerminado = acuerdoActivo.estado?.toLowerCase() === "finalizado";
     const noEsPropietario = publicacion?.propietarioId?.usuarioId !== usuarioId;
     const esUsuarioValido = tipoUsuario === "interesado" || tipoUsuario === "propietario";
 
-    console.log("Estado terminado:", estadoTerminado); // Debug log
-    console.log("No es propietario:", noEsPropietario); // Debug log
-    console.log("Es usuario valido:", esUsuarioValido); // Debug log
-
     return estadoTerminado && noEsPropietario && esUsuarioValido;
   };
 
   if (!publicacion) {
-    return (
-      <div className={styles.detallePublicacionContainer}>
-        Publicación no encontrada.
-      </div>
-    );
+    return <div className={styles.detallePublicacionContainer}>Publicación no encontrada.</div>;
   }
 
   return (
     <div className={styles.detallePublicacionContainer}>
       <header className={styles.headerDetalle}>
-        <span className={styles.iconMenu} onClick={toggleMenu}>☰</span>
+        <span className={styles.iconMenu} onClick={toggleMenu}>
+          ☰
+        </span>
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
@@ -258,8 +256,12 @@ const DetallePublicacion = () => {
                   />
                 ))}
               </div>
-              <button className={`${styles.navButton} ${styles.prevButton}`} onClick={handlePrev}>◄</button>
-              <button className={`${styles.navButton} ${styles.nextButton}`} onClick={handleNext}>►</button>
+              <button className={`${styles.navButton} ${styles.prevButton}`} onClick={handlePrev}>
+                ◄
+              </button>
+              <button className={`${styles.navButton} ${styles.nextButton}`} onClick={handleNext}>
+                ►
+              </button>
             </>
           ) : (
             <p>No hay imágenes disponibles.</p>
@@ -284,7 +286,9 @@ const DetallePublicacion = () => {
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
             {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
-              <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>Reportar</button>
+              <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
+                Reportar
+              </button>
             )}
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <>
@@ -292,9 +296,13 @@ const DetallePublicacion = () => {
                   <button onClick={() => navigate(`/acuerdo/crear/${publicacion.id}`)}>Crear Acuerdo</button>
                 )}
                 {acuerdoActivo && (
-                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>Modificar Acuerdo</button>
+                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
+                    Modificar Acuerdo
+                  </button>
                 )}
-                <button onClick={handleEliminar} className={styles.botonEliminar}>Eliminar Publicación</button>
+                <button onClick={handleEliminar} className={styles.botonEliminar}>
+                  Eliminar Publicación
+                </button>
               </>
             )}
           </div>
@@ -305,13 +313,12 @@ const DetallePublicacion = () => {
                 <h3>Califica esta experiencia</h3>
                 <label>
                   Calificación:
-                  <select
-                    value={rating}
-                    onChange={(e) => setRating(parseInt(e.target.value))}
-                  >
+                  <select value={rating} onChange={(e) => setRating(parseInt(e.target.value))}>
                     <option value={0}>Selecciona estrellas</option>
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <option key={star} value={star}>{star} estrella{star > 1 ? "s" : ""}</option>
+                      <option key={star} value={star}>
+                        {star} estrella{star > 1 ? "s" : ""}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -323,10 +330,7 @@ const DetallePublicacion = () => {
                     placeholder="Escribe tu comentario"
                   />
                 </label>
-                <button
-                  onClick={handleSubmitRating}
-                  disabled={loadingRating}
-                >
+                <button onClick={handleSubmitRating} disabled={loadingRating}>
                   {loadingRating ? "Enviando..." : "Enviar Calificación"}
                 </button>
                 {ratingMessage && <p>{ratingMessage}</p>}
@@ -334,9 +338,7 @@ const DetallePublicacion = () => {
             ) : (
               <p>Gracias por calificar esta experiencia.</p>
             )
-          ) : (
-            console.log("No se puede calificar") // Debug log
-          )}
+          ) : null}
 
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
@@ -353,11 +355,7 @@ const DetallePublicacion = () => {
             <form onSubmit={handleEnviarReporte}>
               <label>
                 Motivo:
-                <select
-                  value={motivo}
-                  onChange={(e) => setMotivo(e.target.value)}
-                  required
-                >
+                <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required>
                   <option value="">Selecciona un motivo</option>
                   <option value="inapropiado">Contenido Inapropiado</option>
                   <option value="spam">Spam</option>
@@ -375,7 +373,9 @@ const DetallePublicacion = () => {
               {mensajeReporte && <p className={styles.exito}>{mensajeReporte}</p>}
               <div className={styles.modalBotones}>
                 <button type="submit">Enviar Reporte</button>
-                <button type="button" onClick={() => setMostrarModal(false)}>Cancelar</button>
+                <button type="button" onClick={() => setMostrarModal(false)}>
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
@@ -386,7 +386,9 @@ const DetallePublicacion = () => {
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <img src={selectedImage} alt="Imagen ampliada" className={styles.modalImage} />
-            <button className={styles.modalCloseButton} onClick={closeModal}>×</button>
+            <button className={styles.modalCloseButton} onClick={closeModal}>
+              ×
+            </button>
           </div>
         </div>
       )}
