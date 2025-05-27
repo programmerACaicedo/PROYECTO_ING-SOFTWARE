@@ -36,6 +36,7 @@ const DetallePublicacion = () => {
         setPublicacion(encontrada || null);
       } catch (error) {
         setPublicacion(null);
+        console.error("Error fetching publicaciones:", error);
       }
     };
 
@@ -75,11 +76,20 @@ const DetallePublicacion = () => {
     if (!publicacion) return;
     setMensajeNotificacion("Creando chat con el propietario...");
 
+    const idAviso = publicacion.id;
+    const propietarioId = publicacion.propietarioId?.usuarioId || publicacion.propietarioId;
+
+    if (!usuarioId || !idAviso || !propietarioId) {
+      setMensajeNotificacion("Error: Datos incompletos para crear el chat.");
+      setTimeout(() => setMensajeNotificacion(""), 3000);
+      return;
+    }
+
     try {
       const chatData = {
         idInteresado: usuarioId,
-        idAviso: publicacion.id,
-        propietarioId: publicacion.propietarioId?.usuarioId || publicacion.propietarioId, // Adjust based on structure
+        idAviso: idAviso,
+        propietarioId: propietarioId,
       };
       const nuevoChat = await crearChat(chatData);
       setMensajeNotificacion("Chat creado con éxito.");
@@ -104,6 +114,7 @@ const DetallePublicacion = () => {
       navigate("/propietario");
     } catch (error) {
       alert("Error al eliminar el aviso");
+      console.error("Error:", error);
     }
   };
 
@@ -138,6 +149,7 @@ const DetallePublicacion = () => {
       }, 2000);
     } catch (error) {
       setMensajeReporte("Error al enviar el reporte.");
+      console.error("Error:", error);
     }
   };
 

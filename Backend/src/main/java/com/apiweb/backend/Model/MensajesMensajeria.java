@@ -21,6 +21,7 @@ public class MensajesMensajeria {
     public Instant fecha;
     public Boolean leido;
     
+    
     // Agregado para el servicio
     private String nombreInteresado;
     private String nombrePropietario;

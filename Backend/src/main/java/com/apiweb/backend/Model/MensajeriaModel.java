@@ -23,7 +23,7 @@ public class MensajeriaModel {
     private ObjectId id;
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId idInteresado;
-    private String propietarioId;
+    public ObjectId propietarioId;
     @JsonSerialize(using = ToStringSerializer.class)
     public ObjectId idAviso;
     public String mensaje;
@@ -40,16 +40,16 @@ public class MensajeriaModel {
         this.idInteresado = idInteresado;
     }
 
-    public String getPropietarioId() {
+    public ObjectId getPropietarioId() {
         return propietarioId;
     }
 
-    public void setPropietarioId(String propietarioId) {
+    public void setPropietarioId(ObjectId propietarioId) {
         this.propietarioId = propietarioId;
     }
 
-    public void setPropietarioId(ObjectId propietarioId2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPropietarioId'");
+    // Método corregido (opcional, si decides mantenerlo)
+    public void setIdPropietario(ObjectId idPropietario) {
+        this.propietarioId = idPropietario; // Ahora asigna el valor correctamente
     }
 }
