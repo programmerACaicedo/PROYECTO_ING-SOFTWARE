@@ -14,6 +14,8 @@ import com.apiweb.backend.Exception.ResourceNotFoundException;
 import com.apiweb.backend.Exception.UserNotFoundException;
 import com.apiweb.backend.Model.AcuerdosModel;
 import com.apiweb.backend.Model.AvisosModel;
+import com.apiweb.backend.Model.CalificacionServicio;
+import com.apiweb.backend.Model.Calificaciones;
 import com.apiweb.backend.Model.ExtensionAcuerdo;
 import com.apiweb.backend.Model.UsuariosModel;
 import com.apiweb.backend.Model.ENUM.EstadoAcuerdo;
@@ -33,6 +35,9 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
     @Autowired
     private IUsuariosRepository usuariosRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     @Transactional
@@ -151,4 +156,112 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         return acuerdos;
     }
 
+    @Override
+    @Transactional
+    public AcuerdosModel calificarArrendatario(ObjectId idAcuerdo, Integer calificacion, String comentario) {
+        // Validar calificación
+        if (calificacion == null || calificacion < 1 || calificacion > 5) {
+            throw new IllegalArgumentException("La calificación debe estar entre 1 y 5 estrellas.");
+        }
+        if (comentario != null && comentario.length() > 300) {
+            throw new IllegalArgumentException("El comentario no puede superar los 300 caracteres.");
+        }
+
+        // Buscar el acuerdo
+        Optional<AcuerdosModel> acuerdoOpt = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoOpt.isPresent()) {
+            throw new ResourceNotFoundException("No se encontró el acuerdo de arrendamiento.");
+        }
+        AcuerdosModel acuerdo = acuerdoOpt.get();
+
+        // Validar estado del acuerdo
+        if (acuerdo.getEstado() != EstadoAcuerdo.Finalizado) {
+            throw new IllegalStateException("Sólo puede calificar después de que el arrendamiento haya finalizado.");
+        }
+
+        // Buscar al arrendatario
+        ObjectId idArrendatario = acuerdo.getArrendatario().getUsuarioId();
+        UsuariosModel arrendatario = usuariosRepository.findById(idArrendatario)
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+
+        // Validar que no se haya calificado antes este acuerdo
+        boolean yaCalificado = arrendatario.getCalificaciones().stream()
+            .anyMatch(c -> c.getCalificador() != null && c.getCalificador().equals(acuerdo.getPropietarioId())
+                && c.getComentario() != null && c.getComentario().contains(idAcuerdo.toHexString()));
+        if (yaCalificado) {
+            throw new IllegalStateException("Ya se ha calificado este arrendamiento.");
+        }
+
+        // Crear la calificación
+        Calificaciones nuevaCalificacion = new Calificaciones();
+        nuevaCalificacion.setCalificador(acuerdo.getPropietarioId());
+        nuevaCalificacion.setCalificacion(calificacion);
+        nuevaCalificacion.setComentario((comentario != null ? comentario : "") + " [Acuerdo: " + idAcuerdo.toHexString() + "]");
+
+        // Agregar la calificación al arrendatario
+        arrendatario.getCalificaciones().add(nuevaCalificacion);
+        usuariosRepository.save(arrendatario);
+
+         emailService.sendEmail(
+             arrendatario.getCorreo(),
+             "¡Has sido calificado!",
+             "El propietario ha calificado tu experiencia como arrendatario.\n\n" +
+             "Calificación: " + calificacion + " estrellas\n" +
+             (comentario != null && !comentario.isBlank() ? "Comentario: " + comentario + "\n\n" : "") +
+             "¡Gracias por usar nuestro servicio!"
+         );
+        return acuerdo;
+    }
+
+    @Override
+    @Transactional
+    public AcuerdosModel calificarServicio(ObjectId idAcuerdo, Integer calificacion, String comentario) {
+        // 1. Validar calificación y comentario
+        if (calificacion == null || calificacion < 1 || calificacion > 5) {
+            throw new IllegalArgumentException("La calificación debe estar entre 1 y 5 estrellas.");
+        }
+        if (comentario != null && comentario.length() > 300) {
+            throw new IllegalArgumentException("El comentario no puede superar los 300 caracteres.");
+        }
+
+        // 2. Buscar el acuerdo
+        Optional<AcuerdosModel> acuerdoOpt = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoOpt.isPresent()) {
+            throw new ResourceNotFoundException("No se encontró el acuerdo de arrendamiento.");
+        }
+        AcuerdosModel acuerdo = acuerdoOpt.get();
+
+        // 3. Validar estado del acuerdo
+        if (acuerdo.getEstado() != EstadoAcuerdo.Finalizado) {
+            throw new IllegalStateException("Sólo puede calificar después de que el arrendamiento haya finalizado.");
+        }
+
+        // 4. Validar que no se haya calificado antes
+        if (acuerdo.getCalificacionServicio() != null) {
+            throw new IllegalStateException("Ya se ha calificado este acuerdo. No se puede editar ni eliminar la calificación.");
+        }
+
+        // 5. Registrar la calificación en el acuerdo
+        CalificacionServicio nuevaCalificacion = new CalificacionServicio();
+        nuevaCalificacion.setCalificador(acuerdo.getArrendatario().getUsuarioId());
+        nuevaCalificacion.setCalificacion(calificacion);
+        nuevaCalificacion.setComentario(comentario);
+        nuevaCalificacion.setFecha(java.time.Instant.now());
+        acuerdo.setCalificacionServicio(nuevaCalificacion);
+
+        acuerdosRepository.save(acuerdo);
+
+        // 6. Notificar al propietario
+        UsuariosModel propietario = usuariosRepository.findById(acuerdo.getPropietarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el propietario."));
+        emailService.sendEmail(
+            propietario.getCorreo(),
+            "¡Has recibido una calificación!",
+            "Has recibido una nueva calificación por parte del arrendatario.\n\n" +
+            "Calificación: " + calificacion + " estrellas\n" +
+            (comentario != null && !comentario.isBlank() ? "Comentario: " + comentario + "\n\n" : "") +
+            "¡Gracias por usar nuestro servicio!"
+        );
+        return acuerdo;
+    }
 }
