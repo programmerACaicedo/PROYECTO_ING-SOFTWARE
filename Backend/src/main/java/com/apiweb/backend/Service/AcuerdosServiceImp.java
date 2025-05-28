@@ -151,4 +151,13 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         return acuerdos;
     }
 
+    @Override
+    public AcuerdosModel detallarUnAcuerdo(ObjectId idAcuerdo) {
+        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El id: "+idAcuerdo + " no corresponde a ningun acuerdo");
+        }
+        AcuerdosModel acuerdo = acuerdoExiste.get();
+        return acuerdo;
+    }
 }
