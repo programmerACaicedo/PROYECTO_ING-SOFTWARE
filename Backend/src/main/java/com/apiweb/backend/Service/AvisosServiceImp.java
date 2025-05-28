@@ -142,10 +142,6 @@ public class AvisosServiceImp implements IAvisosService{
             });
         }
         
-        
-        
-        
-
         return avisosRepository.save(avisoActualizado);
     }
 
@@ -210,9 +206,6 @@ public class AvisosServiceImp implements IAvisosService{
             throw new InvalidAvisoConfigurationException("El motivo no puede estar vacío.");
         }
 
-        
-
-        
         reporte.setFecha(Instant.now());
         reporte.setEstadoReporte(EstadoReporte.Reportado);
         avisoActualizado.getReporte().add(reporte);
@@ -330,8 +323,6 @@ public class AvisosServiceImp implements IAvisosService{
         } else {
         throw new InvalidAvisoConfigurationException("La decisión debe ser Invalido o Excluido.");
         }
-
-
         return avisosRepository.save(aviso);
     }
 

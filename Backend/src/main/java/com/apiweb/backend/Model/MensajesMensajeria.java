@@ -20,4 +20,40 @@ public class MensajesMensajeria {
     public String mensaje;
     public Instant fecha;
     public Boolean leido;
+    private ObjectId idDestinatario;
+    private String nombreDestinatario;
+    private String nombreRemitente;
+    
+    
+    // Agregado para el servicio
+    private String nombreInteresado;
+    private String nombrePropietario;
+    public void setNombreRemitente(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setNombreRemitente'");
+    }
+
+      public ObjectId getIdDestinatario() {
+        return idDestinatario;
+    }
+
+    public void setIdDestinatario(ObjectId idDestinatario) {
+        this.idDestinatario = idDestinatario;
+    }
+
+    public String getNombreDestinatario() {
+    return nombreDestinatario;
+}
+
+public void setNombreDestinatario(String nombreDestinatario) {
+    this.nombreDestinatario = nombreDestinatario;
+}
+public String getNombreRemitente() {
+    return nombreRemitente;
+}
+
+// Setter para nombreRemitente
+public void setNombreRemitente(String nombreRemitente) {
+    this.nombreRemitente = nombreRemitente;
+}
 }

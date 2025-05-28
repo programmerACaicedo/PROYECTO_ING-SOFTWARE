@@ -254,7 +254,6 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
     const respuesta = await api.get(`/acuerdos/aviso/${idAviso}`);
     return respuesta.data;
   } catch (error) {
-    // Si no existe acuerdo, puede devolver 404, lo cual es válido para tu lógica
     if (error.response && error.response.status === 404) {
       return null;
     }
@@ -264,8 +263,97 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
 };
 
 export const listarAcuerdosPropietario = async (idPropietario) => {
-  const respuesta = await api.get(`/acuerdos/propietario/${idPropietario}`);
+  const respuesta = await api.get(`/acuerdos/listarAcuerdosDeUnPropietario/${idPropietario}`);
   return respuesta.data;
 };
 
+export const modificarAcuerdo = async (idAcuerdo, extension) => {
+  const respuesta = await api.put(`/acuerdos/extension/${idAcuerdo}`, extension, {
+    headers: { "Content-Type": "application/json" }
+  });
+  return respuesta.data;
+};
+
+export const cancelarAcuerdo = async (idAcuerdo, razon) => {
+  const respuesta = await api.put(`/acuerdos/cancelarAcuerdo/${idAcuerdo}`, razon, {
+    headers: { "Content-Type": "application/json" }
+  });
+  return respuesta.data;
+};
+
+
+export const obtenerAvisoPorId = async (idAviso) => {
+  const respuesta = await api.get(`/avisos/${idAviso}`);
+  return respuesta.data;
+};
+
+// Funciones de mensajería
+export const crearChat = async (chatData) => {
+  // Validar que todos los campos necesarios estén presentes
+  if (!chatData.idInteresado || !chatData.idAviso || !chatData.propietarioId) {
+    throw new Error("Faltan campos requeridos en chatData: se necesitan idInteresado, idAviso y propietarioId.");
+  }
+  
+  try {
+    const response = await api.post("/mensajeria/crearChat", chatData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear chat:", error.response?.data || error.message);
+    throw error;
+  }
+};
+/*implementar
+  @PutMapping("/mandarMensaje/{idMensajeria}")
+  public ResponseEntity<MensajeriaModel> mandarMensaje(
+      @PathVariable("idMensajeria") String idMensajeria,
+      @RequestBody MensajesMensajeria mensajes) {
+    MensajeriaModel chatActualizado = mensajeriaService.mandarMensaje(idMensajeria, mensajes);
+    messagingTemplate.convertAndSend("/topic/nuevoMensaje", 
+        new MensajeSocket(idMensajeria, mensajes));
+    return new ResponseEntity<>(chatActualizado, HttpStatus.OK);
+  }
+*/
+export const mandarMensaje = async (idMensajeria, mensajeData) => {
+  // Declara id aquí para que esté disponible en todo el scope
+  const id = typeof idMensajeria === "object" ? idMensajeria.id : idMensajeria;
+  try {
+    const response = await api.post(`/mensajeria/mandarMensaje/${id}`, mensajeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar mensaje:", error.response || error.message);
+    console.log("URL:", `/mensajeria/mandarMensaje/${id}`);
+    console.log("Datos enviados:", mensajeData);
+    console.log("idMensajeria:", idMensajeria);
+    throw error;
+  }
+};
+
+
+export const obtenerChat = async (idMensajeria) => {
+  try {
+    const response = await api.get(`/mensajeria/mostrarChat/${idMensajeria}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener chat:", error.response || error.message);
+    throw error;
+  }
+};
+
+// Nueva función para obtener todas las conversaciones (requiere un endpoint en el backend)
+export const obtenerConversaciones = async (userId) => {
+  // Validar que userId esté presente
+  if (!userId) {
+    throw new Error("Se requiere userId para obtener las conversaciones.");
+  }
+  
+  try {
+    const response = await api.get(`/mensajeria/conversaciones/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener conversaciones para el usuario ${userId}:`, error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export default api;
+

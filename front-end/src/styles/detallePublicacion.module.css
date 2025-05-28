@@ -146,10 +146,7 @@ body {
   cursor: pointer;
   background-color: #dc3545;
   width: 200px;
-
 }
-
-
 
 /* Contenido principal */
 .contenidoDetalle {
@@ -323,6 +320,15 @@ body {
   margin: 0 0 1rem;
 }
 
+/* Cambia el color del texto del formulario de reporte a negro */
+.modalContenido,
+.modalContenido h3,
+.modalContenido label,
+.modalContenido select,
+.modalContenido textarea {
+  color: #000 !important;
+}
+
 .modalContenido form {
   display: flex;
   flex-direction: column;
@@ -338,6 +344,7 @@ body {
 
 .modalBotones {
   display: flex;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -443,6 +450,57 @@ body {
   background-color: #c82333;
 }
 
+/* NUEVO: Estilos para el formulario de calificación */
+.calificacionContainer {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.calificacionContainer h3 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.calificacionContainer label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.calificacionContainer select,
+.calificacionContainer textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.calificacionContainer textarea {
+  resize: vertical;
+  height: 80px;
+}
+
+.calificacionContainer button {
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.calificacionContainer button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
 
 /* Responsividad */
 @media (max-width: 768px) {
@@ -464,8 +522,7 @@ body {
 
   .textoDetalle {
     width: 100%;
-    margin-top: 1rem  /* Corregido el comentario faltante */
-
+    margin-top: 1rem; /* Corregido el comentario faltante */
   }
 
   .navButton {

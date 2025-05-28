@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
+import { crearChat, verificarChatExistente } from "../services/conexiones";
 import styles from "../styles/detallePublicacion.module.css";
-import { listarSinReportes } from "../services/conexiones";
-import { reportarAviso } from "../services/conexiones";
-import { obtenerAcuerdoPorAviso } from "../services/conexiones";
-import { eliminarAviso } from "../services/conexiones";
-import { jwtDecode} from "jwt-decode";
 
 const DetallePublicacion = () => {
   const navigate = useNavigate();
@@ -20,11 +18,15 @@ const DetallePublicacion = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [tipoUsuario, setTipoUsuario] = useState("");
   const [mensajeNotificacion, setMensajeNotificacion] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal de imagen
-  const [selectedImage, setSelectedImage] = useState(""); // Imagen seleccionada
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
   const [acuerdoActivo, setAcuerdoActivo] = useState(null);
-
+  const [rating, setRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [hasRated, setHasRated] = useState(false);
+  const [loadingRating, setLoadingRating] = useState(false);
+  const [ratingMessage, setRatingMessage] = useState("");
 
   useEffect(() => {
     const fetchPublicacion = async () => {
@@ -34,119 +36,142 @@ const DetallePublicacion = () => {
         setPublicacion(encontrada || null);
       } catch (error) {
         setPublicacion(null);
+        console.error("Error fetching publicaciones:", error);
       }
     };
 
     fetchPublicacion();
-    
 
     const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = require("jwt-decode").jwtDecode(token);
-      setTipoUsuario(decodedToken.tipo || "");
-    }
-    if (token) {
-      const decodedToken = require("jwt-decode").jwtDecode(token);
+      const decodedToken = jwtDecode(token);
       setTipoUsuario(decodedToken.tipo || "");
       setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
-    }    
+    }
   }, [id]);
 
   useEffect(() => {
-  const fetchAcuerdo = async () => {
-    try {
-      const acuerdo = await obtenerAcuerdoPorAviso(id);
-      console.log("Acuerdo obtenido:", acuerdo);
-      if (acuerdo && acuerdo.estado && acuerdo.estado.toLowerCase() === "activo") {
-       setAcuerdoActivo(acuerdo);
-      } else {
-        setAcuerdoActivo(null); 
+    const fetchAcuerdo = async () => {
+      try {
+        const acuerdo = await obtenerAcuerdoPorAviso(id);
+        if (
+          acuerdo &&
+          (acuerdo.estado?.toLowerCase() === "activo" || acuerdo.estado?.toLowerCase() === "finalizado")
+        ) {
+          setAcuerdoActivo(acuerdo);
+        } else {
+          setAcuerdoActivo(null);
+        }
+      } catch (error) {
+        console.error("Error fetching acuerdo:", error);
+        setAcuerdoActivo(null);
       }
-    } catch (error) {
-      setAcuerdoActivo(null);
-    }
-  };
-  fetchAcuerdo();
-}, [id]);
-
-const handleEliminar = async () => {
-  const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este aviso?");
-  if (!confirmacion) return;
-
-  try {
-    await eliminarAviso(publicacion.id);
-    alert("Aviso eliminado con éxito");
-    navigate("/propietario");
-  } catch (error) {
-    alert("Error al eliminar el aviso");
-  }
-};
-
-const handleEnviarReporte = async (e) => {
-  e.preventDefault();
-  setMensajeReporte("");
-
-  try {
-    const token = localStorage.getItem("token");
-    const decoded = require("jwt-decode").jwtDecode(token);
-    const usuarioId = decoded.id?._id || decoded.id;
-
-    if (!motivo) {
-      setMensajeReporte("Debes seleccionar un motivo.");
-      return;
-    }
-
-    const reporte = {
-      usuarioReporta: usuarioId,
-      motivo,
-      comentario: comentarios,
     };
 
-   await reportarAviso(publicacion.id, reporte);
+    if (usuarioId) fetchAcuerdo();
+  }, [id, usuarioId]);
 
-    setMensajeReporte("Reporte enviado con éxito.");
-    setTimeout(() => {
-      setMostrarModal(false);
-      setMotivo("");
-      setComentarios("");
-      setMensajeReporte("");
-    }, 2000);
-  } catch (error) {
-    setMensajeReporte("Error al enviar el reporte.");
-  }
-};
+  const handleNotificar = async (e) => {
+    e.preventDefault();
+    if (!publicacion) return;
+    setMensajeNotificacion("Creando chat con el propietario...");
 
-const handleInicioClick = () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
+    const idAviso = publicacion.id;
+    const propietarioId = publicacion.propietarioId?.usuarioId || publicacion.propietarioId;
+
+    if (!usuarioId || !idAviso || !propietarioId) {
+      setMensajeNotificacion("Error: Datos incompletos para crear el chat.");
+      setTimeout(() => setMensajeNotificacion(""), 3000);
       return;
     }
 
-    const usuario = jwtDecode(token);
-    if (usuario.tipo === "propietario") {
-      navigate("/propietario");
-    } else if (usuario.tipo === "interesado") {
-      navigate("/interesado");
+    try {
+      const chatData = {
+        idInteresado: usuarioId,
+        idAviso: idAviso,
+        propietarioId: propietarioId,
+      };
+      const nuevoChat = await crearChat(chatData);
+      setMensajeNotificacion("Chat creado con éxito.");
+      setTimeout(() => {
+        setMensajeNotificacion("");
+        navigate("/mensajes", { state: { conversacionId: nuevoChat.id } });
+      }, 1500);
+    } catch (error) {
+      setMensajeNotificacion("Error al crear el chat.");
+      console.error("Error:", error);
+      setTimeout(() => setMensajeNotificacion(""), 3000);
     }
-  } catch (error) {
-    console.error("Error al decodificar el token:", error);
-    navigate("/login");
-  }
-  setIsMenuOpen(false);
-};
+  };
 
-  const handleNotificar = (e) => {
+  const handleEliminar = async () => {
+    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?");
+    if (!confirmacion) return;
+
+    try {
+      await eliminarAviso(publicacion.id);
+      alert("Aviso eliminado con éxito");
+      navigate("/propietario");
+    } catch (error) {
+      alert("Error al eliminar el aviso");
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEnviarReporte = async (e) => {
     e.preventDefault();
-    if (!publicacion) return;
-    setMensajeNotificacion("Enviando mensaje al propietario...");
-    setTimeout(() => {
-      setMensajeNotificacion("");
-      navigate("/mensajes", {
-        state: { iniciarChat: true, propietarioId: publicacion.propietarioId },
-      });
-    }, 1500);
+    setMensajeReporte("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const decoded = jwtDecode(token);
+      const usuarioId = decoded.id?._id || decoded.id;
+
+      if (!motivo) {
+        setMensajeReporte("Debes seleccionar un motivo.");
+        return;
+      }
+
+      const reporte = {
+        usuarioReporta: usuarioId,
+        motivo,
+        comentario: comentarios,
+      };
+
+      await reportarAviso(publicacion.id, reporte);
+
+      setMensajeReporte("Reporte enviado con éxito.");
+      setTimeout(() => {
+        setMostrarModal(false);
+        setMotivo("");
+        setComentarios("");
+        setMensajeReporte("");
+      }, 2000);
+    } catch (error) {
+      setMensajeReporte("Error al enviar el reporte.");
+      console.error("Error:", error);
+    }
+  };
+
+  const handleInicioClick = () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const usuario = jwtDecode(token);
+      if (usuario.tipo === "propietario") {
+        navigate("/propietario");
+      } else if (usuario.tipo === "interesado") {
+        navigate("/interesado");
+      }
+    } catch (error) {
+      console.error("Error al decodificar el token:", error);
+      navigate("/login");
+    }
+    setIsMenuOpen(false);
   };
 
   const handleActualizar = () => {
@@ -174,33 +199,44 @@ const handleInicioClick = () => {
       carruselRef.current.scrollBy({ left: imageWidth, behavior: "smooth" });
     }
   };
-  const handleAcuerdo = () => {
-  if (!publicacion) return;
-  if (publicacion.acuerdo) {
-    navigate(`/acuerdo/modificar/${publicacion.id}`);
-  } else {
-    navigate(`/acuerdo/crear/${publicacion.id}`);
-  }
-};
 
-  // Abrir el modal con la imagen seleccionada
   const openModal = (image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
   };
 
-  // Cerrar el modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedImage("");
   };
 
+  const handleSubmitRating = () => {
+    if (rating < 1 || rating > 5) {
+      setRatingMessage("Por favor, selecciona una calificación de 1 a 5 estrellas.");
+      return;
+    }
+    setLoadingRating(true);
+    setRatingMessage("");
+
+    setTimeout(() => {
+      setHasRated(true);
+      setRatingMessage("Calificación enviada con éxito.");
+      setLoadingRating(false);
+    }, 1500);
+  };
+
+  const puedeCalificar = () => {
+    if (!acuerdoActivo) return false;
+
+    const estadoTerminado = acuerdoActivo.estado?.toLowerCase() === "finalizado";
+    const noEsPropietario = publicacion?.propietarioId?.usuarioId !== usuarioId;
+    const esUsuarioValido = tipoUsuario === "interesado" || tipoUsuario === "propietario";
+
+    return estadoTerminado && noEsPropietario && esUsuarioValido;
+  };
+
   if (!publicacion) {
-    return (
-      <div className={styles.detallePublicacionContainer}>
-        Publicación no encontrada.
-      </div>
-    );
+    return <div className={styles.detallePublicacionContainer}>Publicación no encontrada.</div>;
   }
 
   return (
@@ -212,24 +248,10 @@ const handleInicioClick = () => {
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
-        <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-            <button onClick={handleInicioClick}>Inicio</button>
-        <button
-          onClick={() => {
-            navigate("/perfil");
-            closeMenu();
-          }}
-        >
-          Perfil
-        </button>
-        <button
-          onClick={() => {
-            navigate("/nuevo-aviso");
-            closeMenu();
-          }}
-        >
-          Nuevo Aviso
-        </button>
+      <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
+        <button onClick={handleInicioClick}>Inicio</button>
+        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
+        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
       </nav>
 
       <div className={styles.contenidoDetalle}>
@@ -243,7 +265,7 @@ const handleInicioClick = () => {
                     src={img}
                     alt={`Imagen ${index + 1}`}
                     className={styles.imagen}
-                    onClick={() => openModal(img)} // Abrir modal al hacer clic
+                    onClick={() => openModal(img)}
                   />
                 ))}
               </div>
@@ -258,6 +280,7 @@ const handleInicioClick = () => {
             <p>No hay imágenes disponibles.</p>
           )}
         </div>
+
         <div className={styles.textoDetalle}>
           <h2>{publicacion.nombre}</h2>
           <p><strong>Descripción:</strong> {publicacion.descripcion}</p>
@@ -267,53 +290,77 @@ const handleInicioClick = () => {
           <p><strong>Número:</strong> {publicacion.ubicacion?.piso || "No especificado"}</p>
           <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
           <p><strong>Estado:</strong> {publicacion.estado}</p>
-          <div className={styles.botonesAccion}>
 
-           {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
-           <button onClick={handleNotificar}>Notificar arrendatario</button>
-          )}
-       
-            {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId &&  (
+          <div className={styles.botonesAccion}>
+            {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
+              <button onClick={handleNotificar}>Notificar arrendatario</button>
+            )}
+            {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <button onClick={handleActualizar}>Actualizar publicación</button>
             )}
-
             {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
-            <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
-              Reportar
+              <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
+                Reportar
               </button>
             )}
-
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <>
-                {/* Botón para crear acuerdo: solo si NO hay acuerdo activo */}
                 {!acuerdoActivo && (
-                 <button onClick={() => navigate(`/acuerdo/crear/${publicacion.id}`)}>
-                   Crear Acuerdo
-                 </button>
-               )}
-               {/* Botón para modificar acuerdo: solo si HAY acuerdo activo */}
-               {acuerdoActivo && (
-                 <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
-                   Modificar Acuerdo
-                 </button>
-                     )}
-                     <button onClick={handleEliminar} className={styles.botonEliminar}>
-                       Eliminar Publicación
-                     </button>
-                   </>         
-           )}
-
-            
+                  <button onClick={() => navigate(`/acuerdo/crear/${publicacion.id}`)}>Crear Acuerdo</button>
+                )}
+                {acuerdoActivo && (
+                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
+                    Modificar Acuerdo
+                  </button>
+                )}
+                <button onClick={handleEliminar} className={styles.botonEliminar}>
+                  Eliminar Publicación
+                </button>
+              </>
+            )}
           </div>
+
+          {puedeCalificar() ? (
+            !hasRated ? (
+              <div className={styles.calificacionContainer}>
+                <h3>Califica esta experiencia</h3>
+                <label>
+                  Calificación:
+                  <select value={rating} onChange={(e) => setRating(parseInt(e.target.value))}>
+                    <option value={0}>Selecciona estrellas</option>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <option key={star} value={star}>
+                        {star} estrella{star > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Comentarios (opcional):
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Escribe tu comentario"
+                  />
+                </label>
+                <button onClick={handleSubmitRating} disabled={loadingRating}>
+                  {loadingRating ? "Enviando..." : "Enviar Calificación"}
+                </button>
+                {ratingMessage && <p>{ratingMessage}</p>}
+              </div>
+            ) : (
+              <p>Gracias por calificar esta experiencia.</p>
+            )
+          ) : null}
+
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
-              <p className={styles.mensajeNotificacion}>
-                {mensajeNotificacion}
-              </p>
+              <p className={styles.mensajeNotificacion}>{mensajeNotificacion}</p>
             </div>
           )}
         </div>
       </div>
+
       {mostrarModal && (
         <div className={styles.modalFondo}>
           <div className={styles.modalContenido}>
@@ -321,11 +368,7 @@ const handleInicioClick = () => {
             <form onSubmit={handleEnviarReporte}>
               <label>
                 Motivo:
-                <select
-                  value={motivo}
-                  onChange={(e) => setMotivo(e.target.value)}
-                  required
-                >
+                <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required>
                   <option value="">Selecciona un motivo</option>
                   <option value="inapropiado">Contenido Inapropiado</option>
                   <option value="spam">Spam</option>
@@ -351,6 +394,7 @@ const handleInicioClick = () => {
           </div>
         </div>
       )}
+
       {isModalOpen && (
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>

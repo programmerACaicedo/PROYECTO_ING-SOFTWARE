@@ -16,4 +16,6 @@ public interface IAcuerdosService {
     public List<AcuerdosModel> listarAcuerdosDeUnPropietario (ObjectId propietarioId);//Falta testear en postman
     public List<AcuerdosModel> listarAcuerdosDeUnPropietarioAndEstado (ObjectId propietarioId, EstadoAcuerdo estado);//Falta testear en postman
     public AcuerdosModel detallarUnAcuerdo(ObjectId idAcuerdo); 
+    public AcuerdosModel calificarArrendatario(ObjectId idAcuerdo, Integer calificacion, String comentario);//Falta testear en postman
+    public AcuerdosModel calificarServicio(ObjectId idAcuerdo, Integer calificacion, String comentario);
 }
