@@ -14,6 +14,7 @@ const Mensajes = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [conversaciones, setConversaciones] = useState([]);
   const [conversacionSeleccionada, setConversacionSeleccionada] = useState(null);
+  const conversacionSeleccionadaRef = useRef(conversacionSeleccionada);
   const [nuevoMensaje, setNuevoMensaje] = useState("");
   const [error, setError] = useState("");
   const [userId, setUserId] = useState("");
@@ -31,6 +32,9 @@ const Mensajes = () => {
     setTipoUsuario(decoded.tipo || "");
     const id = decoded.id?._id || decoded.id || "";
     setUserId(id);
+
+    // Agrega este log para depurar
+    console.log("Tipo de usuario:", decoded.tipo, "ID usado para socket:", id);
 
     // Extraer notificaciones del token
     setUserNotifications(decoded.notificaciones || []);
@@ -71,11 +75,16 @@ const Mensajes = () => {
       const data = await obtenerConversaciones(id);
       const conversaciones = data.map(conv => ({
         ...conv,
-        id: conv.id || conv._id // usa 'id' si existe, si no usa '_id'
+        id: conv.id || conv._id
       }));
       setConversaciones(conversaciones);
+      // Limpia el error si la carga fue exitosa
+      setError("");
     } catch {
-      setError("Error al cargar conversaciones");
+      // Solo muestra el error si no hay conversaciones cargadas
+      if (conversaciones.length === 0) {
+        setError("Error al cargar conversaciones");
+      }
     }
   };
 
@@ -89,8 +98,8 @@ const Mensajes = () => {
   };
 
   const seleccionarConversacion = conv => {
-    console.log("Conversación seleccionada:", conv);
-    setConversacionSeleccionada(conv); // conv debe tener el campo 'id'
+    if (!conv?.id) return;
+    seleccionarConversacionPorId(conv.id); // Siempre obtiene el chat actualizado del backend
     setError("");
   };
 
@@ -111,9 +120,18 @@ const Mensajes = () => {
     };
 
     try {
-      await mandarMensaje(conversacionSeleccionada.id, mensajeData);
-      setNuevoMensaje(""); // Solo limpia el input
-      // NO hagas socket.emit aquí
+      // Espera la respuesta del backend (chat actualizado)
+      const chatActualizado = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
+      setNuevoMensaje(""); // Limpia el input
+
+      // Actualiza el estado local del chat seleccionado y la lista de conversaciones
+      setConversacionSeleccionada(chatActualizado);
+      setConversaciones(prev =>
+        prev.map(conv =>
+          conv.id === chatActualizado.id ? chatActualizado : conv
+        )
+      );
+      // El socket también actualizará cuando llegue el evento, pero esto da feedback inmediato
     } catch (err) {
       setError("Error al enviar el mensaje: " + (err.response?.data?.message || err.message));
     }
@@ -136,22 +154,35 @@ const Mensajes = () => {
   };
 
   useEffect(() => {
+    conversacionSeleccionadaRef.current = conversacionSeleccionada;
+  }, [conversacionSeleccionada]);
+
+  useEffect(() => {
+    if (!socket || !userId) return;
+
+    // Actualiza la lista de conversaciones cuando haya un nuevo chat o cambio
+    const handleNuevoChat = () => {
+      fetchConversaciones(userId);
+    };
+
+    socket.on("nuevoChat", handleNuevoChat);
+
+    return () => {
+      socket.off("nuevoChat", handleNuevoChat);
+    };
+  }, [socket, userId]);
+
+  useEffect(() => {
     if (!socket) return;
 
-    const handleNuevoMensaje = ({ conversacionId, mensaje }) => {
-      setConversaciones(prev =>
-        prev.map(conv =>
-          conv.id === conversacionId
-            ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
-            : conv
-        )
-      );
-      if (conversacionSeleccionada?.id === conversacionId) {
-        setConversacionSeleccionada(prev => ({
-          ...prev,
-          mensajes: [...prev.mensajes, mensaje],
-        }));
+    // Cuando llega un nuevo mensaje, actualiza el chat seleccionado desde el backend
+    const handleNuevoMensaje = ({ conversacionId }) => {
+      // Si el chat abierto es el que recibió el mensaje, actualízalo completamente
+      if (conversacionSeleccionadaRef.current?.id === conversacionId) {
+        seleccionarConversacionPorId(conversacionId);
       }
+      // Siempre actualiza la lista de conversaciones
+      fetchConversaciones(userId);
     };
 
     socket.on('nuevoMensaje', handleNuevoMensaje);
@@ -159,7 +190,21 @@ const Mensajes = () => {
     return () => {
       socket.off('nuevoMensaje', handleNuevoMensaje);
     };
-  }, [socket, conversacionSeleccionada]);
+  }, [socket, userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // Refresca conversaciones y chat seleccionado cada 5 segundos
+    const interval = setInterval(() => {
+      fetchConversaciones(userId);
+      if (conversacionSeleccionada?.id) {
+        seleccionarConversacionPorId(conversacionSeleccionada.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [userId, conversacionSeleccionada?.id]);
 
   return (
     <div className={styles.mensajesContainer}>

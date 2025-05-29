@@ -102,7 +102,12 @@ public MensajeriaModel crearChat(MensajeriaModel chat) {
     chat.getMensajes().add(mensajeInicial);
 
     // 7. Guardar y devolver
-    return MensajeriaRepository.save(chat);
+    MensajeriaModel chatGuardado = MensajeriaRepository.save(chat);
+
+    // Notificar a través de WebSocket sobre la creación de un nuevo chat
+    messagingTemplate.convertAndSend("/topic/nuevoChat", chatGuardado);
+
+    return chatGuardado;
 }
 
 @Override
@@ -182,6 +187,10 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
             notificacion
         );
     }
+
+    // Notificar a través de WebSocket sobre el nuevo mensaje y la actualización de conversaciones
+    messagingTemplate.convertAndSend("/topic/nuevoMensaje", chat);
+    messagingTemplate.convertAndSend("/topic/actualizarConversaciones", chat);
 
     System.out.println("Finalizando mandarMensaje");
     return MensajeriaRepository.save(chat);
