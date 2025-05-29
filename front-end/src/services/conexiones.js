@@ -1,16 +1,12 @@
 import axios from "axios";
 
-const isDev = true; // o una condición según el entorno
-
 const api = axios.create({
-  baseURL: isDev
-    ? "http://localhost:8080/api/"
-    : "https://fkzklx7z-8080.use2.devtunnels.ms/api",
+  //"https://fkzklx7z-8080.use2.devtunnels.ms/api"  URL para funcionamiento con tunel
+  baseURL: "http://localhost:8080/api", // Base URL de la API
   headers: {
     "Content-Type": "application/json",
   },
 });
-
 
 // Agregar token a cada petición automáticamente
 api.interceptors.request.use(
@@ -311,7 +307,6 @@ export const crearChat = async (chatData) => {
     throw error;
   }
 };
-
 /*implementar
   @PutMapping("/mandarMensaje/{idMensajeria}")
   public ResponseEntity<MensajeriaModel> mandarMensaje(
