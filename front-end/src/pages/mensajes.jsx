@@ -14,6 +14,7 @@ const Mensajes = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [conversaciones, setConversaciones] = useState([]);
   const [conversacionSeleccionada, setConversacionSeleccionada] = useState(null);
+  const conversacionSeleccionadaRef = useRef(conversacionSeleccionada);
   const [nuevoMensaje, setNuevoMensaje] = useState("");
   const [error, setError] = useState("");
   const [userId, setUserId] = useState("");
@@ -31,6 +32,9 @@ const Mensajes = () => {
     setTipoUsuario(decoded.tipo || "");
     const id = decoded.id?._id || decoded.id || "";
     setUserId(id);
+
+    // Agrega este log para depurar
+    console.log("Tipo de usuario:", decoded.tipo, "ID usado para socket:", id);
 
     // Extraer notificaciones del token
     setUserNotifications(decoded.notificaciones || []);
@@ -111,9 +115,18 @@ const Mensajes = () => {
     };
 
     try {
-      await mandarMensaje(conversacionSeleccionada.id, mensajeData);
-      setNuevoMensaje(""); // Solo limpia el input
-      // NO hagas socket.emit aquí
+      // Espera la respuesta del backend (chat actualizado)
+      const chatActualizado = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
+      setNuevoMensaje(""); // Limpia el input
+
+      // Actualiza el estado local del chat seleccionado y la lista de conversaciones
+      setConversacionSeleccionada(chatActualizado);
+      setConversaciones(prev =>
+        prev.map(conv =>
+          conv.id === chatActualizado.id ? chatActualizado : conv
+        )
+      );
+      // El socket también actualizará cuando llegue el evento, pero esto da feedback inmediato
     } catch (err) {
       setError("Error al enviar el mensaje: " + (err.response?.data?.message || err.message));
     }
@@ -136,6 +149,10 @@ const Mensajes = () => {
   };
 
   useEffect(() => {
+    conversacionSeleccionadaRef.current = conversacionSeleccionada;
+  }, [conversacionSeleccionada]);
+
+  useEffect(() => {
     if (!socket) return;
 
     const handleNuevoMensaje = ({ conversacionId, mensaje }) => {
@@ -146,7 +163,7 @@ const Mensajes = () => {
             : conv
         )
       );
-      if (conversacionSeleccionada?.id === conversacionId) {
+      if (conversacionSeleccionadaRef.current?.id === conversacionId) {
         setConversacionSeleccionada(prev => ({
           ...prev,
           mensajes: [...prev.mensajes, mensaje],
@@ -159,7 +176,7 @@ const Mensajes = () => {
     return () => {
       socket.off('nuevoMensaje', handleNuevoMensaje);
     };
-  }, [socket, conversacionSeleccionada]);
+  }, [socket]);
 
   return (
     <div className={styles.mensajesContainer}>
