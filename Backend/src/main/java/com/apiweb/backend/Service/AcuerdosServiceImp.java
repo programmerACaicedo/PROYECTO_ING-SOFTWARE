@@ -165,6 +165,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }
         acuerdo.setRazonCancelacion(razonCancelacion);
         acuerdo.setEstado(EstadoAcuerdo.Cancelado);
+        acuerdo.setFechaCancelacion(Instant.now());
 
         return acuerdosRepository.save(acuerdo);
     }
