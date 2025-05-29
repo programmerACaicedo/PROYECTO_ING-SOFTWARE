@@ -18,7 +18,6 @@ export default function CrearAcuerdo() {
     fechaFin: "",
     archivoContrato: "",
     arrendatarioCorreo: "",
-    //arrendatarioNombre: "",
   });
   const [mensajes, setMensajes] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -135,7 +134,6 @@ export default function CrearAcuerdo() {
       archivoContrato: form.archivoContrato,
       arrendatario: {
         correo: form.arrendatarioCorreo,
-        //nombre: form.arrendatarioNombre,
       },
     };
 
