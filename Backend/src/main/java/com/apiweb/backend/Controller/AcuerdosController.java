@@ -47,7 +47,7 @@ public class AcuerdosController {
     public ResponseEntity<List<AcuerdosModel>> listarAcuerdosDeUnPropietarioAndEstado (@PathVariable("propietarioId") ObjectId propietarioId,@RequestBody EstadoAcuerdo estado) {
         return new ResponseEntity<List<AcuerdosModel>>(acuerdosService.listarAcuerdosDeUnPropietarioAndEstado(propietarioId, estado),HttpStatus.OK);
     }
-    @GetMapping("/DetallarUnAviso/{idAcuerdo}")
+    @GetMapping("/DetallarUnAcuerdo/{idAcuerdo}")
     public ResponseEntity<AcuerdosModel> detallarUnAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo) {
         return new ResponseEntity<AcuerdosModel> (acuerdosService.detallarUnAcuerdo(idAcuerdo),HttpStatus.OK);
     }
