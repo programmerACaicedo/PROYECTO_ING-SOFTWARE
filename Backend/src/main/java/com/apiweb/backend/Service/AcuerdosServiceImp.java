@@ -107,6 +107,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     }
 
     @Override
+    @Transactional
     public AcuerdosModel modificarAcuerdo(ObjectId idAcuerdo, ExtensionAcuerdo extension) {
         //Verificar que el acuerdo a modificar no este finalizado
         verificacionFechaFinalizacion();
@@ -133,13 +134,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
                 if (extension.getFechaFin().isBefore(extension.getFechaInicio())) {
                     throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la nueva fecha inicio extensión. ");
                 }
-                for(ExtensionAcuerdo extensionAcuer : acuerdoActualizar.getExtensiones()){
-                    if (extension.getFechaInicio().isBefore(extensionAcuer.getFechaFin())) {
+                ExtensionAcuerdo ultimaExtension = acuerdoActualizar.getExtensiones().get(acuerdoActualizar.getExtensiones().size() - 1);
+                if (extension.getFechaInicio().isBefore(ultimaExtension.getFechaFin())) {
                         throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la ultima fecha fin de las extensiones ya creadas. ");
-                    }
                 }
             }
 
+
+        acuerdoActualizar.getExtensiones().add(extension);
         return acuerdosRepository.save(acuerdoActualizar);
 
     }

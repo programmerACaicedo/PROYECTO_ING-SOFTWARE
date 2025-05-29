@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import {
   listarSinReportes,
   reportarAviso,
-  obtenerAcuerdoPorAviso,
+  obtenerAcuerdoPorId,
   eliminarAviso,
   crearCalificacion,
   crearChat,
@@ -58,7 +58,7 @@ const DetallePublicacion = () => {
           // Fetch agreement if usuarioId is available
           if (userId) {
             try {
-              const acuerdo = await obtenerAcuerdoPorAviso(id);
+              const acuerdo = await obtenerAcuerdoPorId(id);
               console.log("Acuerdo from API:", acuerdo);
               // Normalize estado to handle potential enum serialization issues
               const estadoStr = typeof acuerdo?.estado === "string"
