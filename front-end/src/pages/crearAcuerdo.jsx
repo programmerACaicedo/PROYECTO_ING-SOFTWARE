@@ -134,7 +134,6 @@ export default function CrearAcuerdo() {
       archivoContrato: form.archivoContrato,
       arrendatario: {
         correo: form.arrendatarioCorreo,
-        //nombre: form.arrendatarioNombre,
       },
     };
 
