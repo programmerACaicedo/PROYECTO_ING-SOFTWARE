@@ -91,7 +91,11 @@ const Mensajes = () => {
   const fetchConversaciones = async id => {
     try {
       const data = await obtenerConversaciones(id);
-      setConversaciones(data);
+      const conversaciones = data.map(conv => ({
+        ...conv,
+        id: conv.id || conv._id // usa 'id' si existe, si no usa '_id'
+      }));
+      setConversaciones(conversaciones);
     } catch {
       setError("Error al cargar conversaciones");
     }
@@ -107,12 +111,17 @@ const Mensajes = () => {
   };
 
   const seleccionarConversacion = conv => {
-    setConversacionSeleccionada(conv);
+    console.log("Conversación seleccionada:", conv);
+    setConversacionSeleccionada(conv); // conv debe tener el campo 'id'
     setError("");
   };
 
   const handleEnviarMensaje = async () => {
-    if (!nuevoMensaje.trim() || !conversacionSeleccionada) return;
+    if (
+      !nuevoMensaje.trim() ||
+      !conversacionSeleccionada ||
+      !conversacionSeleccionada.id
+    ) return;
 
     const mensajeData = {
       idRemitente: userId,
@@ -124,11 +133,9 @@ const Mensajes = () => {
     };
 
     try {
-      const updatedChat = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
-      setConversacionSeleccionada(updatedChat);
-      setConversaciones(prev =>
-        prev.map(conv => (conv.id === updatedChat.id ? updatedChat : conv))
-      );
+      await mandarMensaje(conversacionSeleccionada.id, mensajeData);
+      const updatedChat = await obtenerChat(conversacionSeleccionada.id);
+      await obtenerConversaciones(userId);
       socket.emit("enviarMensaje", {
         conversacionId: updatedChat.id,
         emisorId: userId,

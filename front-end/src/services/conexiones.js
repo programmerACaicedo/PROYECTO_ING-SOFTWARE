@@ -319,24 +319,23 @@ export const crearChat = async (chatData) => {
   }
 */
 export const mandarMensaje = async (idMensajeria, mensajeData) => {
-  // Declara id aquí para que esté disponible en todo el scope
   const id = typeof idMensajeria === "object" ? idMensajeria.id : idMensajeria;
+  if (!id) throw new Error("idMensajeria es requerido para mandarMensaje");
   try {
     const response = await api.post(`/mensajeria/mandarMensaje/${id}`, mensajeData);
     return response.data;
   } catch (error) {
     console.error("Error al enviar mensaje:", error.response || error.message);
-    console.log("URL:", `/mensajeria/mandarMensaje/${id}`);
-    console.log("Datos enviados:", mensajeData);
-    console.log("idMensajeria:", idMensajeria);
     throw error;
   }
 };
 
-
 export const obtenerChat = async (idMensajeria) => {
+  // Asegúrate de que idMensajeria sea string
+  const id = typeof idMensajeria === "object" ? idMensajeria.id : idMensajeria;
+  if (!id) throw new Error("idMensajeria es requerido para obtenerChat");
   try {
-    const response = await api.get(`/mensajeria/mostrarChat/${idMensajeria}`);
+    const response = await api.get(`/mensajeria/mostrarChat/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener chat:", error.response || error.message);
@@ -346,19 +345,28 @@ export const obtenerChat = async (idMensajeria) => {
 
 // Nueva función para obtener todas las conversaciones (requiere un endpoint en el backend)
 export const obtenerConversaciones = async (userId) => {
-  // Validar que userId esté presente
-  if (!userId) {
-    throw new Error("Se requiere userId para obtener las conversaciones.");
-  }
-  
+  // Asegúrate de que userId sea string
+  const id = typeof userId === "object" ? userId.id : userId;
+  if (!id) throw new Error("userId es requerido para obtener las conversaciones.");
   try {
-    const response = await api.get(`/mensajeria/conversaciones/${userId}`);
+    const response = await api.get(`/mensajeria/conversaciones/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Error al obtener conversaciones para el usuario ${userId}:`, error.response?.data || error.message);
+    console.error(`Error al obtener conversaciones para el usuario ${id}:`, error.response?.data || error.message);
     throw error;
   }
 };
 
 export default api;
 
+// NUEVA FUNCIÓN PARA CREAR CALIFICACIÓN (AJUSTE SOLICITADO)
+
+export const crearCalificacion = async (idAcuerdo, calificacionData) => {
+  try {
+    const respuesta = await api.post(`/calificaciones/${idAcuerdo}`, calificacionData);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al crear calificación:", error.response || error.message);
+    throw error;
+  }
+};

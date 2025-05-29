@@ -22,6 +22,7 @@ import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
 import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ENUM.TipoNotificacion;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IMensajeriaRepository;
@@ -154,11 +155,16 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
     nuevoMsg.setNombreRemitente(remitente.getNombre());
     nuevoMsg.setFecha(Instant.now());
     nuevoMsg.setLeido(false);
+    nuevoMsg.setNombreRemitente(remitente.getNombre());
+    // Obtener el usuario destinatario para obtener su nombre
+    UsuariosModel usuarioDest = UsuarioRepository.findById(destinatario).orElse(null);
+    nuevoMsg.setNombreDestinatario(usuarioDest != null ? usuarioDest.getNombre() : "");
 
     chat.getMensajes().add(nuevoMsg);
 
     // Crear notificación
     Notificaciones notificacion = new Notificaciones();
+    notificacion.setTipo(TipoNotificacion.Mensaje); // Usa el enum, NO el string
     notificacion.setContenido("Nuevo mensaje de " + remitente.getNombre());
     notificacion.setFecha(Instant.now());
     notificacion.setLeido(false);
@@ -296,6 +302,8 @@ public MensajeriaModel mandarMensaje(String idMensajeria, MensajesMensajeria men
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'mostrarChat'");
     }
+
+    
 
 
 }
