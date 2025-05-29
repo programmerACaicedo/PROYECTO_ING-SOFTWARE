@@ -62,7 +62,7 @@ function App() {
               <Route path="/MisAvisos" element={<RutaProtegida><MisAvisos /></RutaProtegida>} />
               <Route path="/admin/ver-reportes" element={<RutaProtegida><VerReportes /></RutaProtegida>} />
               <Route path="/acuerdo/crear/:idAviso" element={<RutaProtegida><CrearAcuerdo /></RutaProtegida>} />
-              <Route path="/acuerdo/modificar/:idAviso" element={<RutaProtegida><ModificarAcuerdo /></RutaProtegida>} />
+              <Route path="/acuerdo/modificar/:idAcuerdo" element={<RutaProtegida><ModificarAcuerdo /></RutaProtegida>} />
               <Route path="/misAcuerdos" element={<RutaProtegida><MisAcuerdos /></RutaProtegida>} />
             </Routes>
           </BackgroundWrapper>

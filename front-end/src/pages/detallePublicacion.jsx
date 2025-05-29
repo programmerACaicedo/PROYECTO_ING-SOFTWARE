@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
+import { listarSinReportes, reportarAviso, obtenerAcuerdoPorId, eliminarAviso } from "../services/conexiones";
 import { crearChat, verificarChatExistente } from "../services/conexiones";
 import styles from "../styles/detallePublicacion.module.css";
 
@@ -53,7 +53,7 @@ const DetallePublicacion = () => {
   useEffect(() => {
     const fetchAcuerdo = async () => {
       try {
-        const acuerdo = await obtenerAcuerdoPorAviso(id);
+        const acuerdo = await obtenerAcuerdoPorId(id);
         if (
           acuerdo &&
           (acuerdo.estado?.toLowerCase() === "activo" || acuerdo.estado?.toLowerCase() === "finalizado")

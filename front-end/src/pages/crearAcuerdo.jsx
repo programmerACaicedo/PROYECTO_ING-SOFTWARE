@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../styles/crearAcuerdo.module.css";
 import { obtenerUsuario, registrarAcuerdo } from "../services/conexiones";
-import { obtenerAcuerdoPorAviso } from "../services/conexiones";
+import { obtenerAcuerdoPorId } from "../services/conexiones";
 import api from "../services/conexiones"; // Asegúrate de tener tu instancia de axios aquí
 
 
 
 export default function CrearAcuerdo() {
   const navigate = useNavigate();
+  const { idAcuerdo } = useParams();
   const { idAviso } = useParams();
   const [archivoContratoFile, setArchivoContratoFile] = useState(null);
   const [usuarioSesion, setUsuarioSesion] = useState(null);
@@ -51,7 +52,7 @@ export default function CrearAcuerdo() {
   useEffect(() => {
   const validarAcuerdo = async () => {
     try {
-      const acuerdo = await obtenerAcuerdoPorAviso(idAviso);
+      const acuerdo = await obtenerAcuerdoPorId (idAcuerdo);
       if (acuerdo) {
         setMensajes([{ texto: "Este aviso ya tiene un acuerdo registrado.", tipo: "error" }]);
         // Opcional: redirige o deshabilita el formulario
