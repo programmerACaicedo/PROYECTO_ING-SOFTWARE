@@ -172,6 +172,9 @@ const ActualizarPublicacion = () => {
       const respuesta = await actualizarAviso(id, datosActualizados);
       setMensajeExito("¡Cambios guardados con éxito!");
       setFormData(f => ({ ...f, imagenes: [] })); // Limpiar imágenes nuevas
+      setTimeout(() => {
+        navigate(`/publicacion/${id}`);
+      }, 1500); // Redirige después de 1.5 segundos
     } catch (error) {
       setMensajeExito("Error al actualizar el aviso.");
     }
