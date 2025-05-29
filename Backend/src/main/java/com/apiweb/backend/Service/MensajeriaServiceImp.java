@@ -22,6 +22,7 @@ import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
 import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ENUM.TipoNotificacion;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IMensajeriaRepository;
@@ -163,7 +164,7 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
 
     // Crear notificación
     Notificaciones notificacion = new Notificaciones();
-    notificacion.setTipo("Mensaje");
+    notificacion.setTipo(TipoNotificacion.Mensaje); // Usa el enum, NO el string
     notificacion.setContenido("Nuevo mensaje de " + remitente.getNombre());
     notificacion.setFecha(Instant.now());
     notificacion.setLeido(false);
