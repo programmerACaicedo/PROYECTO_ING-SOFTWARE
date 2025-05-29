@@ -20,8 +20,7 @@ io.on('connection', (socket) => {
   console.log('Usuario conectado:', socket.id);
 
   socket.on('enviarMensaje', (data) => {
-    // Aquí puedes emitir el mensaje a los clientes que correspondan
-    io.emit('nuevoMensaje', data);
+    io.emit('nuevoMensaje', data); // Esto está bien
   });
 
   socket.on('disconnect', () => {

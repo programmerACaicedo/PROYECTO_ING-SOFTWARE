@@ -38,28 +38,6 @@ const Mensajes = () => {
     socket.emit("join", id);
     fetchConversaciones(id);
 
-    socket.on("nuevoMensaje", ({ conversacionId, mensaje, destinatarioId }) => {
-      if (userId === destinatarioId) {
-        setConversaciones(prev =>
-          prev.map(conv =>
-            conv.id === conversacionId
-              ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
-              : conv
-          )
-        );
-        if (conversacionSeleccionada?.id === conversacionId) {
-          setConversacionSeleccionada(prev => ({
-            ...prev,
-            mensajes: [...prev.mensajes, mensaje],
-          }));
-        }
-      }
-    });
-
-    socket.on("nuevoChat", nuevaConversacion => {
-      setConversaciones(prev => [...prev, nuevaConversacion]);
-    });
-
     // Escuchar notificaciones en tiempo real
     socket.on("nuevaNotificacion", (notificacion) => {
       setUserNotifications(prev => [notificacion, ...prev]);
@@ -134,15 +112,8 @@ const Mensajes = () => {
 
     try {
       await mandarMensaje(conversacionSeleccionada.id, mensajeData);
-      const updatedChat = await obtenerChat(conversacionSeleccionada.id);
-      await obtenerConversaciones(userId);
-      socket.emit("enviarMensaje", {
-        conversacionId: updatedChat.id,
-        emisorId: userId,
-        destinatarioId: mensajeData.idDestinatario,
-        mensaje: nuevoMensaje,
-      });
-      setNuevoMensaje("");
+      setNuevoMensaje(""); // Solo limpia el input
+      // NO hagas socket.emit aquí
     } catch (err) {
       setError("Error al enviar el mensaje: " + (err.response?.data?.message || err.message));
     }
@@ -163,6 +134,32 @@ const Mensajes = () => {
     }
     closeMenu();
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNuevoMensaje = ({ conversacionId, mensaje }) => {
+      setConversaciones(prev =>
+        prev.map(conv =>
+          conv.id === conversacionId
+            ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
+            : conv
+        )
+      );
+      if (conversacionSeleccionada?.id === conversacionId) {
+        setConversacionSeleccionada(prev => ({
+          ...prev,
+          mensajes: [...prev.mensajes, mensaje],
+        }));
+      }
+    };
+
+    socket.on('nuevoMensaje', handleNuevoMensaje);
+
+    return () => {
+      socket.off('nuevoMensaje', handleNuevoMensaje);
+    };
+  }, [socket, conversacionSeleccionada]);
 
   return (
     <div className={styles.mensajesContainer}>

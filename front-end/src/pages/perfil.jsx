@@ -313,6 +313,16 @@ const Perfil = () => {
         {tipoUsuario === "propietario" && (
           <button
             onClick={() => {
+              navigate("/misAcuerdos");
+              closeMenu();
+            }}
+          >
+            Mis acuerdos
+          </button>
+        )}
+        {tipoUsuario === "propietario" && (
+          <button
+            onClick={() => {
               navigate("/nuevo-aviso");
               closeMenu();
             }}

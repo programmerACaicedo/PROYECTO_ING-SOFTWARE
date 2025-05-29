@@ -18,7 +18,7 @@ export default function CrearAcuerdo() {
     fechaFin: "",
     archivoContrato: "",
     arrendatarioCorreo: "",
-    arrendatarioNombre: "",
+    //arrendatarioNombre: "",
   });
   const [mensajes, setMensajes] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,7 +92,7 @@ export default function CrearAcuerdo() {
     e.preventDefault();
 
     // Validaciones
-    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo || !form.arrendatarioNombre || !form.archivoContrato) {
+    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo /*|| !form.arrendatarioNombre*/ || !form.archivoContrato) {
       setMensajes((prev) => [
         ...prev,
         { texto: "Todos los campos son obligatorios.", tipo: "error" },
@@ -135,7 +135,7 @@ export default function CrearAcuerdo() {
       archivoContrato: form.archivoContrato,
       arrendatario: {
         correo: form.arrendatarioCorreo,
-        nombre: form.arrendatarioNombre,
+        //nombre: form.arrendatarioNombre,
       },
     };
 
@@ -200,17 +200,6 @@ return (
             value={form.arrendatarioCorreo}
             onChange={handleInputChange}
             placeholder="Correo del arrendatario"
-            required
-          />
-        </div>
-        <div className={styles.campoForm}>
-          <label>Nombre del arrendatario:</label>
-          <input
-            type="text"
-            name="arrendatarioNombre"
-            value={form.arrendatarioNombre}
-            onChange={handleInputChange}
-            placeholder="Nombre del arrendatario"
             required
           />
         </div>
