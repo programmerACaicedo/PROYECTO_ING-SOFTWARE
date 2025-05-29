@@ -104,6 +104,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         acuerdo.getArrendatario().setNombre(arrendatarioExiste.getNombre());
         acuerdo.setPropietarioId(aviso.getPropietarioId().getUsuarioId());
         avisosRepository.save(aviso);
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Creacion de acuerdo de arrendamiento exitosa",
+            "Creacion de acuerdo de arrendamiento exitosa.\n\n");
+
         return acuerdosRepository.save(acuerdo);
     }
 
@@ -143,6 +151,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
 
         acuerdoActualizar.getExtensiones().add(extension);
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdoActualizar.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Modificacion de acuerdo de arrendamiento exitosa",
+            "Modificacion de acuerdo de arrendamiento exitosa.\n\n");
+
         return acuerdosRepository.save(acuerdoActualizar);
 
     }
@@ -165,6 +181,13 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         acuerdo.setRazonCancelacion(razonCancelacion);
         acuerdo.setEstado(EstadoAcuerdo.Cancelado);
         acuerdo.setFechaCancelacion(Instant.now());
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Cancelacion de acuerdo de arrendamiento exitosa",
+            "Cancelacion de acuerdo de arrendamiento exitosa.\n\n");
 
         return acuerdosRepository.save(acuerdo);
     }
