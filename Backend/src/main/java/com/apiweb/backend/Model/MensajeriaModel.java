@@ -55,5 +55,7 @@ public class MensajeriaModel {
         this.propietarioId = idPropietario; // Ahora asigna el valor correctamente
     }
 
-    
+    public String getId() {
+        return this.id != null ? this.id.toHexString() : null;
+    }
 }
