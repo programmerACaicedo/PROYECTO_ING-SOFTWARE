@@ -3,7 +3,6 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* Centra verticalmente */
   align-items: center;       /* Centra horizontalmente */
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
