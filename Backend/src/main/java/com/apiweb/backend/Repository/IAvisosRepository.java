@@ -15,10 +15,11 @@ public interface IAvisosRepository extends MongoRepository<AvisosModel, ObjectId
     Optional<AvisosModel> findByUbicacion(UbicacionAviso ubicacion);
     void deleteByPropietarioId_UsuarioId(ObjectId usuarioId);
     List<AvisosModel> findByPropietarioIdUsuarioId(ObjectId propietarioId);
-    List<AvisosModel> findByReporteIsNotNull();
-    @Query("{ 'reporte': { $not: { $elemMatch: { 'estadoReporte': ?0 } } } }")
+    List<AvisosModel> findByReportesIsNotNull();
+    @Query("{ 'reportes': { $not: { $elemMatch: { 'estadoReporte': ?0 } } } }")
     List<AvisosModel> findAvisosWithoutExcludedReports(EstadoReporte estado);
     List<AvisosModel> findByPropietarioId(String userId);
+    Optional<AvisosModel> findByIdAndReportesUsuarioReportaAndReportesEstadoReporte(ObjectId idAviso ,ObjectId idUsuarioReporta, EstadoReporte estado);
 }
 
 

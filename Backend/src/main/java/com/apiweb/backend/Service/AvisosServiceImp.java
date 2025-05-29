@@ -44,7 +44,7 @@ public class AvisosServiceImp implements IAvisosService{
         if (usuario.getTipo() != TipoUsuario.propietario){
             throw new InvalidUserRoleException("Solamente un propietario puede crear un aviso.");
         }
-        if (aviso.getReporte() != null && !aviso.getReporte().isEmpty()) {
+        if ((aviso.getReportes()) != null && !aviso.getReportes().isEmpty()) {
             throw new InvalidAvisoConfigurationException("El aviso no puede tener un reporte al momento de crearse.");
         }
         if (aviso.getCalificacion_prom() != null && aviso.getCalificacion_prom() != 0) {
@@ -135,8 +135,8 @@ public class AvisosServiceImp implements IAvisosService{
             avisoActualizado.setEstado(aviso.getEstado());
         }
 
-        if (aviso.getReporte() != null && !aviso.getReporte().isEmpty()) {
-            aviso.getReporte().stream().filter(reporte -> reporte.getEstadoReporte() == EstadoReporte.Excluido).forEach(reporte -> {
+        if (aviso.getReportes() != null && !aviso.getReportes().isEmpty()) {
+            aviso.getReportes().stream().filter(reporte -> reporte.getEstadoReporte() == EstadoReporte.Excluido).forEach(reporte -> {
                 reporte.setEstadoReporte(EstadoReporte.AvisoActualizado);
                 reporte.setComentario("El aviso fue actualizado por el propietario para cumplir con las normas.");
             });
@@ -206,18 +206,21 @@ public class AvisosServiceImp implements IAvisosService{
             throw new InvalidAvisoConfigurationException("El motivo no puede estar vacío.");
         }
 
+        Optional<AvisosModel> ReporteExiste = avisosRepository.findByIdAndReportesUsuarioReportaAndReportesEstadoReporte(avisoActualizado.getId(),reporte.getUsuarioReporta(),EstadoReporte.Reportado);
+        if (ReporteExiste.isPresent()) {
+            throw new InvalidAvisoConfigurationException("Ya existe un reporte en revision por parte de este usuario. ");
+        }
+        reporte.setIdReporte(new ObjectId());
         reporte.setFecha(Instant.now());
         reporte.setEstadoReporte(EstadoReporte.Reportado);
-        avisoActualizado.getReporte().add(reporte);
-
-        //Notificacion al propietario
+        avisoActualizado.getReportes().add(reporte);
         
         return avisosRepository.save(avisoActualizado);  
     }
 
     @Override
     public List<AvisosModel> listarAvisosConReportes() {
-        return avisosRepository.findByReporteIsNotNull();
+        return avisosRepository.findByReportesIsNotNull();
     }
     
     @Override
@@ -244,7 +247,7 @@ public class AvisosServiceImp implements IAvisosService{
             throw new InvalidUserRoleException("El usuario no es un administrador.");
         }
         
-        Optional<ReporteAviso> optReporte = aviso.getReporte().stream()
+        Optional<ReporteAviso> optReporte = aviso.getReportes().stream()
             .filter(r -> r.getIdReporte().equals(idReporte))
             .findFirst();
         if (!optReporte.isPresent()) {
@@ -277,7 +280,7 @@ public class AvisosServiceImp implements IAvisosService{
             }
             
             // Filtrar y actualizar TODOS los reportes que estén en estado Reportado
-            List<ReporteAviso> reportesAActualizar = aviso.getReporte().stream()
+            List<ReporteAviso> reportesAActualizar = aviso.getReportes().stream()
                     .filter(r -> r.getEstadoReporte() == EstadoReporte.Reportado)
                     .toList();
             if (reportesAActualizar.isEmpty()) {
