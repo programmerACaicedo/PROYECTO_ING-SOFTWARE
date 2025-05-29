@@ -3,7 +3,6 @@ package com.apiweb.backend.Model;
 
 import java.time.Instant;
 
-
 import org.bson.types.ObjectId;
 
 import com.apiweb.backend.Model.ENUM.TipoNotificacion;
@@ -11,12 +10,6 @@ import com.apiweb.backend.Model.ENUM.TipoNotificacion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.Instant;
 
 @Data
 @AllArgsConstructor
