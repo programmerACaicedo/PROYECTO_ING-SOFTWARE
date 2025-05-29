@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { listarSinReportes, reportarAviso, obtenerAcuerdoPorAviso, eliminarAviso } from "../services/conexiones";
-import { crearChat, verificarChatExistente } from "../services/conexiones";
+import {
+  listarSinReportes,
+  reportarAviso,
+  obtenerAcuerdoPorAviso,
+  eliminarAviso,
+  crearCalificacion,
+  crearChat,
+} from "../services/conexiones";
 import styles from "../styles/detallePublicacion.module.css";
 
 const DetallePublicacion = () => {
@@ -27,190 +33,110 @@ const DetallePublicacion = () => {
   const [hasRated, setHasRated] = useState(false);
   const [loadingRating, setLoadingRating] = useState(false);
   const [ratingMessage, setRatingMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPublicacion = async () => {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
+        // Fetch publication
         const avisos = await listarSinReportes();
         const encontrada = avisos.find((p) => String(p.id) === String(id));
         setPublicacion(encontrada || null);
-      } catch (error) {
-        setPublicacion(null);
-        console.error("Error fetching publicaciones:", error);
-      }
-    };
+        console.log("Publicacion:", encontrada);
 
-    fetchPublicacion();
+        // Fetch user data from token
+        const token = localStorage.getItem("token");
+        if (token) {
+          const decodedToken = jwtDecode(token);
+          setTipoUsuario(decodedToken.tipo || "unknown");
+          console.log("Decoded Token:", decodedToken);
+          const userId = decodedToken.id?._id || decodedToken.id || "";
+          setUsuarioId(userId);
+          console.log("usuarioId:", userId);
 
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setTipoUsuario(decodedToken.tipo || "");
-      setUsuarioId(decodedToken.id?._id || decodedToken.id || "");
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const fetchAcuerdo = async () => {
-      try {
-        const acuerdo = await obtenerAcuerdoPorAviso(id);
-        if (
-          acuerdo &&
-          (acuerdo.estado?.toLowerCase() === "activo" || acuerdo.estado?.toLowerCase() === "finalizado")
-        ) {
-          setAcuerdoActivo(acuerdo);
+          // Fetch agreement if usuarioId is available
+          if (userId) {
+            try {
+              const acuerdo = await obtenerAcuerdoPorAviso(id);
+              console.log("Acuerdo from API:", acuerdo);
+              // Normalize estado to handle potential enum serialization issues
+              const estadoStr = typeof acuerdo?.estado === "string"
+                ? acuerdo.estado.toLowerCase()
+                : String(acuerdo?.estado).toLowerCase();
+              console.log("Estado processed:", estadoStr);
+              if (
+                acuerdo &&
+                (estadoStr === "activo" || estadoStr === "finalizado")
+              ) {
+                setAcuerdoActivo(acuerdo);
+                setHasRated(
+                  acuerdo.calificacionServicio &&
+                    String(acuerdo.calificacionServicio.calificador) === String(userId)
+                );
+              } else {
+                setAcuerdoActivo(null);
+                setHasRated(false);
+                console.log("No valid estado or acuerdo missing");
+              }
+            } catch (error) {
+              console.error("Error fetching acuerdo:", error);
+              setAcuerdoActivo(null);
+              setHasRated(false);
+            }
+          } else {
+            console.log("No userId available");
+          }
         } else {
-          setAcuerdoActivo(null);
+          console.log("No token available");
         }
       } catch (error) {
-        console.error("Error fetching acuerdo:", error);
-        setAcuerdoActivo(null);
+        console.error("Error fetching data:", error);
+        setPublicacion(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (usuarioId) fetchAcuerdo();
-  }, [id, usuarioId]);
+    fetchData();
+  }, [id]);
 
-  const handleNotificar = async (e) => {
-    e.preventDefault();
-    if (!publicacion) return;
-    setMensajeNotificacion("Creando chat con el propietario...");
-
-    const idAviso = publicacion.id;
-    const propietarioId = publicacion.propietarioId?.usuarioId || publicacion.propietarioId;
-
-    if (!usuarioId || !idAviso || !propietarioId) {
-      setMensajeNotificacion("Error: Datos incompletos para crear el chat.");
-      setTimeout(() => setMensajeNotificacion(""), 3000);
-      return;
+  const puedeCalificar = () => {
+    if (!acuerdoActivo) {
+      console.log("No acuerdoActivo");
+      return false;
     }
 
-    try {
-      const chatData = {
-        idInteresado: usuarioId,
-        idAviso: idAviso,
-        propietarioId: propietarioId,
-      };
-      const nuevoChat = await crearChat(chatData);
-      setMensajeNotificacion("Chat creado con éxito.");
-      setTimeout(() => {
-        setMensajeNotificacion("");
-        navigate("/mensajes", { state: { conversacionId: nuevoChat.id } });
-      }, 1500);
-    } catch (error) {
-      setMensajeNotificacion("Error al crear el chat.");
-      console.error("Error:", error);
-      setTimeout(() => setMensajeNotificacion(""), 3000);
-    }
+    // Normalizar el estado para manejar posibles problemas de serialización
+    const estadoStr = typeof acuerdoActivo.estado === "string"
+      ? acuerdoActivo.estado.toLowerCase()
+      : String(acuerdoActivo.estado).toLowerCase();
+    const estadoTerminado = estadoStr === "finalizado";
+
+    // Verificar si el usuario es parte del acuerdo (propietario o arrendatario)
+    const esPropietario = String(acuerdoActivo.propietarioId) === String(usuarioId);
+    const esArrendatario = String(acuerdoActivo.arrendatario?.usuarioId) === String(usuarioId);
+    const esParteDelAcuerdo = esPropietario || esArrendatario;
+
+    // Verificar si el usuario ya ha calificado
+    const yaCalifico =
+      acuerdoActivo.calificacionServicio &&
+      String(acuerdoActivo.calificacionServicio.calificador) === String(usuarioId);
+
+    console.log({
+      estado: acuerdoActivo.estado,
+      estadoStr,
+      estadoTerminado,
+      esPropietario,
+      esArrendatario,
+      esParteDelAcuerdo,
+      yaCalifico,
+    });
+
+    return estadoTerminado && esParteDelAcuerdo && !yaCalifico;
   };
 
-  const handleEliminar = async () => {
-    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?");
-    if (!confirmacion) return;
-
-    try {
-      await eliminarAviso(publicacion.id);
-      alert("Aviso eliminado con éxito");
-      navigate("/propietario");
-    } catch (error) {
-      alert("Error al eliminar el aviso");
-      console.error("Error:", error);
-    }
-  };
-
-  const handleEnviarReporte = async (e) => {
-    e.preventDefault();
-    setMensajeReporte("");
-
-    try {
-      const token = localStorage.getItem("token");
-      const decoded = jwtDecode(token);
-      const usuarioId = decoded.id?._id || decoded.id;
-
-      if (!motivo) {
-        setMensajeReporte("Debes seleccionar un motivo.");
-        return;
-      }
-
-      const reporte = {
-        usuarioReporta: usuarioId,
-        motivo,
-        comentario: comentarios,
-      };
-
-      await reportarAviso(publicacion.id, reporte);
-
-      setMensajeReporte("Reporte enviado con éxito.");
-      setTimeout(() => {
-        setMostrarModal(false);
-        setMotivo("");
-        setComentarios("");
-        setMensajeReporte("");
-      }, 2000);
-    } catch (error) {
-      setMensajeReporte("Error al enviar el reporte.");
-      console.error("Error:", error);
-    }
-  };
-
-  const handleInicioClick = () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      const usuario = jwtDecode(token);
-      if (usuario.tipo === "propietario") {
-        navigate("/propietario");
-      } else if (usuario.tipo === "interesado") {
-        navigate("/interesado");
-      }
-    } catch (error) {
-      console.error("Error al decodificar el token:", error);
-      navigate("/login");
-    }
-    setIsMenuOpen(false);
-  };
-
-  const handleActualizar = () => {
-    navigate(`/actualizar-publicacion/${publicacion.id}`);
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  const handlePrev = () => {
-    if (carruselRef.current) {
-      const imageWidth = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
-      carruselRef.current.scrollBy({ left: -imageWidth, behavior: "smooth" });
-    }
-  };
-
-  const handleNext = () => {
-    if (carruselRef.current) {
-      const imageWidth = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
-      carruselRef.current.scrollBy({ left: imageWidth, behavior: "smooth" });
-    }
-  };
-
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedImage("");
-  };
-
-  const handleSubmitRating = () => {
+  const handleSubmitRating = async () => {
     if (rating < 1 || rating > 5) {
       setRatingMessage("Por favor, selecciona una calificación de 1 a 5 estrellas.");
       return;
@@ -218,21 +144,22 @@ const DetallePublicacion = () => {
     setLoadingRating(true);
     setRatingMessage("");
 
-    setTimeout(() => {
+    try {
+      const calificacionData = {
+        calificador: usuarioId,
+        calificacion: rating,
+        comentario: reviewComment,
+      };
+
+      await crearCalificacion(acuerdoActivo.id, calificacionData);
       setHasRated(true);
       setRatingMessage("Calificación enviada con éxito.");
+    } catch (error) {
+      console.error("Error enviando calificación:", error);
+      setRatingMessage("Error al enviar la calificación. Intenta de nuevo.");
+    } finally {
       setLoadingRating(false);
-    }, 1500);
-  };
-
-  const puedeCalificar = () => {
-    if (!acuerdoActivo) return false;
-
-    const estadoTerminado = acuerdoActivo.estado?.toLowerCase() === "finalizado";
-    const noEsPropietario = publicacion?.propietarioId?.usuarioId !== usuarioId;
-    const esUsuarioValido = tipoUsuario === "interesado" || tipoUsuario === "propietario";
-
-    return estadoTerminado && noEsPropietario && esUsuarioValido;
+    }
   };
 
   if (!publicacion) {
@@ -242,16 +169,30 @@ const DetallePublicacion = () => {
   return (
     <div className={styles.detallePublicacionContainer}>
       <header className={styles.headerDetalle}>
-        <span className={styles.iconMenu} onClick={toggleMenu}>
+        <span className={styles.iconMenu} onClick={() => setIsMenuOpen(!isMenuOpen)}>
           ☰
         </span>
         <h1 className={styles.titulo}>Servicios de Arrendamientos</h1>
       </header>
 
       <nav className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ""}`}>
-        <button onClick={handleInicioClick}>Inicio</button>
-        <button onClick={() => { navigate("/perfil"); closeMenu(); }}>Perfil</button>
-        <button onClick={() => { navigate("/nuevo-aviso"); closeMenu(); }}>Nuevo Aviso</button>
+        <button
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+              navigate("/login");
+              return;
+            }
+            const usuario = jwtDecode(token);
+            if (usuario.tipo === "propietario") navigate("/propietario");
+            else if (usuario.tipo === "interesado") navigate("/interesado");
+            setIsMenuOpen(false);
+          }}
+        >
+          Inicio
+        </button>
+        <button onClick={() => { navigate("/perfil"); setIsMenuOpen(false); }}>Perfil</button>
+        <button onClick={() => { navigate("/nuevo-aviso"); setIsMenuOpen(false); }}>Nuevo Aviso</button>
       </nav>
 
       <div className={styles.contenidoDetalle}>
@@ -265,14 +206,30 @@ const DetallePublicacion = () => {
                     src={img}
                     alt={`Imagen ${index + 1}`}
                     className={styles.imagen}
-                    onClick={() => openModal(img)}
+                    onClick={() => setSelectedImage(img) || setIsModalOpen(true)}
                   />
                 ))}
               </div>
-              <button className={`${styles.navButton} ${styles.prevButton}`} onClick={handlePrev}>
+              <button
+                className={`${styles.navButton} ${styles.prevButton}`}
+                onClick={() => {
+                  if (carruselRef.current) {
+                    const width = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
+                    carruselRef.current.scrollBy({ left: -width, behavior: "smooth" });
+                  }
+                }}
+              >
                 ◄
               </button>
-              <button className={`${styles.navButton} ${styles.nextButton}`} onClick={handleNext}>
+              <button
+                className={`${styles.navButton} ${styles.nextButton}`}
+                onClick={() => {
+                  if (carruselRef.current) {
+                    const width = carruselRef.current.querySelector(`.${styles.imagen}`).offsetWidth;
+                    carruselRef.current.scrollBy({ left: width, behavior: "smooth" });
+                  }
+                }}
+              >
                 ►
               </button>
             </>
@@ -285,7 +242,7 @@ const DetallePublicacion = () => {
           <h2>{publicacion.nombre}</h2>
           <p><strong>Descripción:</strong> {publicacion.descripcion}</p>
           <p><strong>Precio mensual:</strong> ${publicacion.precio_mensual}</p>
-          <p><strong>Ubicacion:</strong></p>
+          <p><strong>Ubicación:</strong></p>
           <p><strong>Bloque:</strong> {publicacion.ubicacion?.edificio || "No especificado"}</p>
           <p><strong>Número:</strong> {publicacion.ubicacion?.piso || "No especificado"}</p>
           <p><strong>Condiciones:</strong> {publicacion.condiciones}</p>
@@ -293,15 +250,36 @@ const DetallePublicacion = () => {
 
           <div className={styles.botonesAccion}>
             {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
-              <button onClick={handleNotificar}>Notificar arrendatario</button>
+              <button
+                onClick={async () => {
+                  if (!usuarioId || !publicacion?.id || !publicacion?.propietarioId) return;
+                  try {
+                    setMensajeNotificacion("Creando chat con el propietario...");
+                    const chatData = {
+                      idInteresado: usuarioId,
+                      idAviso: publicacion.id,
+                      propietarioId: publicacion.propietarioId.usuarioId || publicacion.propietarioId,
+                    };
+                    const nuevoChat = await crearChat(chatData);
+                    setMensajeNotificacion("Chat creado con éxito.");
+                    setTimeout(() => {
+                      setMensajeNotificacion("");
+                      navigate("/mensajes", { state: { conversacionId: nuevoChat.id } });
+                    }, 1500);
+                  } catch (e) {
+                    setMensajeNotificacion("Error al crear el chat.");
+                    setTimeout(() => setMensajeNotificacion(""), 3000);
+                  }
+                }}
+              >
+                Notificar arrendatario
+              </button>
             )}
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
-              <button onClick={handleActualizar}>Actualizar publicación</button>
+              <button onClick={() => navigate(`/actualizar-publicacion/${publicacion.id}`)}>Actualizar publicación</button>
             )}
             {(tipoUsuario !== "propietario" || usuarioId !== publicacion?.propietarioId?.usuarioId) && (
-              <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>
-                Reportar
-              </button>
+              <button onClick={() => setMostrarModal(true)} className={styles.botonReportar}>Reportar</button>
             )}
             {tipoUsuario === "propietario" && usuarioId === publicacion?.propietarioId?.usuarioId && (
               <>
@@ -309,49 +287,62 @@ const DetallePublicacion = () => {
                   <button onClick={() => navigate(`/acuerdo/crear/${publicacion.id}`)}>Crear Acuerdo</button>
                 )}
                 {acuerdoActivo && (
-                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>
-                    Modificar Acuerdo
-                  </button>
+                  <button onClick={() => navigate(`/acuerdo/modificar/${publicacion.id}`)}>Modificar Acuerdo</button>
                 )}
-                <button onClick={handleEliminar} className={styles.botonEliminar}>
+                <button
+                  onClick={async () => {
+                    const confirmacion = window.confirm("¿Desea eliminar definitivamente este aviso?");
+                    if (!confirmacion) return;
+                    try {
+                      await eliminarAviso(publicacion.id);
+                      alert("Aviso eliminado con éxito");
+                      navigate("/propietario");
+                    } catch {
+                      alert("Error al eliminar el aviso");
+                    }
+                  }}
+                  className={styles.botonEliminar}
+                >
                   Eliminar Publicación
                 </button>
               </>
             )}
           </div>
 
-          {puedeCalificar() ? (
-            !hasRated ? (
-              <div className={styles.calificacionContainer}>
-                <h3>Califica esta experiencia</h3>
-                <label>
-                  Calificación:
-                  <select value={rating} onChange={(e) => setRating(parseInt(e.target.value))}>
-                    <option value={0}>Selecciona estrellas</option>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <option key={star} value={star}>
-                        {star} estrella{star > 1 ? "s" : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Comentarios (opcional):
-                  <textarea
-                    value={reviewComment}
-                    onChange={(e) => setReviewComment(e.target.value)}
-                    placeholder="Escribe tu comentario"
-                  />
-                </label>
-                <button onClick={handleSubmitRating} disabled={loadingRating}>
-                  {loadingRating ? "Enviando..." : "Enviar Calificación"}
-                </button>
-                {ratingMessage && <p>{ratingMessage}</p>}
-              </div>
-            ) : (
-              <p>Gracias por calificar esta experiencia.</p>
-            )
-          ) : null}
+          {isLoading ? (
+            <p>Cargando...</p>
+          ) : puedeCalificar() ? (
+            <div className={styles.calificacionContainer}>
+              <h3>Califica esta experiencia</h3>
+              <label>
+                Calificación:
+                <select value={rating} onChange={(e) => setRating(parseInt(e.target.value))}>
+                  <option value={0}>Selecciona estrellas</option>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <option key={star} value={star}>
+                      {star} estrella{star > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Comentarios (opcional):
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Escribe tu comentario"
+                />
+              </label>
+              <button onClick={handleSubmitRating} disabled={loadingRating}>
+                {loadingRating ? "Enviando..." : "Enviar Calificación"}
+              </button>
+              {ratingMessage && <p>{ratingMessage}</p>}
+            </div>
+          ) : hasRated ? (
+            <p>Gracias por calificar esta experiencia.</p>
+          ) : (
+            <p>No puedes calificar esta experiencia en este momento.</p>
+          )}
 
           {mensajeNotificacion && (
             <div className={styles.notificacionOverlay}>
@@ -365,7 +356,31 @@ const DetallePublicacion = () => {
         <div className={styles.modalFondo}>
           <div className={styles.modalContenido}>
             <h3>Reportar Publicación</h3>
-            <form onSubmit={handleEnviarReporte}>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!motivo) {
+                  setMensajeReporte("Debes seleccionar un motivo.");
+                  return;
+                }
+                try {
+                  await reportarAviso(publicacion.id, {
+                    usuarioReporta: usuarioId,
+                    motivo,
+                    comentario: comentarios,
+                  });
+                  setMensajeReporte("Reporte enviado con éxito.");
+                  setTimeout(() => {
+                    setMostrarModal(false);
+                    setMotivo("");
+                    setComentarios("");
+                    setMensajeReporte("");
+                  }, 2000);
+                } catch {
+                  setMensajeReporte("Error al enviar el reporte.");
+                }
+              }}
+            >
               <label>
                 Motivo:
                 <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required>
@@ -396,10 +411,10 @@ const DetallePublicacion = () => {
       )}
 
       {isModalOpen && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
+        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <img src={selectedImage} alt="Imagen ampliada" className={styles.modalImage} />
-            <button className={styles.modalCloseButton} onClick={closeModal}>
+            <button className={styles.modalCloseButton} onClick={() => setIsModalOpen(false)}>
               ×
             </button>
           </div>
