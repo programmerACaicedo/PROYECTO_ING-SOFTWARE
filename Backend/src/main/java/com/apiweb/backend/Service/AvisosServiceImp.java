@@ -259,6 +259,7 @@ public class AvisosServiceImp implements IAvisosService{
             // Se marca el reporte como inválido
             reporteSeleccionado.setEstadoReporte(EstadoReporte.Invalido);
             reporteSeleccionado.setFecha(Instant.now());
+            reporteSeleccionado.setComentario(reporte.getComentario());
             
             // Notificar al usuario que realizó el reporte
             Optional<UsuariosModel> usuarioReportaOpt = usuariosRepository.findById(reporteSeleccionado.getUsuarioReporta());
