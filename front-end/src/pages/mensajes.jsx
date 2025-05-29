@@ -75,11 +75,16 @@ const Mensajes = () => {
       const data = await obtenerConversaciones(id);
       const conversaciones = data.map(conv => ({
         ...conv,
-        id: conv.id || conv._id // usa 'id' si existe, si no usa '_id'
+        id: conv.id || conv._id
       }));
       setConversaciones(conversaciones);
+      // Limpia el error si la carga fue exitosa
+      setError("");
     } catch {
-      setError("Error al cargar conversaciones");
+      // Solo muestra el error si no hay conversaciones cargadas
+      if (conversaciones.length === 0) {
+        setError("Error al cargar conversaciones");
+      }
     }
   };
 
@@ -93,8 +98,8 @@ const Mensajes = () => {
   };
 
   const seleccionarConversacion = conv => {
-    console.log("Conversación seleccionada:", conv);
-    setConversacionSeleccionada(conv); // conv debe tener el campo 'id'
+    if (!conv?.id) return;
+    seleccionarConversacionPorId(conv.id); // Siempre obtiene el chat actualizado del backend
     setError("");
   };
 
@@ -153,22 +158,31 @@ const Mensajes = () => {
   }, [conversacionSeleccionada]);
 
   useEffect(() => {
+    if (!socket || !userId) return;
+
+    // Actualiza la lista de conversaciones cuando haya un nuevo chat o cambio
+    const handleNuevoChat = () => {
+      fetchConversaciones(userId);
+    };
+
+    socket.on("nuevoChat", handleNuevoChat);
+
+    return () => {
+      socket.off("nuevoChat", handleNuevoChat);
+    };
+  }, [socket, userId]);
+
+  useEffect(() => {
     if (!socket) return;
 
-    const handleNuevoMensaje = ({ conversacionId, mensaje }) => {
-      setConversaciones(prev =>
-        prev.map(conv =>
-          conv.id === conversacionId
-            ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
-            : conv
-        )
-      );
+    // Cuando llega un nuevo mensaje, actualiza el chat seleccionado desde el backend
+    const handleNuevoMensaje = ({ conversacionId }) => {
+      // Si el chat abierto es el que recibió el mensaje, actualízalo completamente
       if (conversacionSeleccionadaRef.current?.id === conversacionId) {
-        setConversacionSeleccionada(prev => ({
-          ...prev,
-          mensajes: [...prev.mensajes, mensaje],
-        }));
+        seleccionarConversacionPorId(conversacionId);
       }
+      // Siempre actualiza la lista de conversaciones
+      fetchConversaciones(userId);
     };
 
     socket.on('nuevoMensaje', handleNuevoMensaje);
@@ -176,7 +190,21 @@ const Mensajes = () => {
     return () => {
       socket.off('nuevoMensaje', handleNuevoMensaje);
     };
-  }, [socket]);
+  }, [socket, userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // Refresca conversaciones y chat seleccionado cada 5 segundos
+    const interval = setInterval(() => {
+      fetchConversaciones(userId);
+      if (conversacionSeleccionada?.id) {
+        seleccionarConversacionPorId(conversacionSeleccionada.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [userId, conversacionSeleccionada?.id]);
 
   return (
     <div className={styles.mensajesContainer}>
