@@ -1,5 +1,6 @@
 package com.apiweb.backend.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     @Override
     @Transactional
     public AcuerdosModel crearAcuerdo(ObjectId idPropietario,AcuerdosModel acuerdo) {
+        //Validación del propietario
         Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(idPropietario);
         if (!usuarioExiste.isPresent()) {
             throw new UserNotFoundException("El id: " + idPropietario + " no corresponde a un usuario.");
@@ -50,6 +52,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         if (propietario.getTipo() != TipoUsuario.propietario) {
             throw new InvalidUserRoleException("El usuario no es propietario.");
         }
+        //Validación del aviso
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(acuerdo.getAvisosId());
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe");
@@ -62,11 +65,22 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
         }
 
+        //Validacion del propio acuerdo
         if (acuerdo.getCalificacionServicio() != null ) {
             throw new InvalidUserRoleException("El propietario no puede calificar el servicio");
         }
         if(acuerdo.getFechaFin().isBefore(acuerdo.getFechaInicio())){
-            throw new IllegalArgumentException("La fecha de finalización del arrendamiento no puede ser anterior a la fecha de inicio.");
+            throw new InvalidAcuerdoConfigurationException("La fecha de finalización del arrendamiento no puede ser anterior a la fecha de inicio.");
+        }
+        if (acuerdo.getFechaFin().equals(acuerdo.getFechaInicio())) {
+            throw new InvalidAcuerdoConfigurationException("La fecha de finalización no puede ser igual a la fecha de inicio. ");
+        }
+
+        //verificar si hay un acuerdo activo con ese mismo aviso
+        verificacionFechaFinalizacion();
+        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findByAvisosIdAndEstado(acuerdo.getAvisosId(), EstadoAcuerdo.Activo);
+        if (acuerdoExiste.isPresent()) {
+            throw new InvalidAcuerdoConfigurationException("Ya existe un acuerdo con estado 'activo' para el aviso con ID: " + acuerdo.getAvisosId());
         }
 
 
@@ -93,7 +107,12 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     }
 
     @Override
+    @Transactional
     public AcuerdosModel modificarAcuerdo(ObjectId idAcuerdo, ExtensionAcuerdo extension) {
+        //Verificar que el acuerdo a modificar no este finalizado
+        verificacionFechaFinalizacion();
+
+        //Validacion del acuerdo 
         Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
         if (!acuerdoExiste.isPresent()){
             throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
@@ -103,8 +122,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidUserRoleException("El acuerdo ya ha sido cancelado.");
         } else if (acuerdoActualizar.getEstado() == EstadoAcuerdo.Finalizado) {
             throw new InvalidUserRoleException("El acuerdo ya ha sido finalizado.");
-        }//Validacion del acuerdo sin los cambios aún
-
+        }
         if (acuerdoActualizar.getExtensiones() == null || acuerdoActualizar.getExtensiones().isEmpty()) {
             if (extension.getFechaInicio().isBefore(acuerdoActualizar.getFechaInicio())) {
                 throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la fecha fin del acuerdo. ");
@@ -116,13 +134,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
                 if (extension.getFechaFin().isBefore(extension.getFechaInicio())) {
                     throw new InvalidAcuerdoConfigurationException("La nueva fecha fin de extensión debe ser despues de la nueva fecha inicio extensión. ");
                 }
-                for(ExtensionAcuerdo extensionAcuer : acuerdoActualizar.getExtensiones()){
-                    if (extension.getFechaInicio().isBefore(extensionAcuer.getFechaFin())) {
+                ExtensionAcuerdo ultimaExtension = acuerdoActualizar.getExtensiones().get(acuerdoActualizar.getExtensiones().size() - 1);
+                if (extension.getFechaInicio().isBefore(ultimaExtension.getFechaFin())) {
                         throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la ultima fecha fin de las extensiones ya creadas. ");
-                    }
                 }
             }
 
+
+        acuerdoActualizar.getExtensiones().add(extension);
         return acuerdosRepository.save(acuerdoActualizar);
 
     }
@@ -130,6 +149,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     @Override
     @Transactional
     public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo, String razonCancelacion) {
+        verificacionFechaFinalizacion();
         Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
         if (!acuerdoExiste.isPresent()) {
             throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
@@ -137,6 +157,9 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         AcuerdosModel acuerdo = acuerdoExiste.get();
         if (razonCancelacion.isBlank()) {
             throw new InvalidAcuerdoConfigurationException("La razon de cancelación es obligatoria y no puede estar vacia. ");
+        }
+        if (acuerdo.getEstado() == EstadoAcuerdo.Finalizado) {
+            throw new InvalidAcuerdoConfigurationException("No se puede cancelar el acuerdo, ya que el acuerdo se encuentra en estado 'Finalizado'. ");
         }
         acuerdo.setRazonCancelacion(razonCancelacion);
         acuerdo.setEstado(EstadoAcuerdo.Cancelado);
@@ -146,16 +169,28 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
     @Override
     public List<AcuerdosModel> listarAcuerdosDeUnPropietario (ObjectId propietarioId){
+        verificacionFechaFinalizacion();
         List<AcuerdosModel> acuerdos = acuerdosRepository.findByPropietarioId(propietarioId);
         return acuerdos;
     }
 
     @Override
     public List<AcuerdosModel> listarAcuerdosDeUnPropietarioAndEstado (ObjectId propietarioId, EstadoAcuerdo estado){
+        verificacionFechaFinalizacion();
         List<AcuerdosModel> acuerdos = acuerdosRepository.findByPropietarioIdAndEstado(propietarioId, estado);
         return acuerdos;
     }
 
+    @Override
+    public AcuerdosModel detallarUnAcuerdo(ObjectId idAcuerdo) {
+        verificacionFechaFinalizacion();
+        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
+        if (!acuerdoExiste.isPresent()) {
+            throw new ResourceNotFoundException("El id: "+idAcuerdo + " no corresponde a ningun acuerdo");
+        }
+        AcuerdosModel acuerdo = acuerdoExiste.get();
+        return acuerdo;
+    }
     @Override
     @Transactional
     public AcuerdosModel calificarArrendatario(ObjectId idAcuerdo, Integer calificacion, String comentario) {
@@ -169,6 +204,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
         // Buscar el acuerdo
         Optional<AcuerdosModel> acuerdoOpt = acuerdosRepository.findById(idAcuerdo);
+        verificacionFechaFinalizacion();
         if (!acuerdoOpt.isPresent()) {
             throw new ResourceNotFoundException("No se encontró el acuerdo de arrendamiento.");
         }
@@ -230,6 +266,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new ResourceNotFoundException("No se encontró el acuerdo de arrendamiento.");
         }
         AcuerdosModel acuerdo = acuerdoOpt.get();
+        verificacionFechaFinalizacion();
 
         // 3. Validar estado del acuerdo
         if (acuerdo.getEstado() != EstadoAcuerdo.Finalizado) {
@@ -263,5 +300,29 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             "¡Gracias por usar nuestro servicio!"
         );
         return acuerdo;
+    }
+
+    public void verificacionFechaFinalizacion() {
+        List<AcuerdosModel> acuerdosActivos = acuerdosRepository.findByEstado(EstadoAcuerdo.Activo);
+        Instant ahora = java.time.Instant.now();
+
+        for (AcuerdosModel acuerdo : acuerdosActivos) {
+            Instant fechaFin;
+            //Si tiene extensiones entonces tomara la fecha fin de la ultima extensión
+            if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
+                ExtensionAcuerdo ultimaExtension = acuerdo.getExtensiones()
+                    .get(acuerdo.getExtensiones().size() - 1);
+                fechaFin = ultimaExtension.getFechaFin();
+            } else {
+                //Si no tiene extensiones entonces tomara la fecha fin del acuerdo principal
+                fechaFin = acuerdo.getFechaFin();
+            }
+
+            //Si la fecha fin ya se alcanzo o paso entonces se finaliza el acuerdo
+            if (!ahora.isBefore(fechaFin)) {
+                acuerdo.setEstado(EstadoAcuerdo.Finalizado);
+                acuerdosRepository.save(acuerdo);
+            }
+        }
     }
 }

@@ -1,21 +1,12 @@
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../styles/crearAcuerdo.module.css";
-import { obtenerAcuerdoPorAviso, modificarAcuerdo, cancelarAcuerdo } from "../services/conexiones";
+import { obtenerAcuerdoPorId, modificarAcuerdo, cancelarAcuerdo } from "../services/conexiones";
 import api from "../services/conexiones";
 
 export default function ModificarAcuerdo() {
   const navigate = useNavigate();
-  const { idAviso } = useParams();
+  const { idAcuerdo } = useParams();
   const [acuerdo, setAcuerdo] = useState(null);
   const [form, setForm] = useState({ fechaFin: "", archivoContrato: "" });
   const [archivoContratoFile, setArchivoContratoFile] = useState(null);
@@ -28,7 +19,7 @@ export default function ModificarAcuerdo() {
   useEffect(() => {
     const cargarAcuerdo = async () => {
       try {
-        const data = await obtenerAcuerdoPorAviso(idAviso);
+        const data = await obtenerAcuerdoPorId(idAcuerdo);
         setAcuerdo(data);
         setForm({
           fechaFin: data.fechaFin ? data.fechaFin.slice(0, 10) : "",
@@ -41,7 +32,7 @@ export default function ModificarAcuerdo() {
       }
     };
     cargarAcuerdo();
-  }, [idAviso]);
+  }, [idAcuerdo]);
 
   // Validaciones y restricciones
   const esModificable = acuerdo && acuerdo.estado !== "Cancelado" && acuerdo.estado !== "Finalizado";
