@@ -110,6 +110,21 @@ const Mensajes = () => {
       !conversacionSeleccionada.id
     ) return;
 
+    // Validación: si el último mensaje lo envió el usuario actual, no permitir enviar otro
+    const mensajes = conversacionSeleccionada.mensajes;
+    if (
+      mensajes.length > 0 &&
+      mensajes[mensajes.length - 1].idRemitente === userId
+    ) {
+      // Determina el nombre del otro usuario
+      const nombreOtroUsuario =
+        userId === conversacionSeleccionada.idInteresado
+          ? conversacionSeleccionada.nombrePropietario
+          : conversacionSeleccionada.nombreInteresado;
+      setError(`Debes esperar la respuesta de ${nombreOtroUsuario} antes de enviar otro mensaje.`);
+      return;
+    }
+
     const mensajeData = {
       idRemitente: userId,
       mensaje: nuevoMensaje,

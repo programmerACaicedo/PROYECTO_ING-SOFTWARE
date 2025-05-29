@@ -25,7 +25,7 @@ public class AcuerdosController {
     @Autowired
     IAcuerdosService acuerdosService;
 
-    @PostMapping("/registar")
+    @PostMapping("/registrar")
     public ResponseEntity<AcuerdosModel> crearAcuerdo (@RequestBody AcuerdosModel acuerdo) {
         return new ResponseEntity<AcuerdosModel>(acuerdosService.crearAcuerdo(acuerdo),HttpStatus.CREATED);
     }
