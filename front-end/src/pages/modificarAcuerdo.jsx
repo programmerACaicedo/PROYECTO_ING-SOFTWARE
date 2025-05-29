@@ -8,7 +8,7 @@ export default function ModificarAcuerdo() {
   const navigate = useNavigate();
   const { idAcuerdo } = useParams();
   const [acuerdo, setAcuerdo] = useState(null);
-  const [form, setForm] = useState({ fechaFin: "", archivoContrato: "" });
+  const [form, setForm] = useState({ fechaInicio: "", fechaFin: "", archivoContrato: "" });
   const [archivoContratoFile, setArchivoContratoFile] = useState(null);
   const [mensajes, setMensajes] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -22,6 +22,7 @@ export default function ModificarAcuerdo() {
         const data = await obtenerAcuerdoPorId(idAcuerdo);
         setAcuerdo(data);
         setForm({
+          fechaInicio: "",
           fechaFin: data.fechaFin ? data.fechaFin.slice(0, 10) : "",
           archivoContrato: data.archivoContrato || "",
         });
@@ -56,35 +57,38 @@ export default function ModificarAcuerdo() {
   };
 
   // Guardar cambios
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMensajes([]);
-    if (!esModificable) {
-      setMensajes([{ texto: "No se puede modificar un acuerdo cancelado o finalizado.", tipo: "error" }]);
-      return;
-    }
-    if (!form.fechaFin) {
-      setMensajes([{ texto: "La fecha de finalización es obligatoria.", tipo: "error" }]);
-      return;
-    }
-    if (new Date(form.fechaFin) <= new Date(acuerdo.fechaFin)) {
-      setMensajes([{ texto: "La nueva fecha debe ser posterior a la actual.", tipo: "error" }]);
-      return;
-    }
-    // Aquí podrías subir el archivo si tienes endpoint para ello
-    try {
-      const extension = {
-        fechaInicio: acuerdo.fechaFin,
-        fechaFin: form.fechaFin,
-        archivoContrato: form.archivoContrato,
-      };
-      await modificarAcuerdo(acuerdo.id, extension);
-      setMensajes([{ texto: "Acuerdo actualizado correctamente.", tipo: "success" }]);
-      setTimeout(() => navigate("/misAcuerdos"), 2000);
-    } catch (error) {
-      setMensajes([{ texto: "Error al actualizar el acuerdo.", tipo: "error" }]);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setMensajes([]);
+  if (!esModificable) {
+    setMensajes([{ texto: "No se puede modificar un acuerdo cancelado o finalizado.", tipo: "error" }]);
+    return;
+  }
+  if (!form.fechaInicio || !form.fechaFin) {
+    setMensajes([{ texto: "Ambas fechas son obligatorias.", tipo: "error" }]);
+    return;
+  }
+  const fechaInicio = new Date(form.fechaInicio + "T00:00:00");
+  const fechaFin = new Date(form.fechaFin + "T00:00:00");
+  if (fechaFin <= fechaInicio) {
+    setMensajes([{ texto: "La fecha de finalización debe ser posterior a la de inicio.", tipo: "error" }]);
+    return;
+  }
+  try {
+    const extension = {
+      fechaInicio: fechaInicio.toISOString(),
+      fechaFin: fechaFin.toISOString(),
+      archivoContrato: form.archivoContrato,
+    };
+    console.log("Enviando extensión:", extension);
+    await modificarAcuerdo(acuerdo.id, extension);
+    setMensajes([{ texto: "Acuerdo actualizado correctamente.", tipo: "success" }]);
+    setTimeout(() => navigate("/misAcuerdos"), 2000);
+  } catch (error) {
+    setMensajes([{ texto: "Error al actualizar el acuerdo.", tipo: "error" }]);
+    console.error(error);
+  }
+};
 
   // Cancelar acuerdo
   const handleCancelar = async (e) => {
@@ -126,8 +130,27 @@ export default function ModificarAcuerdo() {
     </nav>
 
       <h2 className={styles.seccionTitulo}>Actualizar Acuerdo</h2>
+      {acuerdo && (acuerdo.estado === "Finalizado" || acuerdo.estado === "Cancelado") && (
+        <div style={{ color: "red", marginBottom: "1rem" }}>
+          {acuerdo.estado === "Finalizado"
+            ? "Este acuerdo ya está finalizado y no puede ser modificado."
+            : "Este acuerdo ha sido cancelado y no puede ser modificado."}
+        </div>
+      )}
+
+
       <form className={styles.formAcuerdo} onSubmit={handleSubmit}>
         <div className={styles.campoForm}>
+          <label>Fecha de inicio de extensión:</label>
+          <input
+            type="date"
+            name="fechaInicio"
+            value={form.fechaInicio}
+            onChange={handleInputChange}
+            required
+            min={acuerdo.fechaFin ? acuerdo.fechaFin.slice(0, 10) : ""}
+            disabled={!esModificable}
+          />
           <label>Fecha de finalización:</label>
           <input
             type="date"
@@ -135,7 +158,7 @@ export default function ModificarAcuerdo() {
             value={form.fechaFin}
             onChange={handleInputChange}
             required
-            min={acuerdo.fechaFin ? acuerdo.fechaFin.slice(0, 10) : ""}
+            min={form.fechaInicio || acuerdo.fechaFin ? (form.fechaInicio || acuerdo.fechaFin.slice(0, 10)) : ""}
             disabled={!esModificable}
           />
         </div>
