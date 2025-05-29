@@ -229,7 +229,7 @@ export const eliminarAviso = async (id) => {
 
 export const registrarAcuerdo = async (idPropietario, acuerdo) => {
   try {
-    const respuesta = await api.post(`/acuerdos/registar/${idPropietario}`, acuerdo, {
+    const respuesta = await api.post(`/acuerdos/registrar`, acuerdo, {
       headers: { "Content-Type": "application/json" }
     });
     return respuesta.data;

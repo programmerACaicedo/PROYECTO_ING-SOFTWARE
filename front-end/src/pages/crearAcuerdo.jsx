@@ -91,7 +91,7 @@ export default function CrearAcuerdo() {
     e.preventDefault();
 
     // Validaciones
-    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo /*|| !form.arrendatarioNombre*/ || !form.archivoContrato) {
+    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo || !form.archivoContrato) {
       setMensajes((prev) => [
         ...prev,
         { texto: "Todos los campos son obligatorios.", tipo: "error" },
@@ -127,18 +127,20 @@ export default function CrearAcuerdo() {
     }console.log(usuarioArrendatario);
 
     // Construcción del objeto para el backend
-    const acuerdo = {
-      avisosId: idAviso, 
-      fechaInicio: new Date(form.fechaInicio),
-      fechaFin: new Date(form.fechaFin),
-      archivoContrato: form.archivoContrato,
-      arrendatario: {
-        correo: form.arrendatarioCorreo,
-      },
-    };
-
+const acuerdo = {
+  avisosId: idAviso,
+  fechaInicio: new Date(form.fechaInicio + "T00:00:00").toISOString(),
+  fechaFin: new Date(form.fechaFin + "T00:00:00").toISOString(),
+  archivoContrato: form.archivoContrato,
+  arrendatario: {
+    usuarioId: usuarioArrendatario.id || usuarioArrendatario._id,
+    correo: usuarioArrendatario.correo,
+    nombre: usuarioArrendatario.nombre
+  }
+};
+  console.log("Acuerdo a enviar:", acuerdo);
     try {
-      await registrarAcuerdo(usuarioSesion.id, acuerdo);
+      await registrarAcuerdo(acuerdo);
       setMensajes((prev) => [
         ...prev,
         { texto: "¡Acuerdo registrado exitosamente!", tipo: "success" },
@@ -207,7 +209,6 @@ return (
             type="file"
             accept="application/pdf"
             onChange={handleFileChange}
-            required
           />
           {form.archivoContrato && (
             <span className={styles.archivoNombre}></span>
