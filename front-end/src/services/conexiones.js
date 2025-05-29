@@ -1,11 +1,16 @@
 import axios from "axios";
 
+const isDev = true; // o una condición según el entorno
+
 const api = axios.create({
-  baseURL: "https://fkzklx7z-8080.use2.devtunnels.ms/api", // Base URL de la API
+  baseURL: isDev
+    ? "http://localhost:8080/api/"
+    : "https://fkzklx7z-8080.use2.devtunnels.ms/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
+
 
 // Agregar token a cada petición automáticamente
 api.interceptors.request.use(
