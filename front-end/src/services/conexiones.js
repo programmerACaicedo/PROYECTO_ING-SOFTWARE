@@ -249,9 +249,14 @@ export const listarAcuerdos = async (idPropietario) => {
   }
 }
 
-export const obtenerAcuerdoPorAviso = async (idAviso) => {
+export const obtenerAcuerdoPorId = async (idAcuerdo) => {
+  const respuesta = await api.get(`/acuerdos/DetallarUnAcuerdo/${idAcuerdo}`);
+  return respuesta.data;
+};
+
+/*export const obtenerAcuerdoPorId = async (idAcuerdo) => {
   try {
-    const respuesta = await api.get(`/acuerdos/aviso/${idAviso}`);
+    const respuesta = await api.get(`/acuerdos/DetallarUnAcuerdo/${idAcuerdo}`);
     return respuesta.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -260,7 +265,7 @@ export const obtenerAcuerdoPorAviso = async (idAviso) => {
     console.error("Error al obtener acuerdo por aviso:", error.response || error.message);
     throw error;
   }
-};
+};*/
 
 export const listarAcuerdosPropietario = async (idPropietario) => {
   const respuesta = await api.get(`/acuerdos/listarAcuerdosDeUnPropietario/${idPropietario}`);
