@@ -88,6 +88,7 @@ public class AvisosServiceImp implements IAvisosService{
         return avisosRepository.save(aviso);
     }
     @Override
+    @Transactional
     public AvisosModel actualizarAviso(ObjectId id, AvisosModel aviso){
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
@@ -146,6 +147,7 @@ public class AvisosServiceImp implements IAvisosService{
     }
 
     @Override
+    @Transactional
     public String eliminarAviso(ObjectId id) {
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(id);
         if (!avisoExiste.isPresent()) {
@@ -153,7 +155,24 @@ public class AvisosServiceImp implements IAvisosService{
         }
         AvisosModel aviso = avisoExiste.get();
         avisosRepository.deleteById(id);
+        //Notificacion
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
+        if (usuarioExiste.isPresent()) {
+            UsuariosModel propietario = usuarioExiste.get();
+            Notificaciones notificacionReporto = new Notificaciones();
+            notificacionReporto.setRemitente(null);
+            notificacionReporto.setContenido("Se ha eliminado el aviso con id: "+id);
+            notificacionReporto.setFecha(Instant.now());
+            notificacionReporto.setTipo(TipoNotificacion.Mensaje);
+            notificacionReporto.setLeido(false);
+            propietario.getNotificaciones().add(notificacionReporto);
+            usuariosRepository.save(propietario);
+            
+        }
+
         return "El aviso " + aviso.getNombre() + "fue eliminado con éxito.";
+        
+
     }
 
     
