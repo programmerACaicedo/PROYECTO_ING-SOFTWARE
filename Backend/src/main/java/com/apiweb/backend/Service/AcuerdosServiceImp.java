@@ -103,6 +103,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         aviso.setEstado(EstadoAviso.Arrendado);
         acuerdo.setEstado(EstadoAcuerdo.Activo);
         acuerdo.setPropietarioId(aviso.getPropietarioId().getUsuarioId());
+        avisosRepository.save(aviso);
         return acuerdosRepository.save(acuerdo);
     }
 
