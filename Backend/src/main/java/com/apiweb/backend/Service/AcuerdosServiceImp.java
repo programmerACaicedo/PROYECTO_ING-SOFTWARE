@@ -107,6 +107,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
     }
 
     @Override
+    @Transactional
     public AcuerdosModel modificarAcuerdo(ObjectId idAcuerdo, ExtensionAcuerdo extension) {
         //Verificar que el acuerdo a modificar no este finalizado
         verificacionFechaFinalizacion();
