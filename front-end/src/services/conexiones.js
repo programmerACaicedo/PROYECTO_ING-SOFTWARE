@@ -359,3 +359,14 @@ export const obtenerConversaciones = async (userId) => {
 
 export default api;
 
+// NUEVA FUNCIÓN PARA CREAR CALIFICACIÓN (AJUSTE SOLICITADO)
+
+export const crearCalificacion = async (idAcuerdo, calificacionData) => {
+  try {
+    const respuesta = await api.post(`/calificaciones/${idAcuerdo}`, calificacionData);
+    return respuesta.data;
+  } catch (error) {
+    console.error("Error al crear calificación:", error.response || error.message);
+    throw error;
+  }
+};
