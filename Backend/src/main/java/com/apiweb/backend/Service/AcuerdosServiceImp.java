@@ -164,34 +164,52 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
     }
 
-    @Override
-    @Transactional
-    public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo, String razonCancelacion) {
-        verificacionFechaFinalizacion();
-        Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
-        if (!acuerdoExiste.isPresent()) {
-            throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
-        }
-        AcuerdosModel acuerdo = acuerdoExiste.get();
-        if (razonCancelacion.isBlank()) {
-            throw new InvalidAcuerdoConfigurationException("La razon de cancelación es obligatoria y no puede estar vacia. ");
-        }
-        if (acuerdo.getEstado() == EstadoAcuerdo.Finalizado) {
-            throw new InvalidAcuerdoConfigurationException("No se puede cancelar el acuerdo, ya que el acuerdo se encuentra en estado 'Finalizado'. ");
-        }
-        acuerdo.setRazonCancelacion(razonCancelacion);
-        acuerdo.setEstado(EstadoAcuerdo.Cancelado);
-        acuerdo.setFechaCancelacion(Instant.now());
+@Override
+@Transactional
+public AcuerdosModel cancelarAcuerdo(ObjectId idAcuerdo, String razonCancelacion) {
+    // Verifica y finaliza acuerdos si corresponde
+    verificacionFechaFinalizacion();
 
-        UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
-            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
-        emailService.sendEmail(
-            arrendatario.getCorreo(),
-            "Cancelacion de acuerdo de arrendamiento exitosa",
-            "Cancelacion de acuerdo de arrendamiento exitosa.\n\n");
-
-        return acuerdosRepository.save(acuerdo);
+    // Busca el acuerdo
+    Optional<AcuerdosModel> acuerdoExiste = acuerdosRepository.findById(idAcuerdo);
+    if (!acuerdoExiste.isPresent()) {
+        throw new ResourceNotFoundException("El id: " + idAcuerdo + " no corresponde a un acuerdo.");
     }
+    AcuerdosModel acuerdo = acuerdoExiste.get();
+
+    // Validaciones
+    if (razonCancelacion == null || razonCancelacion.isBlank()) {
+        throw new InvalidAcuerdoConfigurationException("La razón de cancelación es obligatoria y no puede estar vacía.");
+    }
+    if (acuerdo.getEstado() == EstadoAcuerdo.Finalizado) {
+        throw new InvalidAcuerdoConfigurationException("No se puede cancelar el acuerdo, ya que el acuerdo se encuentra en estado 'Finalizado'.");
+    }
+
+    // Cambia el estado del acuerdo
+    acuerdo.setRazonCancelacion(razonCancelacion);
+    acuerdo.setEstado(EstadoAcuerdo.Cancelado);
+    acuerdo.setFechaCancelacion(Instant.now());
+
+    // Cambia el estado del aviso a DISPONIBLE
+    Optional<AvisosModel> avisoOpt = avisosRepository.findById(acuerdo.getAvisosId());
+    if (avisoOpt.isPresent()) {
+        AvisosModel aviso = avisoOpt.get();
+        aviso.setEstado(EstadoAviso.Disponible); // Usa tu enum o "Disponible"
+        avisosRepository.save(aviso);
+    }
+
+    // Notifica al arrendatario
+    UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
+        .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+    emailService.sendEmail(
+        arrendatario.getCorreo(),
+        "Cancelación de acuerdo de arrendamiento exitosa",
+        "Cancelación de acuerdo de arrendamiento exitosa.\n\n"
+    );
+
+    // Guarda y retorna el acuerdo actualizado
+    return acuerdosRepository.save(acuerdo);
+}
 
     @Override
     public List<AcuerdosModel> listarAcuerdosDeUnPropietario (ObjectId propietarioId){
@@ -328,27 +346,35 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         return acuerdo;
     }
 
-    public void verificacionFechaFinalizacion() {
-        List<AcuerdosModel> acuerdosActivos = acuerdosRepository.findByEstado(EstadoAcuerdo.Activo);
-        Instant ahora = java.time.Instant.now();
+public void verificacionFechaFinalizacion() {
+    List<AcuerdosModel> acuerdosActivos = acuerdosRepository.findByEstado(EstadoAcuerdo.Activo);
+    Instant ahora = java.time.Instant.now();
 
-        for (AcuerdosModel acuerdo : acuerdosActivos) {
-            Instant fechaFin;
-            //Si tiene extensiones entonces tomara la fecha fin de la ultima extensión
-            if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
-                ExtensionAcuerdo ultimaExtension = acuerdo.getExtensiones()
-                    .get(acuerdo.getExtensiones().size() - 1);
-                fechaFin = ultimaExtension.getFechaFin();
-            } else {
-                //Si no tiene extensiones entonces tomara la fecha fin del acuerdo principal
-                fechaFin = acuerdo.getFechaFin();
-            }
+    for (AcuerdosModel acuerdo : acuerdosActivos) {
+        Instant fechaFin;
+        // Si tiene extensiones entonces tomará la fecha fin de la última extensión
+        if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
+            ExtensionAcuerdo ultimaExtension = acuerdo.getExtensiones()
+                .get(acuerdo.getExtensiones().size() - 1);
+            fechaFin = ultimaExtension.getFechaFin();
+        } else {
+            // Si no tiene extensiones entonces tomará la fecha fin del acuerdo principal
+            fechaFin = acuerdo.getFechaFin();
+        }
 
-            //Si la fecha fin ya se alcanzo o paso entonces se finaliza el acuerdo
-            if (!ahora.isBefore(fechaFin)) {
-                acuerdo.setEstado(EstadoAcuerdo.Finalizado);
-                acuerdosRepository.save(acuerdo);
+        // Si la fecha fin ya se alcanzó o pasó entonces se finaliza el acuerdo
+        if (!ahora.isBefore(fechaFin)) {
+            acuerdo.setEstado(EstadoAcuerdo.Finalizado);
+            acuerdosRepository.save(acuerdo);
+
+            // Cambia el estado del aviso a DISPONIBLE
+            Optional<AvisosModel> avisoOpt = avisosRepository.findById(acuerdo.getAvisosId());
+            if (avisoOpt.isPresent()) {
+                AvisosModel aviso = avisoOpt.get();
+                aviso.setEstado(EstadoAviso.Disponible); // Usa tu enum o "Disponible"
+                avisosRepository.save(aviso);
             }
         }
     }
+}
 }
