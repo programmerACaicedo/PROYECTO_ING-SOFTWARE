@@ -25,10 +25,17 @@ public class AcuerdosController {
     @Autowired
     IAcuerdosService acuerdosService;
 
-    @PostMapping("/registrar")
-    public ResponseEntity<AcuerdosModel> crearAcuerdo (@RequestBody AcuerdosModel acuerdo) {
-        return new ResponseEntity<AcuerdosModel>(acuerdosService.crearAcuerdo(acuerdo),HttpStatus.CREATED);
+@PostMapping("/registrar")
+public ResponseEntity<?> crearAcuerdo (@RequestBody AcuerdosModel acuerdo) {
+    try {
+        AcuerdosModel creado = acuerdosService.crearAcuerdo(acuerdo);
+        return new ResponseEntity<>(creado, HttpStatus.CREATED);
+    } catch (Exception e) {
+        e.printStackTrace(); // Log para depuración
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error al crear el acuerdo: " + e.getMessage());
     }
+}
 
     @PutMapping("/extension/{idAcuerdo}")
     public ResponseEntity<AcuerdosModel> modificarAcuerdo(@PathVariable("idAcuerdo") ObjectId idAcuerdo, @RequestBody ExtensionAcuerdo extension) {

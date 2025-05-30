@@ -168,13 +168,14 @@ const acuerdo = {
   console.log("ID propietario:", usuarioSesion.id);
   console.log("Acuerdo a enviar:", acuerdo);
   try {
-    await registrarAcuerdo(usuarioSesion.id, acuerdo);
+    await registrarAcuerdo(acuerdo);
     setMensajes((prev) => [
       ...prev,
       { texto: "¡Acuerdo registrado exitosamente!", tipo: "success" },
     ]);
     setTimeout(() => navigate("/misAcuerdos"), 2000);
   } catch (error) {
+    console.error("Error al registrar acuerdo:", error, error.response?.data);
     setMensajes((prev) => [
       ...prev,
       { texto: "Error al registrar el acuerdo.", tipo: "error" },
