@@ -311,12 +311,16 @@ const DetallePublicacion = () => {
 
           {isLoading ? (
             <p>Cargando...</p>
-          ) : puedeCalificar() ? (
+          ) : (
             <div className={styles.calificacionContainer}>
               <h3>Califica esta experiencia</h3>
               <label>
                 Calificación:
-                <select value={rating} onChange={(e) => setRating(parseInt(e.target.value))}>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(parseInt(e.target.value))}
+                  disabled={!puedeCalificar() || hasRated || isLoading || loadingRating}
+                >
                   <option value={0}>Selecciona estrellas</option>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <option key={star} value={star}>
@@ -331,17 +335,21 @@ const DetallePublicacion = () => {
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                   placeholder="Escribe tu comentario"
+                  disabled={!puedeCalificar() || hasRated || isLoading || loadingRating}
                 />
               </label>
-              <button onClick={handleSubmitRating} disabled={loadingRating}>
+              <button
+                onClick={handleSubmitRating}
+                disabled={!puedeCalificar() || hasRated || loadingRating || isLoading}
+              >
                 {loadingRating ? "Enviando..." : "Enviar Calificación"}
               </button>
               {ratingMessage && <p>{ratingMessage}</p>}
+              {!puedeCalificar() && !hasRated && !isLoading && (
+                <p style={{ color: "gray" }}>No puedes calificar esta experiencia en este momento.</p>
+              )}
+              {hasRated && <p>Gracias por calificar esta experiencia.</p>}
             </div>
-          ) : hasRated ? (
-            <p>Gracias por calificar esta experiencia.</p>
-          ) : (
-            <p>No puedes calificar esta experiencia en este momento.</p>
           )}
 
           {mensajeNotificacion && (
