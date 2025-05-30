@@ -179,7 +179,6 @@ const acuerdo = {
       ...prev,
       { texto: "Error al registrar el acuerdo.", tipo: "error" },
     ]);
-    console.log(message.error)
   }
 };
 
