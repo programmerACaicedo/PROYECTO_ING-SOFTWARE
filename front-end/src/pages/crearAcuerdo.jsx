@@ -88,71 +88,74 @@ export default function CrearAcuerdo() {
   };
 
   // Validación y envío
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Validaciones
-    if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo || !form.arrendatarioNombre || !form.archivoContrato) {
-      setMensajes((prev) => [
-        ...prev,
-        { texto: "Todos los campos son obligatorios.", tipo: "error" },
-      ]);
-      return;
-    }
-    if (new Date(form.fechaFin) < new Date(form.fechaInicio)) {
-      setMensajes((prev) => [
-        ...prev,
-        { texto: "La fecha de finalización no puede ser anterior a la de inicio.", tipo: "error" },
-      ]);
-      
-      return;
-    }
-        // Buscar usuario por correo
-    let usuarioArrendatario;
-    try {
+  // Validaciones
+  if (!form.fechaInicio || !form.fechaFin || !form.arrendatarioCorreo || !form.arrendatarioNombre || !form.archivoContrato) {
+    setMensajes((prev) => [
+      ...prev,
+      { texto: "Todos los campos son obligatorios.", tipo: "error" },
+    ]);
+    return;
+  }
+  if (new Date(form.fechaFin) < new Date(form.fechaInicio)) {
+    setMensajes((prev) => [
+      ...prev,
+      { texto: "La fecha de finalización no puede ser anterior a la de inicio.", tipo: "error" },
+    ]);
+    return;
+  }
+
+  // Buscar usuario por correo
+  let usuarioArrendatario;
+  try {
     const res = await api.get(`/usuario/correo/${encodeURIComponent(form.arrendatarioCorreo)}`);
-      usuarioArrendatario = res.data; 
-      if (!usuarioArrendatario || !(usuarioArrendatario.id || usuarioArrendatario._id)) {
-        setMensajes((prev) => [
-          ...prev,
-          { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
-        ]);
-        return;
-      }
-    } catch (error) {
+    usuarioArrendatario = res.data; 
+    if (!usuarioArrendatario || !(usuarioArrendatario.id || usuarioArrendatario._id)) {
       setMensajes((prev) => [
         ...prev,
         { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
       ]);
       return;
-    }console.log(usuarioArrendatario);
-
-    // Construcción del objeto para el backend
-    const acuerdo = {
-      avisosId: idAviso, 
-      fechaInicio: new Date(form.fechaInicio),
-      fechaFin: new Date(form.fechaFin),
-      archivoContrato: form.archivoContrato,
-      arrendatario: {
-        correo: form.arrendatarioCorreo,
-        nombre: form.arrendatarioNombre,
-      },
-    };
-
-    try {
-      await registrarAcuerdo(usuarioSesion.id, acuerdo);
-      setMensajes((prev) => [
-        ...prev,
-        { texto: "¡Acuerdo registrado exitosamente!", tipo: "success" },
-      ]);
-      setTimeout(() => navigate("/misAcuerdos"), 2000);
-    } catch (error) {
-      setMensajes((prev) => [
-        ...prev,
-        { texto: "Error al registrar el acuerdo.", tipo: "error" },
-      ]);
     }
+  } catch (error) {
+    setMensajes((prev) => [
+      ...prev,
+      { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
+    ]);
+    return;
+  }
+
+  // Construcción del objeto para el backend
+  const acuerdo = {
+    avisosId: idAviso,
+    fechaInicio: new Date(form.fechaInicio + "T00:00:00").toISOString(),
+    fechaFin: new Date(form.fechaFin + "T00:00:00").toISOString(),
+    archivoContrato: form.archivoContrato,
+    arrendatario: {
+      usuarioId: usuarioArrendatario.id || usuarioArrendatario._id,
+      correo: usuarioArrendatario.correo,
+      nombre: usuarioArrendatario.nombre,
+    },
   };
+  console.log("ID propietario:", usuarioSesion.id);
+  console.log("Acuerdo a enviar:", acuerdo);
+  try {
+    await registrarAcuerdo(usuarioSesion.id, acuerdo);
+    setMensajes((prev) => [
+      ...prev,
+      { texto: "¡Acuerdo registrado exitosamente!", tipo: "success" },
+    ]);
+    setTimeout(() => navigate("/misAcuerdos"), 2000);
+  } catch (error) {
+    setMensajes((prev) => [
+      ...prev,
+      { texto: "Error al registrar el acuerdo.", tipo: "error" },
+    ]);
+    console.log(message.error)
+  }
+};
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
