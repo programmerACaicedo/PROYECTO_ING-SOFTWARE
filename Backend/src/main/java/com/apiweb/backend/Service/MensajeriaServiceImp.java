@@ -22,6 +22,7 @@ import com.apiweb.backend.Model.MensajeriaModel;
 import com.apiweb.backend.Model.MensajesMensajeria;
 import com.apiweb.backend.Model.Notificaciones;
 import com.apiweb.backend.Model.UsuariosModel;
+import com.apiweb.backend.Model.ENUM.TipoNotificacion;
 import com.apiweb.backend.Model.ENUM.TipoUsuario;
 import com.apiweb.backend.Repository.IAvisosRepository;
 import com.apiweb.backend.Repository.IMensajeriaRepository;
@@ -101,7 +102,12 @@ public MensajeriaModel crearChat(MensajeriaModel chat) {
     chat.getMensajes().add(mensajeInicial);
 
     // 7. Guardar y devolver
-    return MensajeriaRepository.save(chat);
+    MensajeriaModel chatGuardado = MensajeriaRepository.save(chat);
+
+    // Notificar a través de WebSocket sobre la creación de un nuevo chat
+    messagingTemplate.convertAndSend("/topic/nuevoChat", chatGuardado);
+
+    return chatGuardado;
 }
 
 @Override
@@ -154,11 +160,16 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
     nuevoMsg.setNombreRemitente(remitente.getNombre());
     nuevoMsg.setFecha(Instant.now());
     nuevoMsg.setLeido(false);
+    nuevoMsg.setNombreRemitente(remitente.getNombre());
+    // Obtener el usuario destinatario para obtener su nombre
+    UsuariosModel usuarioDest = UsuarioRepository.findById(destinatario).orElse(null);
+    nuevoMsg.setNombreDestinatario(usuarioDest != null ? usuarioDest.getNombre() : "");
 
     chat.getMensajes().add(nuevoMsg);
 
     // Crear notificación
     Notificaciones notificacion = new Notificaciones();
+    notificacion.setTipo(TipoNotificacion.Mensaje); // Usa el enum, NO el string
     notificacion.setContenido("Nuevo mensaje de " + remitente.getNombre());
     notificacion.setFecha(Instant.now());
     notificacion.setLeido(false);
@@ -176,6 +187,10 @@ public MensajeriaModel mandarMensaje(ObjectId idMensajeria, MensajesMensajeria n
             notificacion
         );
     }
+
+    // Notificar a través de WebSocket sobre el nuevo mensaje y la actualización de conversaciones
+    messagingTemplate.convertAndSend("/topic/nuevoMensaje", chat);
+    messagingTemplate.convertAndSend("/topic/actualizarConversaciones", chat);
 
     System.out.println("Finalizando mandarMensaje");
     return MensajeriaRepository.save(chat);
@@ -296,6 +311,8 @@ public MensajeriaModel mandarMensaje(String idMensajeria, MensajesMensajeria men
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'mostrarChat'");
     }
+
+    
 
 
 }

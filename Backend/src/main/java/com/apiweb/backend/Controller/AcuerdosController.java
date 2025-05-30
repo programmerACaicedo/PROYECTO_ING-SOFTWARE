@@ -25,9 +25,9 @@ public class AcuerdosController {
     @Autowired
     IAcuerdosService acuerdosService;
 
-    @PostMapping("/registar/{idPropietario}")
-    public ResponseEntity<AcuerdosModel> crearAcuerdo (@PathVariable("idPropietario") ObjectId idPropietario,@RequestBody AcuerdosModel acuerdo) {
-        return new ResponseEntity<AcuerdosModel>(acuerdosService.crearAcuerdo(idPropietario,acuerdo),HttpStatus.CREATED);
+    @PostMapping("/registrar")
+    public ResponseEntity<AcuerdosModel> crearAcuerdo (@RequestBody AcuerdosModel acuerdo) {
+        return new ResponseEntity<AcuerdosModel>(acuerdosService.crearAcuerdo(acuerdo),HttpStatus.CREATED);
     }
 
     @PutMapping("/extension/{idAcuerdo}")

@@ -14,6 +14,7 @@ const Mensajes = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [conversaciones, setConversaciones] = useState([]);
   const [conversacionSeleccionada, setConversacionSeleccionada] = useState(null);
+  const conversacionSeleccionadaRef = useRef(conversacionSeleccionada);
   const [nuevoMensaje, setNuevoMensaje] = useState("");
   const [error, setError] = useState("");
   const [userId, setUserId] = useState("");
@@ -32,33 +33,14 @@ const Mensajes = () => {
     const id = decoded.id?._id || decoded.id || "";
     setUserId(id);
 
+    // Agrega este log para depurar
+    console.log("Tipo de usuario:", decoded.tipo, "ID usado para socket:", id);
+
     // Extraer notificaciones del token
     setUserNotifications(decoded.notificaciones || []);
 
     socket.emit("join", id);
     fetchConversaciones(id);
-
-    socket.on("nuevoMensaje", ({ conversacionId, mensaje, destinatarioId }) => {
-      if (userId === destinatarioId) {
-        setConversaciones(prev =>
-          prev.map(conv =>
-            conv.id === conversacionId
-              ? { ...conv, mensajes: [...conv.mensajes, mensaje] }
-              : conv
-          )
-        );
-        if (conversacionSeleccionada?.id === conversacionId) {
-          setConversacionSeleccionada(prev => ({
-            ...prev,
-            mensajes: [...prev.mensajes, mensaje],
-          }));
-        }
-      }
-    });
-
-    socket.on("nuevoChat", nuevaConversacion => {
-      setConversaciones(prev => [...prev, nuevaConversacion]);
-    });
 
     // Escuchar notificaciones en tiempo real
     socket.on("nuevaNotificacion", (notificacion) => {
@@ -91,9 +73,18 @@ const Mensajes = () => {
   const fetchConversaciones = async id => {
     try {
       const data = await obtenerConversaciones(id);
-      setConversaciones(data);
+      const conversaciones = data.map(conv => ({
+        ...conv,
+        id: conv.id || conv._id
+      }));
+      setConversaciones(conversaciones);
+      // Limpia el error si la carga fue exitosa
+      setError("");
     } catch {
-      setError("Error al cargar conversaciones");
+      // Solo muestra el error si no hay conversaciones cargadas
+      if (conversaciones.length === 0) {
+        setError("Error al cargar conversaciones");
+      }
     }
   };
 
@@ -107,12 +98,32 @@ const Mensajes = () => {
   };
 
   const seleccionarConversacion = conv => {
-    setConversacionSeleccionada(conv);
+    if (!conv?.id) return;
+    seleccionarConversacionPorId(conv.id); // Siempre obtiene el chat actualizado del backend
     setError("");
   };
 
   const handleEnviarMensaje = async () => {
-    if (!nuevoMensaje.trim() || !conversacionSeleccionada) return;
+    if (
+      !nuevoMensaje.trim() ||
+      !conversacionSeleccionada ||
+      !conversacionSeleccionada.id
+    ) return;
+
+    // Validación: si el último mensaje lo envió el usuario actual, no permitir enviar otro
+    const mensajes = conversacionSeleccionada.mensajes;
+    if (
+      mensajes.length > 0 &&
+      mensajes[mensajes.length - 1].idRemitente === userId
+    ) {
+      // Determina el nombre del otro usuario
+      const nombreOtroUsuario =
+        userId === conversacionSeleccionada.idInteresado
+          ? conversacionSeleccionada.nombrePropietario
+          : conversacionSeleccionada.nombreInteresado;
+      setError(`Debes esperar la respuesta de ${nombreOtroUsuario} antes de enviar otro mensaje.`);
+      return;
+    }
 
     const mensajeData = {
       idRemitente: userId,
@@ -124,18 +135,18 @@ const Mensajes = () => {
     };
 
     try {
-      const updatedChat = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
-      setConversacionSeleccionada(updatedChat);
+      // Espera la respuesta del backend (chat actualizado)
+      const chatActualizado = await mandarMensaje(conversacionSeleccionada.id, mensajeData);
+      setNuevoMensaje(""); // Limpia el input
+
+      // Actualiza el estado local del chat seleccionado y la lista de conversaciones
+      setConversacionSeleccionada(chatActualizado);
       setConversaciones(prev =>
-        prev.map(conv => (conv.id === updatedChat.id ? updatedChat : conv))
+        prev.map(conv =>
+          conv.id === chatActualizado.id ? chatActualizado : conv
+        )
       );
-      socket.emit("enviarMensaje", {
-        conversacionId: updatedChat.id,
-        emisorId: userId,
-        destinatarioId: mensajeData.idDestinatario,
-        mensaje: nuevoMensaje,
-      });
-      setNuevoMensaje("");
+      // El socket también actualizará cuando llegue el evento, pero esto da feedback inmediato
     } catch (err) {
       setError("Error al enviar el mensaje: " + (err.response?.data?.message || err.message));
     }
@@ -156,6 +167,59 @@ const Mensajes = () => {
     }
     closeMenu();
   };
+
+  useEffect(() => {
+    conversacionSeleccionadaRef.current = conversacionSeleccionada;
+  }, [conversacionSeleccionada]);
+
+  useEffect(() => {
+    if (!socket || !userId) return;
+
+    // Actualiza la lista de conversaciones cuando haya un nuevo chat o cambio
+    const handleNuevoChat = () => {
+      fetchConversaciones(userId);
+    };
+
+    socket.on("nuevoChat", handleNuevoChat);
+
+    return () => {
+      socket.off("nuevoChat", handleNuevoChat);
+    };
+  }, [socket, userId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Cuando llega un nuevo mensaje, actualiza el chat seleccionado desde el backend
+    const handleNuevoMensaje = ({ conversacionId }) => {
+      // Si el chat abierto es el que recibió el mensaje, actualízalo completamente
+      if (conversacionSeleccionadaRef.current?.id === conversacionId) {
+        seleccionarConversacionPorId(conversacionId);
+      }
+      // Siempre actualiza la lista de conversaciones
+      fetchConversaciones(userId);
+    };
+
+    socket.on('nuevoMensaje', handleNuevoMensaje);
+
+    return () => {
+      socket.off('nuevoMensaje', handleNuevoMensaje);
+    };
+  }, [socket, userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // Refresca conversaciones y chat seleccionado cada 5 segundos
+    const interval = setInterval(() => {
+      fetchConversaciones(userId);
+      if (conversacionSeleccionada?.id) {
+        seleccionarConversacionPorId(conversacionSeleccionada.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [userId, conversacionSeleccionada?.id]);
 
   return (
     <div className={styles.mensajesContainer}>

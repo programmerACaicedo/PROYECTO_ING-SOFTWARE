@@ -28,6 +28,7 @@ public class AcuerdosModel {
     private Instant fechaInicio;
     private Instant fechaFin;
     private String razonCancelacion;
+    private Instant fechaCancelacion;
     private EstadoAcuerdo estado;
     private String archivoContrato;
     private CalificacionServicio calificacionServicio;

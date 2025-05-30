@@ -259,8 +259,7 @@ public class UsuariosServiceImp implements IUsuariosService {
     
             // Generar un token de restablecimiento válido por 1 hora
             String token = jwtTokenService.generarTokenVerificacion(usuario.getCorreo(), 60 * 60);
-            //"https://fkzklx7z-3000.use2.devtunnels.ms/restablecer-contraseña?token=" URL para el funcionamiento del tunel
-            String enlaceRestablecimiento = "http://localhost:3000/restablecer-contraseña?token=" + token;
+            String enlaceRestablecimiento = "http://localhost:8080/restablecer-contraseña?token=" + token;
     
             // Enviar correo con el enlace de restablecimiento
             emailService.sendEmail(

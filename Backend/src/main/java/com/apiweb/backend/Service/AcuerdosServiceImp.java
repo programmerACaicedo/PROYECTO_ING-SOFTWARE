@@ -42,27 +42,26 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
     @Override
     @Transactional
-    public AcuerdosModel crearAcuerdo(ObjectId idPropietario,AcuerdosModel acuerdo) {
-        //Validación del propietario
-        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(idPropietario);
-        if (!usuarioExiste.isPresent()) {
-            throw new UserNotFoundException("El id: " + idPropietario + " no corresponde a un usuario.");
-        }
-        UsuariosModel propietario = usuarioExiste.get();
-        if (propietario.getTipo() != TipoUsuario.propietario) {
-            throw new InvalidUserRoleException("El usuario no es propietario.");
-        }
+    public AcuerdosModel crearAcuerdo(AcuerdosModel acuerdo) {
+        
         //Validación del aviso
         Optional<AvisosModel> avisoExiste = avisosRepository.findById(acuerdo.getAvisosId());
         if (!avisoExiste.isPresent()) {
             throw new ResourceNotFoundException("El aviso no existe");
         }
         AvisosModel aviso = avisoExiste.get();
-        if (!aviso.getPropietarioId().getUsuarioId().equals(propietario.getId())) {
-            throw new InvalidUserRoleException("El usuario no es el propietario del aviso");
-        }
+
         if (aviso.getEstado() != EstadoAviso.Disponible && aviso.getEstado() != EstadoAviso.EnProceso) {
             throw new InvalidUserRoleException("El estado del aviso debe ser 'Disponible' o 'EnProceso' para poder crear un acuerdo.");
+        }
+        //Validación del propietario
+        Optional<UsuariosModel> usuarioExiste = usuariosRepository.findById(aviso.getPropietarioId().getUsuarioId());
+        if (!usuarioExiste.isPresent()) {
+            throw new UserNotFoundException("El id: " + aviso.getPropietarioId().getUsuarioId() + " no corresponde a un usuario.");
+        }
+        UsuariosModel propietario = usuarioExiste.get();
+        if (propietario.getTipo() != TipoUsuario.propietario) {
+            throw new InvalidUserRoleException("El usuario no es propietario.");
         }
 
         //Validacion del propio acuerdo
@@ -102,7 +101,18 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
         aviso.setEstado(EstadoAviso.Arrendado);
         acuerdo.setEstado(EstadoAcuerdo.Activo);
+        acuerdo.getArrendatario().setNombre(arrendatarioExiste.getNombre());
+        acuerdo.getArrendatario().setUsuarioId(arrendatarioExiste.getId());
         acuerdo.setPropietarioId(aviso.getPropietarioId().getUsuarioId());
+        avisosRepository.save(aviso);
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Creacion de acuerdo de arrendamiento exitosa",
+            "Creacion de acuerdo de arrendamiento exitosa.\n\n");
+
         return acuerdosRepository.save(acuerdo);
     }
 
@@ -142,6 +152,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
 
 
         acuerdoActualizar.getExtensiones().add(extension);
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdoActualizar.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Modificacion de acuerdo de arrendamiento exitosa",
+            "Modificacion de acuerdo de arrendamiento exitosa.\n\n");
+
         return acuerdosRepository.save(acuerdoActualizar);
 
     }
@@ -163,6 +181,14 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         }
         acuerdo.setRazonCancelacion(razonCancelacion);
         acuerdo.setEstado(EstadoAcuerdo.Cancelado);
+        acuerdo.setFechaCancelacion(Instant.now());
+
+        UsuariosModel arrendatario = usuariosRepository.findById(acuerdo.getArrendatario().getUsuarioId())
+            .orElseThrow(() -> new UserNotFoundException("No se encontró el arrendatario."));
+        emailService.sendEmail(
+            arrendatario.getCorreo(),
+            "Cancelacion de acuerdo de arrendamiento exitosa",
+            "Cancelacion de acuerdo de arrendamiento exitosa.\n\n");
 
         return acuerdosRepository.save(acuerdo);
     }
