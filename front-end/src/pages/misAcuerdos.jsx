@@ -100,7 +100,6 @@ const MisAcuerdos = () => {
                 className={styles.acuerdoCard}
                 onClick={() => handleAcuerdoClick(acuerdo.id)}
               >
-                <h3>{acuerdo.nombreAviso || "Sin título"}</h3>
                 <p>Arrendatario: {acuerdo.arrendatario?.nombre || "No especificado"}</p>
                 <p>Fecha inicio: {acuerdo.fechaInicio?.slice(0,10)}</p>
                 <p>Fecha fin: {acuerdo.fechaFin?.slice(0,10)}</p>
