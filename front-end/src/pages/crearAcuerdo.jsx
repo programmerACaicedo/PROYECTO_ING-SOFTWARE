@@ -98,15 +98,43 @@ const handleSubmit = async (e) => {
       ]);
       return;
     }
+
+    // Validación: la fecha de inicio no puede ser anterior a hoy
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Ignora la hora para comparar solo la fecha
+    // Convertir YYYY-MM-DD a fecha local correctamente
+    const [anioInicio, mesInicio, diaInicio] = form.fechaInicio.split('-').map(Number);
+    const fechaInicio = new Date(anioInicio, mesInicio - 1, diaInicio);
+
+    const [anioFin, mesFin, diaFin] = form.fechaFin.split('-').map(Number);
+    const fechaFin = new Date(anioFin, mesFin - 1, diaFin);
+
+    if (fechaInicio.getTime() < hoy.getTime()) {
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "La fecha de inicio no puede ser anterior a la fecha actual.", tipo: "error" },
+      ]);
+      return;
+    }
+
     if (new Date(form.fechaFin) < new Date(form.fechaInicio)) {
       setMensajes((prev) => [
         ...prev,
         { texto: "La fecha de finalización no puede ser anterior a la de inicio.", tipo: "error" },
       ]);
-      
       return;
     }
-        // Buscar usuario por correo
+
+    // Validación: la fecha de fin no puede ser igual a la fecha de inicio
+    if (fechaFin.getTime() === fechaInicio.getTime()) {
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "La fecha de finalización no puede ser igual a la fecha de inicio.", tipo: "error" },
+      ]);
+      return;
+    }
+
+    // Buscar usuario por correo
     let usuarioArrendatario;
     try {
     const res = await api.get(`/usuario/correo/${encodeURIComponent(form.arrendatarioCorreo)}`);
@@ -117,15 +145,27 @@ const handleSubmit = async (e) => {
         { texto: "No se encontró un usuario con ese correo.", tipo: "error" },
       ]);
       return;
-    }console.log(usuarioArrendatario);
+    }
+
+    // Validación: el propietario no puede ser el arrendatario
+    if (
+      usuarioSesion &&
+      form.arrendatarioCorreo.trim().toLowerCase() === usuarioSesion.correo.trim().toLowerCase()
+    ) {
+      setMensajes((prev) => [
+        ...prev,
+        { texto: "El arrendador y el arrendatario no pueden ser la misma persona.", tipo: "error" },
+      ]);
+      return;
+    }
 
     // Construcción del objeto para el backend
-const acuerdo = {
-  avisosId: idAviso,
-  fechaInicio: new Date(form.fechaInicio + "T00:00:00").toISOString(),
-  fechaFin: new Date(form.fechaFin + "T00:00:00").toISOString(),
-  archivoContrato: form.archivoContrato,
-  arrendatario: {
+  const acuerdo = {
+    avisosId: idAviso,
+    fechaInicio: fechaInicio.toISOString(),
+    fechaFin: fechaFin.toISOString(),
+    archivoContrato: form.archivoContrato,
+    arrendatario: {
     usuarioId: usuarioArrendatario.id || usuarioArrendatario._id,
     correo: usuarioArrendatario.correo,
     nombre: usuarioArrendatario.nombre
