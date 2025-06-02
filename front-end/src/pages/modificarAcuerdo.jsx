@@ -21,9 +21,21 @@ export default function ModificarAcuerdo() {
       try {
         const data = await obtenerAcuerdoPorId(idAcuerdo);
         setAcuerdo(data);
+
+        // Determinar la fechaFin a mostrar
+        let fechaFinMostrada = "";
+        if (data.extensiones && data.extensiones.length > 0) {
+          // Tomar la fechaFin de la última extensión
+          const ultimaExtension = data.extensiones[data.extensiones.length - 1];
+          fechaFinMostrada = ultimaExtension.fechaFin ? ultimaExtension.fechaFin.slice(0, 10) : "";
+        } else {
+          // Tomar la fechaFin inicial del acuerdo
+          fechaFinMostrada = data.fechaFin ? data.fechaFin.slice(0, 10) : "";
+        }
+
         setForm({
           fechaInicio: "",
-          fechaFin: data.fechaFin ? data.fechaFin.slice(0, 10) : "",
+          fechaFin: fechaFinMostrada,
           archivoContrato: data.archivoContrato || "",
         });
       } catch {

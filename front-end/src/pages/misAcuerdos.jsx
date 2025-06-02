@@ -83,7 +83,7 @@ const MisAcuerdos = () => {
       </div>
 
       <section className={styles.acuerdosSection}>
-        <h2>Tus Acuerdos</h2>
+        <h2>Mis Acuerdos</h2>
         {isLoading ? (
           <p className={styles.loading}>Cargando acuerdos...</p>
         ) : error ? (
@@ -93,18 +93,25 @@ const MisAcuerdos = () => {
         ) : (
           <div className={styles.acuerdosList}>
             {acuerdos.map((acuerdo) => {
-                console.log(acuerdo.avisosId);
+                // Determinar fechas a mostrar
+                let fechaInicio = acuerdo.fechaInicio;
+                let fechaFin = acuerdo.fechaFin;
+                if (acuerdo.extensiones && acuerdo.extensiones.length > 0) {
+                  const ultimaExtension = acuerdo.extensiones[acuerdo.extensiones.length - 1];
+                  fechaInicio = ultimaExtension.fechaInicio;
+                  fechaFin = ultimaExtension.fechaFin;
+                }
                 return (
-              <div
-                key={acuerdo.id}
-                className={styles.acuerdoCard}
-                onClick={() => handleAcuerdoClick(acuerdo.id)}
-              >
-                <p>Arrendatario: {acuerdo.arrendatario?.nombre || "No especificado"}</p>
-                <p>Fecha inicio: {acuerdo.fechaInicio?.slice(0,10)}</p>
-                <p>Fecha fin: {acuerdo.fechaFin?.slice(0,10)}</p>
-                <p>Estado: {acuerdo.estado}</p>
-              </div>
+                  <div
+                    key={acuerdo.id}
+                    className={styles.acuerdoCard}
+                    onClick={() => handleAcuerdoClick(acuerdo.id)}
+                  >
+                    <h3> Acuerdo con el arrendatario {acuerdo.arrendatario?.nombre || "No especificado"}</h3>
+                    <p>Fecha inicio: {fechaInicio?.slice(0,10)}</p>
+                    <p>Fecha fin: {fechaFin?.slice(0,10)}</p>
+                    <p>Estado: {acuerdo.estado}</p>
+                  </div>
                 );
             })}
           </div>

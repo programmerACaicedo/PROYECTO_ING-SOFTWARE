@@ -1,6 +1,8 @@
 package com.apiweb.backend.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,14 +84,16 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidAcuerdoConfigurationException("Ya existe un acuerdo con estado 'activo' para el aviso con ID: " + acuerdo.getAvisosId());
         }
 
-
         UsuariosModel arrendatarioExiste = usuariosRepository.findByCorreo(acuerdo.getArrendatario().getCorreo());
         if (arrendatarioExiste == null){
             throw new UserNotFoundException("El correo: " + acuerdo.getArrendatario().getCorreo() + " no corresponde a un usuario.");
         }
 
         if (arrendatarioExiste.getId()==acuerdo.getPropietarioId()) {
-            throw new InvalidAcuerdoConfigurationException("El arrendador y el arrendatario no pueden ser la misma persona a la ahora de crear un acuerdo. ");
+            throw new InvalidAcuerdoConfigurationException("El arrendador y el arrendatario no pueden ser la misma persona a la a hora de crear un acuerdo. ");
+        }
+        if (arrendatarioExiste.getCorreo().equalsIgnoreCase(propietario.getCorreo())) {
+            throw new InvalidAcuerdoConfigurationException("El arrendador y el arrendatario no pueden ser la misma persona a la a hora de crear un acuerdo. ");
         }
         if (arrendatarioExiste.getTipo() == TipoUsuario.administrador){
             throw new InvalidUserRoleException("El arrendatario no puede ser un administrador. ");
@@ -97,6 +101,19 @@ public class AcuerdosServiceImp implements IAcuerdosService{
         acuerdo.getArrendatario().setUsuarioId(arrendatarioExiste.getId());
         if (acuerdo.getExtensiones() != null && !acuerdo.getExtensiones().isEmpty()) {
             throw new InvalidAcuerdoConfigurationException("El acuerdo no puede tener extensiones al momento de su creación. ");
+        }
+
+        // Validación: la fecha de inicio no puede ser menor a la fecha actual (solo fecha, sin hora)
+        LocalDate fechaInicio = acuerdo.getFechaInicio().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
+        if (fechaInicio.isBefore(hoy)) {
+            throw new InvalidAcuerdoConfigurationException("La fecha de inicio del acuerdo no puede ser anterior a la fecha actual.");
+        }
+
+        // Validación: la fecha de fin no puede ser menor a la fecha actual (solo fecha, sin hora)
+        LocalDate fechaFin = acuerdo.getFechaFin().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (fechaFin.isBefore(hoy)) {
+            throw new InvalidAcuerdoConfigurationException("La fecha de finalización del acuerdo no puede ser anterior a la fecha actual.");
         }
 
         aviso.setEstado(EstadoAviso.Arrendado);
@@ -134,7 +151,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
             throw new InvalidUserRoleException("El acuerdo ya ha sido finalizado.");
         }
         if (acuerdoActualizar.getExtensiones() == null || acuerdoActualizar.getExtensiones().isEmpty()) {
-            if (extension.getFechaInicio().isBefore(acuerdoActualizar.getFechaInicio())) {
+            if (!extension.getFechaInicio().isAfter(acuerdoActualizar.getFechaFin())) {
                 throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la fecha fin del acuerdo. ");
             }
             if (extension.getFechaFin().isBefore(extension.getFechaInicio())) {
@@ -149,8 +166,7 @@ public class AcuerdosServiceImp implements IAcuerdosService{
                         throw new InvalidAcuerdoConfigurationException("La nueva fecha inicio de extensión debe ser despues de la ultima fecha fin de las extensiones ya creadas. ");
                 }
             }
-
-
+            
         acuerdoActualizar.getExtensiones().add(extension);
 
         UsuariosModel arrendatario = usuariosRepository.findById(acuerdoActualizar.getArrendatario().getUsuarioId())
